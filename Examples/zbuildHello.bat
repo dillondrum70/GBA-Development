@@ -1,0 +1,1 @@
+/Utils/Vasm/vasmarm_std_win32.exe /Sources/HelloWorld/GBA_Hello.asm -m7tdmi -chklabels -nocase -Dvasm=1 -L Listing.txt -DBuildGBA=1 -Fbin -o "HelloWorld.gba"

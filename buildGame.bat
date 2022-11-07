@@ -1,0 +1,1 @@
+/Utils/Vasm/vasmarm_std_win32.exe /CSI370/GBA_Project/GBA_Drummond.asm -m7tdmi -chklabels -nocase -Dvasm=1 -L Listing.txt -DBuildGBA=1 -Fbin -o "Drummond.gba"

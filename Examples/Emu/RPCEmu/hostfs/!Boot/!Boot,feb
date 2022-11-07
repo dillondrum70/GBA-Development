@@ -1,0 +1,13 @@
+RMEnsure UtilityModule 3.10 Error This !Boot structure is only suitable for RISC OS 3.1 or later
+Set Alias$BootEnd Unset Alias$BootEnd|mObey
+If "<Boot$Dir>"  = "" Then Set Alias$BootEnd Unset Alias$BootEnd
+Iconsprites <Obey$Dir>.!Sprites
+If "<Boot$Dir>"  = "" Then Set Boot$Dir <Obey$Dir>
+If "<Boot$Path>" = "" Then Set Boot$Path <Boot$Dir>.
+If "<Run$Path>"  = ",%." Then Set Run$Path <Boot$Dir>.Library.,,%.
+BootEnd
+If "<Boot$OSVersion>"    = "" Then Run Boot:Utils.BootVars
+If "<BootResources$Dir>" = "" Then IfThere Boot:Resources Then Set BootResources$Dir Boot:Resources
+If "<BootResources$Dir>" <>"" Then Do Repeat Filer_Boot <BootResources$Dir> -Applications -Tasks
+RMEnsure UtilityModule 3.50 Obey
+Error No Boot application has been run on startup. Some facilities may not be available or set up correctly.

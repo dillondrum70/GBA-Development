@@ -1,0 +1,12 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="2">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="M:\sources\Minimal.asm" backupFilePath="" originalFileLastModifTimestamp="1578108466" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1224" startPos="0" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="M:\sources\Thumb_Minimal.asm" backupFilePath="" originalFileLastModifTimestamp="1609155012" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1044" startPos="253" endPos="253" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1667681689" />
+        </mainView>
+        <subView activeIndex="0">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="928" startPos="3216" endPos="3216" selMode="0" lang="Assembly" encoding="-1" filename="M:\sources\HelloWorld\GBA_Hello.asm" backupFilePath="" originalFileLastModifTimestamp="1608289462" />
+        </subView>
+    </Session>
+</NotepadPlus>

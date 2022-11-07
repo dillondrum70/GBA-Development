@@ -1,0 +1,70 @@
+localtime: 2020-01-04 15:09:32
+   gmtime: 2020-01-04 06:09:32
+RPCEmu 0.9.1 [INTERPRETER NO_DEBUG]
+Build: 32-bit binary
+Compiler: GCC version 4.9.2
+OS: Microsoft Windows
+OS: PlatformId = 2
+OS: MajorVersion = 6
+OS: MinorVersion = 1
+OS: ProductType = 1
+OS: SuiteMask = 0x100
+OS: ServicePackMajor = 1
+OS: ServicePackMinor = 0
+OS: ProcessorArchitecture = 9
+OS: SystemMetricsServerR2 = 0
+OS: ProductInfoType = 4
+QT5: 5.6.3
+Number of screens: 3
+Primary screen: \\.\DISPLAY5
+Information for screen: \\.\DISPLAY5
+ Resolution: 3840 x 2160
+ Colour depth: 32
+Information for screen: \\.\DISPLAY6
+ Resolution: 1080 x 1920
+ Colour depth: 32
+Information for screen: \\.\DISPLAY7
+ Resolution: 1080 x 1920
+ Colour depth: 32
+Working Directory: M:\Emu\RPCEmu
+config_load: bridgename = "rpcemu"
+config_load: cdrom_enabled = "0"
+config_load: cdrom_iso = ""
+config_load: cdrom_type = "0"
+config_load: cpu_idle = "1"
+config_load: ipaddress = "172.31.0.1"
+config_load: macaddress = ""
+config_load: mem_size = "32"
+config_load: model = "RPCSA"
+config_load: mouse_following = "0"
+config_load: mouse_twobutton = "0"
+config_load: network_type = "off"
+config_load: refresh_rate = "60"
+config_load: show_fullscreen_message = "1"
+config_load: sound_enabled = "1"
+config_load: stretch_mode = "1"
+config_load: username = ""
+config_load: vram_size = "0"
+romload: Loaded 'riscos-3.71.rom' 4194304 bytes
+romload: Total ROM size 4 MB
+romload: ROM patch applied: 8MB VRAM RISC OS 3.71
+plt_sound: qt5 Audio Device: Speakers (3- USB2.0 High-Speed 
+plt_sound: qt5 Audio Codecs Supported: 1
+0: audio/pcm
+plt_sound: qt5 Audio SampleRates Supported: 10
+0: 8000
+1: 11025
+2: 16000
+3: 22050
+4: 32000
+5: 44100
+6: 48000
+7: 88200
+8: 96000
+9: 192000
+initpodulerom: Successfully loaded 'hostfs,ffa' into podulerom
+initpodulerom: Successfully loaded 'hostfsfiler,ffa' into podulerom
+RPCEmu: Machine reset
+RPCEmu: Machine reset complete
+plt_sound: changing to samplerate 41666Hz
+HostFS: Registration request version 3 accepted

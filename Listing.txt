@@ -1,0 +1,28 @@
+F00:0001       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0002       .equ ram, 0x02000000	;RAM on the GBA starts at 0x02000000
+F00:0003       .equ CursorX, ram+32	;32 bits past ram start
+F00:0004       .equ CursorY, ram+33	;1 bit past CursorX
+F00:0005       
+F00:0006       .org 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
+F00:0007       
+F00:0008       
+
+
+Sections:
+S01  seg8000000
+
+
+Sources:
+F00  GBA_Drummond.asm
+
+
+Symbols:
+CursorY EXPR(33554465=0x2000021) UNUSED 
+CursorX EXPR(33554464=0x2000020) UNUSED 
+ram EXPR(33554432=0x2000000) 
+__VASM EXPR(0=0x0) INTERNAL 
+BuildGBA EXPR(1=0x1) UNUSED 
+vasm EXPR(1=0x1) UNUSED 
+__MSDOSFS EXPR(0=0x0) INTERNAL 
+
+There have been no errors.

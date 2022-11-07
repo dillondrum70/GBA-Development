@@ -1,0 +1,4 @@
+RMEnsure UtilityModule 3.10 Error This !Boot structure is only suitable for RISC OS 3.1 or later
+Set Boot$Dir <Obey$Dir>
+Set Boot$Path <Boot$Dir>.
+desktop prog

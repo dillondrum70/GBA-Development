@@ -1,0 +1,11 @@
+
+.equ Ascii_0,"0"
+.equ Ascii_1,"1"
+.equ Ascii_2,"2"
+.equ Ascii_3,"3"
+.equ Ascii_4,"4"
+.equ Ascii_5,"5"
+.equ Ascii_6,"6"
+.equ Ascii_7,"7"
+.equ Ascii_8,"8"
+.equ Ascii_9,"9"
