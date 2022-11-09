@@ -13,7 +13,7 @@
         <GUIConfig name="UserDefineDlg" position="undocked">hide</GUIConfig>
         <GUIConfig name="TabSetting" size="4" replaceBySpace="no" />
         <!--App position-->
-        <GUIConfig name="AppPosition" x="-35" y="73" width="1172" height="884" isMaximized="yes" />
+        <GUIConfig name="AppPosition" x="179" y="33" width="1172" height="884" isMaximized="yes" />
         <!-- For the primary scintilla view,
              2 status for Attribut lineNumberMargin, bookMarkMargin, indentGuideLine and currentLineHilitingShow: "show" or "hide"
              4 status for Attribut folderMarkStyle : "simple", "arrow", "circle" and "box"  -->
@@ -129,7 +129,6 @@
         <Replace name="$" />
     </FindHistory>
     <History nbMaxFile="15" inSubMenu="no" customLength="-1">
-        <File filename="M:\Utils\Vasm\vasmGBA.bat" />
         <File filename="M:\sources\HelloWorld\NDS_Hello.asm" />
         <File filename="M:\sources\Thumb_Lesson2.asm" />
         <File filename="M:\sources\Thumb_Lesson1.asm" />
@@ -144,6 +143,7 @@
         <File filename="M:\sources\HelloWorld\NDS_Hello_Advanced.asm" />
         <File filename="M:\Utils\Vasm\vasmNDS.bat" />
         <File filename="M:\sources\HelloWorld\GBA_Hello.asm" />
+        <File filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />
