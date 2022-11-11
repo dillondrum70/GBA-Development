@@ -1,41 +1,49 @@
+;LITTLE ENDIAN
+;LITTLE ENDIAN
+;LITTLE ENDIAN
+;LITTLE ENDIAN
+;LITTLE ENDIAN
+;LITTLE ENDIAN
+;LITTLE ENDIAN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.equ ram, 0x02000000	;RAM on the GBA starts at 0x02000000
-.equ CursorX, ram+32	;32 bits past ram start
-.equ CursorY, ram+33	;1 bit past CursorX
+.EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000
+.EQU CursorX, ram+32	;32 bits past ram start
+.EQU CursorY, ram+33	;1 bit past CursorX
+.EQU VramBase, #0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
-.org 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
+.ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
 
 b ProgramStart	;Branch to start of program
 
 ;GBA Header
 ;004h    156   Nintendo Logo    (compressed bitmap, required!)
-	.byte 0xC8,0x60,0x4F,0xE2,0x01,0x70,0x8F,0xE2,0x17,0xFF,0x2F,0xE1,0x12,0x4F,0x11,0x48     ; C
-	.byte 0x12,0x4C,0x20,0x60,0x64,0x60,0x7C,0x62,0x30,0x1C,0x39,0x1C,0x10,0x4A,0x00,0xF0     ; D
-    .byte 0x14,0xF8,0x30,0x6A,0x80,0x19,0xB1,0x6A,0xF2,0x6A,0x00,0xF0,0x0B,0xF8,0x30,0x6B     ; E
-    .byte 0x80,0x19,0xB1,0x6B,0xF2,0x6B,0x00,0xF0,0x08,0xF8,0x70,0x6A,0x77,0x6B,0x07,0x4C     ; F
-    .byte 0x60,0x60,0x38,0x47,0x07,0x4B,0xD2,0x18,0x9A,0x43,0x07,0x4B,0x92,0x08,0xD2,0x18     ; 10
-    .byte 0x0C,0xDF,0xF7,0x46,0x04,0xF0,0x1F,0xE5,0x00,0xFE,0x7F,0x02,0xF0,0xFF,0x7F,0x02     ; 11
-    .byte 0xF0,0x01,0x00,0x00,0xFF,0x01,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00     ; 12
-    .byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 13
-    .byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 14
-	.byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x1A,0x9E,0x7B,0xEB     ; 15
+	.BYTE 0xC8,0x60,0x4F,0xE2,0x01,0x70,0x8F,0xE2,0x17,0xFF,0x2F,0xE1,0x12,0x4F,0x11,0x48     ; C
+	.BYTE 0x12,0x4C,0x20,0x60,0x64,0x60,0x7C,0x62,0x30,0x1C,0x39,0x1C,0x10,0x4A,0x00,0xF0     ; D
+    .BYTE 0x14,0xF8,0x30,0x6A,0x80,0x19,0xB1,0x6A,0xF2,0x6A,0x00,0xF0,0x0B,0xF8,0x30,0x6B     ; E
+    .BYTE 0x80,0x19,0xB1,0x6B,0xF2,0x6B,0x00,0xF0,0x08,0xF8,0x70,0x6A,0x77,0x6B,0x07,0x4C     ; F
+    .BYTE 0x60,0x60,0x38,0x47,0x07,0x4B,0xD2,0x18,0x9A,0x43,0x07,0x4B,0x92,0x08,0xD2,0x18     ; 10
+    .BYTE 0x0C,0xDF,0xF7,0x46,0x04,0xF0,0x1F,0xE5,0x00,0xFE,0x7F,0x02,0xF0,0xFF,0x7F,0x02     ; 11
+    .BYTE 0xF0,0x01,0x00,0x00,0xFF,0x01,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00     ; 12
+    .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 13
+    .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 14
+	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x1A,0x9E,0x7B,0xEB     ; 15
 	
     ;		123456789012
-    .ascii "DRUMMOND.NET";0A0h    12    Game Title       (uppercase ascii, max 12 characters)	
-    .ascii "0000"	;0ACh    4     Game Code        (uppercase ascii, 4 characters)
-    .ascii "00"		;0B0h    2     Maker Code       (uppercase ascii, 2 characters)
-	.byte 0x96		;0B2h    1     Fixed value      (must be 96h, required!)
-	.byte 0			;0B3h    1     Main unit code   (00h for current GBA models)
-	.byte 0			;0B4h    1     Device type      (usually 00h) (bit7=DACS/debug related)
-	.space 7		;0B5h    7     Reserved Area    (should be zero filled)
-	.byte 0			;0BCh    1     Software version (usually 00h)
-	.byte 0			;0BDh    1     Complement check (header checksum, required!)
-	.word 0			;0BEh    2     Reserved Area    (should be zero filled)
-	.long 0			;0C0h    4     RAM Entry Point  (32bit ARM branch opcode, eg. "B ram_start")
-	.byte 0			;0C4h    1     Boot mode        (init as 00h - BIOS overwrites this value!)
-	.byte 0			;0C5h    1     Slave ID Number  (init as 00h - BIOS overwrites this value!)
-	.space 26		;0C6h    26    Not used         (seems to be unused)
-	.long 0			;0E0h    4     JOYBUS Entry Pt. (32bit ARM branch opcode, eg. "B joy_start")
+    .ASCII "DRUMMOND.NET";0A0h    12    Game Title       (uppercase ascii, max 12 characters)	
+    .ASCII "0000"	;0ACh    4     Game Code        (uppercase ascii, 4 characters)
+    .ASCII "00"		;0B0h    2     Maker Code       (uppercase ascii, 2 characters)
+	.BYTE 0x96		;0B2h    1     Fixed value      (must be 96h, required!)
+	.BYTE 0			;0B3h    1     Main unit code   (00h for current GBA models)
+	.BYTE 0			;0B4h    1     Device type      (usually 00h) (bit7=DACS/debug related)
+	.SPACE 7		;0B5h    7     Reserved Area    (should be zero filled)
+	.BYTE 0			;0BCh    1     Software version (usually 00h)
+	.BYTE 0			;0BDh    1     Complement check (header checksum, required!)
+	.WORD 0			;0BEh    2     Reserved Area    (should be zero filled)
+	.LONG 0			;0C0h    4     RAM Entry Point  (32bit ARM branch opcode, eg. "B ram_start")
+	.BYTE 0			;0C4h    1     Boot mode        (init as 00h - BIOS overwrites this value!)
+	.BYTE 0			;0C5h    1     Slave ID Number  (init as 00h - BIOS overwrites this value!)
+	.SPACE 26		;0C6h    26    Not used         (seems to be unused)
+	.LONG 0			;0E0h    4     JOYBUS Entry Pt. (32bit ARM branch opcode, eg. "B joy_start")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -55,6 +63,95 @@ AsciiTestAddress:
 Ascii:
 	.BYTE " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 255	;All characters in font, 255 terminated
 	.ALIGN 4	;Align to 4 bytes
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+NewLine:
+	STMFD sp!, {r0-r12, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the last function
+		MOV r0, #CursorX	;Get address of cursor x
+		XOR r1, r1			;Clear r1
+		STRB r1, [r0]		;Store 0 from r1 in CursorX, move cursor back to left side of screen
+		
+		MOV r0, #CursorY	;Get Y address
+		LDRB r1, [r0]		;Store CursorY valye in r1
+		ADD r1, r1, #1		;Add 1 to CursorY
+		STRB r1, [r0]		;Store the incremented CursorY vlaue in CursorY, moves cursor down
+	LDMFD sp!, {r0-r12, pc}	;Load registers from stack, put link register in program counter to return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+WriteText:
+	STMFD sp!, {r0-r12, lr}
+	
+RepeatWriteText:
+		LDRB r0, [r1], #1 	;Load byte then shift by 1
+		CMPS r0, #255		;Check if char is null terminator
+		BEQ WriteTextDone
+		BL WriteChar
+		B RepeatWriteText
+	
+	WriteTextDone:
+	LDMFD sp!, {r0-r12, lr}
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;r0 = character to write
+WriteChar:
+	STMFD sp!, {r0-r12, lr}
+		;Clear r0 and r1
+		XOR r4, r4
+		XOR r5, r5
+		
+		;Loading address of cursor x and y then loading values into r4 and r5
+		MOV r3, #CursorX
+		LDRB r4, [r3]
+		MOV r3, #CursorY
+		LDRB r5, [r3]
+		
+		;r4 = cursor x position, r5 = cursor y position
+		
+		MOV r3, #VramBase	;Load VRAM base address in, addresses after this point will modify screen, 2 bytes, half word, 16 bits for color aBBBBBGGGGGRRRRR
+		
+		;Each char is 8 x 8 pixels
+		;Each pixel is 2 bytes
+		;8 lines of 16 bytes
+		MOV r6, #16		;Bytes in a line of character
+		MUL r2, r4, r6	;Multiply cursor x position by 16
+		ADD r3, r3, r2	;Add that position to r2 so we are at that x position in VRAM
+		
+		MOV r4, #240*8*2	;240 pixels per row, 8 lines per char, 2 bytes per pixel, (no longer need cursor x position, can write over r4)
+		MUL r2, r5, r4		;cursor y position * bytes per char row (8 screen lines, 240 pixels per line, 2 bytes per pixel)
+		ADD r3, r3, r2		;Add number of bytes to move over in x direction (r3) and number of bytes to move down in the y direction (r2) to get final vram position
+		ADR r4,BitmapFont 	;Load address of font into r4
+		
+		SUB r0,r0,#32			;Subtract 32 from value in first paramter 
+		ADD r4,r4,r0,asl #3		;Add the value to the bitmap font and shift left 3 to get address of the passed character
+		
+		MOV r1,#8				
+DrawLine:
+		MOV r7,#8 				
+		LDRB r8,[r4],#1			
+		MOV r9,#0b100000000		
+				
+		MOV r2, #0b1111111101000000; Color: ABBBBBGGGGGRRRRR	A=Alpha
+DrawPixel:
+		tst r8,r9				
+		strneh r2,[r3]			
+		ADD r3,r3,#2
+		MOV r9,r9,ror #1		
+		SUBS r7,r7,#1
+		BNE DrawPixel			
+		
+		ADD r3,r3,#480-16	   
+		SUBS r1,r1,#1								
+		BNE DrawLine			
+LineDone:	
+		MOV r3,#CursorX
+		LDRB r0,[r3]	
+		ADD r0,r0,#1			
+		STRB r0,[r3]
+		
+	LDMFD sp!, {r0-r12, pc}
 	
 ;Starts at ASCII number 32, simplifying by starting at 0
 ;I translated the Presst Start 2P Google Font into 8-tuples of byte sized hex codes

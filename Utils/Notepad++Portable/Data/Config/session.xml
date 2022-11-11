@@ -1,10 +1,10 @@
 <NotepadPlus>
     <Session activeView="0">
         <mainView activeIndex="0">
-            <File firstVisibleLine="34" xOffset="0" scrollWidth="1397" startPos="3012" endPos="3012" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1667974730" />
+            <File firstVisibleLine="117" xOffset="0" scrollWidth="1593" startPos="5940" endPos="5940" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1668188828" />
         </mainView>
         <subView activeIndex="0">
-            <File firstVisibleLine="58" xOffset="0" scrollWidth="928" startPos="2955" endPos="2955" selMode="0" lang="Assembly" encoding="-1" filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" backupFilePath="M:\Utils\Notepad++Portable\App\Notepad++\backup\GBA_Hello_Advance.asm@2022-11-09_011338" originalFileLastModifTimestamp="1608290336" />
+            <File firstVisibleLine="118" xOffset="0" scrollWidth="928" startPos="4575" endPos="5344" selMode="0" lang="Assembly" encoding="-1" filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" backupFilePath="M:\Utils\Notepad++Portable\App\Notepad++\backup\GBA_Hello_Advance.asm@2022-11-09_011338" originalFileLastModifTimestamp="1668183995" />
         </subView>
     </Session>
 </NotepadPlus>
