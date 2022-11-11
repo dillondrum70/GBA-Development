@@ -54,14 +54,20 @@ ProgramStart:
 	mov r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
 	str r2, [r3]			;Store layer and screen mode in LCD Control address
 	
-	ldr r1, AsciiTestAddress	;Load test address into r1, parameter 1
+	ldr r1, AsciiTestAddress	;Load test address into r1, parameter 1	
+	BL WriteText
 	
+	BL NewLine
+	
+GameLoop:
+	B GameLoop
 	
 AsciiTestAddress:
 	.LONG Ascii	;Address of Ascii string
 	
 Ascii:
-	.BYTE " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 255	;All characters in font, 255 terminated
+	;.BYTE " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 255	;All characters in font, 255 terminated
+	.BYTE "Test", 255
 	.ALIGN 4	;Align to 4 bytes
 
 

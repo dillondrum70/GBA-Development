@@ -47,7 +47,7 @@ ProgramStart:
 	
 	mov r4,#0x04000000  		;DISPCNT -LCD Control
 	mov r2,#0x403    			;4= Layer 2 on / 3= ScreenMode 3
-	str	r2,[r4]         	
+	str	r2,[r4]         		
 
 	ldr r1,HelloWorldAddress	;Address of Hello World Message
 	bl PrintString				;Show Message

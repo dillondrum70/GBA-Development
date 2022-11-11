@@ -143,6 +143,7 @@
         <File filename="M:\sources\HelloWorld\NDS_Hello_Advanced.asm" />
         <File filename="M:\Utils\Vasm\vasmNDS.bat" />
         <File filename="M:\sources\HelloWorld\GBA_Hello.asm" />
+        <File filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />
