@@ -8,13 +8,36 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 .EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000
+
 .EQU CursorX, Ram+32	;32 bits past ram start
 .EQU CursorY, Ram+33	;1 bit past CursorX
+
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
 .ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-b ProgramStart	;Branch to start of program
+.EQU InputLocation, 0x04000130	;Location in memory where input is stored
+
+;OR these masks with data at input location to get input, returns 0 if pressed
+.EQU Key_A, 			0b0000000000000001				
+.EQU Key_B, 			0b0000000000000010
+.EQU Key_Select, 		0b0000000000000100
+.EQU Key_Start, 		0b0000000000001000
+.EQU Key_RightBump, 	0b0000000000010000
+.EQU Key_LeftBump, 		0b0000000000100000
+.EQU Key_Up, 			0b0000000001000000
+.EQU Key_Down, 			0b0000000010000000
+.EQU Key_Right, 		0b0000000100000000
+.EQU Key_Left, 			0b0000001000000000
+
+.EQU MaskKey, 			0b1111110000000000	;Mask out other bits
+
+.EQU BackgroundColor, 0b1100001000010000
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+B ProgramStart	;Branch to start of program
 
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 ;GBA Header
@@ -71,6 +94,16 @@ ProgramStart:
 	;BL NewLine
 	
 GameLoop:
+	EOR r1, r1, r1
+	MOV r1, #Key_Up
+	BL ReadInput
+	
+	CMPS r0, #0
+	MOVE r1, #0b1111110000000000
+	MOVNE r1, #BackgroundColor
+	
+	BL ClearToColor
+	
 	B GameLoop
 	
 AsciiTestAddress1:
@@ -103,18 +136,41 @@ AsciiTest4:
 ScreenInit:
 	STMFD sp!, {r0-r12, lr}
 		;Actual screen initialization, tells console which mode we're in
-		mov r3, #0x04000000		;DISPCNT - LCD Control
-		mov r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
-		str r2, [r3]			;Store layer and screen mode in LCD Control address
-	
-		MOV r2, #VramBase	;Start with vram base
-		MOV r1, #240*160	;Take number of pixels in screen
-		MOV r0, #0b1100001000010000		;Color to fill
-FillScreen:
-		STRH r0, [r2], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
-		SUBS r1, r1, #1		;Decrement and set signs of loop counter
-		BNE FillScreen		;Loop to fill screen
+		MOV r3, #0x04000000		;DISPCNT - LCD Control
+		MOV r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
+		STR r2, [r3]			;Store layer and screen mode in LCD Control address
+		
+		MOV r0, #BackgroundColor		;Color to fill
+		BL ClearToColor
 	LDMFD sp!, {r0-r12, pc}
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;r1 = color halfword
+ClearToColor:
+	STMFD sp!, {r1-r12, lr}
+		MOV r3, #VramBase	;Start with vram base
+		MOV r2, #240*160	;Take number of pixels in screen
+		
+FillScreen:
+		STRH r1, [r3], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
+		SUBS r2, r2, #1		;Decrement and set signs of loop counter
+		BNE FillScreen		;Loop to fill screen
+		
+	LDMFD sp!, {r1-r12, pc}
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Use E conditional to check if pressed
+;r1 = key mask
+;Returns keymask in r0
+ReadInput:
+	STMFD sp!, {r1-r12, lr}
+		EOR r0, r0, r0
+		MOV r2, #InputLocation	;Input memory location
+		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
+		MOV r2, #MaskKey		;Mask out superfluous bits
+		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
+		AND r0, r0, r1			;AND return register with input bits with the passed key mask
+	LDMFD sp!, {r1-r12, pc}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
@@ -151,7 +207,7 @@ WriteTextDone:
 ;Comments added by me, Dillon Drummond
 ;r0 = character to write
 WriteChar:
-	STMFD sp!, {r0-r12, lr}	;Store registers and link register
+	STMFD sp!, {r1-r12, lr}	;Store registers and link register
 		;Clear r0 and r1
 		EOR r4, r4, r4
 		EOR r5, r5, r5
@@ -205,7 +261,7 @@ LineDone:
 		ADD r0,r0,#1		;Increment cursor by 1 position
 		STRB r0,[r3]		;Store incremented value back in address
 		
-	LDMFD sp!, {r0-r12, pc}	;Return
+	LDMFD sp!, {r1-r12, pc}	;Return
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
