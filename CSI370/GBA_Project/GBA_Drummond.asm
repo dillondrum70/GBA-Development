@@ -73,36 +73,38 @@ B ProgramStart	;Branch to start of program
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ProgramStart:
-	mov sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
+	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
 	BL ScreenInit
 	
-	;ldr r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
+	LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
+	BL WriteText
+	BL NewLine
+	
+	LDR r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
+	BL WriteText
+	BL NewLine
+	
+	MOV r1, #126
+	BL WriteChar
+	
+	;LDR r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
 	;BL WriteText
 	;BL NewLine
 	
-	;ldr r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
-	;BL WriteText
-	;BL NewLine
-	
-	;ldr r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
-	;BL WriteText
-	;BL NewLine
-	
-	;ldr r1, AsciiTestAddress4	;Load test address into r1, parameter 1	
+	;LDR r1, AsciiTestAddress4	;Load test address into r1, parameter 1	
 	;BL WriteText
 	;BL NewLine
 	
 GameLoop:
-	EOR r1, r1, r1
-	MOV r1, #Key_Up
-	BL ReadInput
+	;MOV r1, #Key_Up					;Pass up key mask to input function
+	;BL ReadInput					;Call function, value returned in r0
 	
-	CMPS r0, #0
-	MOVE r1, #0b1111110000000000
-	MOVNE r1, #BackgroundColor
+	;CMPS r0, #0						;Set flag register to check input
+	;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
+	;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
 	
-	BL ClearToColor
+	;BL ClearToColor					;Update color
 	
 	B GameLoop
 	
@@ -177,7 +179,7 @@ ReadInput:
 NewLine:
 	STMFD sp!, {r0-r12, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the last function
 		MOV r0, #CursorX	;Get address of cursor x
-		EOR r1, r1, r1			;Clear r1
+		EOR r1, r1, r1		;Clear r1
 		STRB r1, [r0]		;Store 0 from r1 in CursorX, move cursor back to left side of screen
 		
 		MOV r0, #CursorY	;Get Y address
@@ -189,26 +191,29 @@ NewLine:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 ;Comments added by me, Dillon Drummond
+;Some changes made
+;Paramters: r1 = string address
 WriteText:
 	STMFD sp!, {r0-r12, lr}
-	
+		MOV r2, r1			;Store parameter in temp variable so new parameter can be passed to WriteChar
+		
 RepeatWriteText:
-		LDRB r0, [r1], #1 	;Load byte then shift by 1
-		CMPS r0, #255		;Check if char is null terminator
+		LDRB r1, [r2], #1 	;Load byte then shift by 1
+		CMPS r1, #255		;Check if char is null terminator
 		BEQ WriteTextDone	;If null terminator, exit
 		BL WriteChar		;Otherwise, write character
 		B RepeatWriteText	;Go back to begining of this block and check if there is another character or if at null terminator
 	
 WriteTextDone:
-	LDMFD sp!, {r0-r12, lr}
+	LDMFD sp!, {r0-r12, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 ;Comments added by me, Dillon Drummond
-;r0 = character to write
+;r1 = character to write
 WriteChar:
-	STMFD sp!, {r1-r12, lr}	;Store registers and link register
-		;Clear r0 and r1
+	STMFD sp!, {r0-r12, lr}	;Store registers and link register
+		;Clear r4 and r5
 		EOR r4, r4, r4
 		EOR r5, r5, r5
 		
@@ -234,10 +239,10 @@ WriteChar:
 		ADD r3, r3, r2		;Add number of bytes to move over in x direction (r3) and number of bytes to move down in the y direction (r2) to get final vram position
 		ADR r4,BitmapFont 	;Load address of font into r4
 		
-		SUB r0,r0,#32			;Subtract 32 from value in first paramter 
-		ADD r4,r4,r0,asl #3		;Add the value to the bitmap font and shift left 3 to get address of the passed character
+		SUB r1,r1,#32			;Subtract 32 from value in first paramter 
+		ADD r4,r4,r1,asl #3		;Add the value to the bitmap font and shift left 3 to get address of the passed character
 		
-		MOV r1,#8			;Loop counter for lines	
+		MOV r10,#8			;Loop counter for lines	
 WriteLine:
 		MOV r7,#8 			;Loop counter for pixels
 		LDRB r8,[r4],#1				;Load bitmap font into r8
@@ -253,15 +258,15 @@ DrawPixel:
 		BNE DrawPixel		;Loop for 8 pixels, until zero flag is set
 		
 		ADD r3,r3,#480-16	;240 pixels * 2 bytes per pixel - 16 
-		SUBS r1,r1,#1		;Decrement loop counter for lines, set signs to see if after 8 lines	
+		SUBS r10,r10,#1		;Decrement loop counter for lines, set signs to see if after 8 lines	
 		BNE WriteLine		;If zeor flag set, exit.  Otherwise, repeat, go to next line
 LineDone:	
 		MOV r3,#CursorX		;Get CursorX address
-		LDRB r0,[r3]		;Get CursorX value
-		ADD r0,r0,#1		;Increment cursor by 1 position
-		STRB r0,[r3]		;Store incremented value back in address
+		LDRB r1,[r3]		;Get CursorX value
+		ADD r1,r1,#1		;Increment cursor by 1 position
+		STRB r1,[r3]		;Store incremented value back in address
 		
-	LDMFD sp!, {r1-r12, pc}	;Return
+	LDMFD sp!, {r0-r12, pc}	;Return
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -365,3 +370,4 @@ BitmapFont:
 	.BYTE 0x00,0x18,0x18,0x18,0x18,0x18,0x18,0x18	;91 - |
 	.BYTE 0x00,0x30,0x18,0x18,0x0C,0x18,0x18,0x30	;92 - }
 	.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
+	;.BYTE 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
