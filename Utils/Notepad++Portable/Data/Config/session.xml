@@ -1,7 +1,7 @@
 <NotepadPlus>
     <Session activeView="0">
         <mainView activeIndex="0">
-            <File firstVisibleLine="338" xOffset="0" scrollWidth="1568" startPos="16705" endPos="16705" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="M:\Utils\Notepad++Portable\App\Notepad++\backup\GBA_Drummond.asm@2022-11-12_023052" originalFileLastModifTimestamp="1668238116" />
+            <File firstVisibleLine="76" xOffset="0" scrollWidth="1568" startPos="4568" endPos="4568" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1668238897" />
         </mainView>
         <subView activeIndex="0">
             <File firstVisibleLine="75" xOffset="0" scrollWidth="928" startPos="0" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" backupFilePath="" originalFileLastModifTimestamp="1668193066" />

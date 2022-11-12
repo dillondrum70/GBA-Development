@@ -77,16 +77,13 @@ ProgramStart:
 	
 	BL ScreenInit
 	
-	LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
-	BL WriteText
-	BL NewLine
+	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
+	;BL WriteText
+	;BL NewLine
 	
-	LDR r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
-	BL WriteText
-	BL NewLine
-	
-	MOV r1, #126
-	BL WriteChar
+	;LDR r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
+	;BL WriteText
+	;BL NewLine
 	
 	;LDR r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -97,14 +94,14 @@ ProgramStart:
 	;BL NewLine
 	
 GameLoop:
-	;MOV r1, #Key_Up					;Pass up key mask to input function
-	;BL ReadInput					;Call function, value returned in r0
+	MOV r1, #Key_Up					;Pass up key mask to input function
+	BL ReadInput					;Call function, value returned in r0
 	
-	;CMPS r0, #0						;Set flag register to check input
-	;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
-	;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
+	CMPS r0, #0						;Set flag register to check input
+	MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
+	MOVNE r1, #BackgroundColor		;Stay background gray otherwise
 	
-	;BL ClearToColor					;Update color
+	BL ClearToColor					;Update color
 	
 	B GameLoop
 	
@@ -245,7 +242,7 @@ WriteChar:
 		MOV r10,#8			;Loop counter for lines	
 WriteLine:
 		MOV r7,#8 			;Loop counter for pixels
-		LDRB r8,[r4],#1				;Load bitmap font into r8
+		LDRB r8,[r4],#1				;Load bitmap font value into r8
 		MOV r9,#0b100000000			;Bitmask gets shifted over 1 through each loop
 				
 		MOV r2, #0b1111111101000000; Color: ABBBBBGGGGGRRRRR	A=Alpha
