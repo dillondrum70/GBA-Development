@@ -6,6 +6,7 @@
 ;LITTLE ENDIAN
 ;LITTLE ENDIAN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 .EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000
 .EQU CursorX, Ram+32	;32 bits past ram start
 .EQU CursorY, Ram+33	;1 bit past CursorX
@@ -15,6 +16,7 @@
 
 b ProgramStart	;Branch to start of program
 
+;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 ;GBA Header
 ;004h    156   Nintendo Logo    (compressed bitmap, required!)
 	.BYTE 0xC8,0x60,0x4F,0xE2,0x01,0x70,0x8F,0xE2,0x17,0xFF,0x2F,0xE1,0x12,0x4F,0x11,0x48     ; C
@@ -50,25 +52,23 @@ b ProgramStart	;Branch to start of program
 ProgramStart:
 	mov sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
-	mov r3, #0x04000000		;DISPCNT - LCD Control
-	mov r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
-	str r2, [r3]			;Store layer and screen mode in LCD Control address
+	BL ScreenInit
 	
-	ldr r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
-	BL WriteText
-	BL NewLine
+	;ldr r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
+	;BL WriteText
+	;BL NewLine
 	
-	ldr r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
-	BL WriteText
-	BL NewLine
+	;ldr r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
+	;BL WriteText
+	;BL NewLine
 	
-	ldr r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
-	BL WriteText
-	BL NewLine
+	;ldr r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
+	;BL WriteText
+	;BL NewLine
 	
-	ldr r1, AsciiTestAddress4	;Load test address into r1, parameter 1	
-	BL WriteText
-	BL NewLine
+	;ldr r1, AsciiTestAddress4	;Load test address into r1, parameter 1	
+	;BL WriteText
+	;BL NewLine
 	
 GameLoop:
 	B GameLoop
@@ -98,9 +98,26 @@ AsciiTest4:
 	.BYTE "z{|}~",255
 	.ALIGN 4
 	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ScreenInit:
+	STMFD sp!, {r0-r12, lr}
+		;Actual screen initialization, tells console which mode we're in
+		mov r3, #0x04000000		;DISPCNT - LCD Control
+		mov r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
+		str r2, [r3]			;Store layer and screen mode in LCD Control address
+	
+		MOV r2, #VramBase	;Start with vram base
+		MOV r1, #240*160	;Take number of pixels in screen
+		MOV r0, #0b1100001000010000		;Color to fill
+FillScreen:
+		STRH r0, [r2], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
+		SUBS r1, r1, #1		;Decrement and set signs of loop counter
+		BNE FillScreen		;Loop to fill screen
+	LDMFD sp!, {r0-r12, pc}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 NewLine:
 	STMFD sp!, {r0-r12, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the last function
 		MOV r0, #CursorX	;Get address of cursor x
@@ -114,7 +131,8 @@ NewLine:
 	LDMFD sp!, {r0-r12, pc}	;Load registers from stack, put link register in program counter to return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+;Comments added by me, Dillon Drummond
 WriteText:
 	STMFD sp!, {r0-r12, lr}
 	
@@ -129,6 +147,8 @@ WriteTextDone:
 	LDMFD sp!, {r0-r12, lr}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+;Comments added by me, Dillon Drummond
 ;r0 = character to write
 WriteChar:
 	STMFD sp!, {r0-r12, lr}	;Store registers and link register
@@ -187,9 +207,12 @@ LineDone:
 		
 	LDMFD sp!, {r0-r12, pc}	;Return
 	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;Starts at ASCII number 32, simplifying by starting at 0
 ;I translated the Presst Start 2P Google Font into 8-tuples of byte sized hex codes
 ;This effectively defines an 8x8 bitmap of a character
+;Method learned from https://www.chibialiens.com/arm/helloworld.php#LessonH2
 BitmapFont:
 	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00	;0 - Space
 	.BYTE 0x70,0x70,0x70,0x60,0x60,0x00,0x60,0x00	;1 - !
@@ -285,6 +308,4 @@ BitmapFont:
 	.BYTE 0x00,0x0C,0x18,0x18,0x30,0x18,0x18,0x0C	;90 - {
 	.BYTE 0x00,0x18,0x18,0x18,0x18,0x18,0x18,0x18	;91 - |
 	.BYTE 0x00,0x30,0x18,0x18,0x0C,0x18,0x18,0x30	;92 - }
-	;.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
-	.BYTE 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
-	;95
+	.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
