@@ -7,7 +7,7 @@
 ;LITTLE ENDIAN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
-.EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000
+.EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000, builds upwards, can store whatever we want whereever we want, just make sure it doesn't collide with other data in RAM or with Stack which builds down from 0x03000000
 
 .EQU CursorX, Ram+32	;32 bits past ram start
 .EQU CursorY, Ram+33	;1 bit past CursorX
@@ -234,12 +234,19 @@ WriteChar:
 		MOV r4, #240*8*2	;240 pixels per row, 8 lines per char, 2 bytes per pixel, (no longer need cursor x position, can write over r4)
 		MUL r2, r5, r4		;cursor y position * bytes per char row (8 screen lines, 240 pixels per line, 2 bytes per pixel)
 		ADD r3, r3, r2		;Add number of bytes to move over in x direction (r3) and number of bytes to move down in the y direction (r2) to get final vram position
+		
+		;I added this, could potentially cause problems
+		;Within each 8x8 space for chars, they are offset to the right by one pixel for some reason.  Since r3 is the location in VRAM for each pixel, I know the issue was there, but I do not know WHY it is offset by a byte, just that this shifts it back
+		;;;;;;;;;;;;;;;;;;;;;;;
+		SUB r3, r3, #2	;Subtract 1 byte from position, solves 1 byte right offset within each char space, may have something to do with indexing at 1 instead of 0
+		;;;;;;;;;;;;;;;;;;;;;;;
+		
 		ADR r4,BitmapFont 	;Load address of font into r4
 		
 		SUB r1,r1,#32			;Subtract 32 from value in first paramter 
-		ADD r4,r4,r1,asl #3		;Add the value to the bitmap font and shift left 3 to get address of the passed character
+		ADD r4,r4,r1,asl #3		;Add the value to the bitmap font and shift left 3 to multiply by 8 and get address of the passed character (little endian)
 		
-		MOV r10,#8			;Loop counter for lines	
+		MOV r10,#8			;Loop counter for lines
 WriteLine:
 		MOV r7,#8 			;Loop counter for pixels
 		LDRB r8,[r4],#1				;Load bitmap font value into r8
