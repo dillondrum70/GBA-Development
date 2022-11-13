@@ -110,6 +110,7 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="GetNextLine" />
         <Find name="WriteText" />
         <Find name=" " />
         <Find name="\" />
@@ -119,7 +120,6 @@
         <Find name=" bpl " />
         <Find name="push" />
         <Find name="ldr" />
-        <Find name=".arm" />
         <Replace name=" " />
         <Replace name="000" />
         <Replace name="0" />

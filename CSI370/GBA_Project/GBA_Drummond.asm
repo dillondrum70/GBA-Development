@@ -11,6 +11,8 @@
 
 .EQU CursorX, Ram+32	;32 bits past ram start
 .EQU CursorY, Ram+33	;1 bit past CursorX
+.EQU PlayerX, Ram+34	;Player's x position
+.EQU PlayerY, Ram+35	;Player's y position
 
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
@@ -75,15 +77,16 @@ B Main	;Branch to start of program
 Main:
 	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
+	;Set player start position
+	MOV r0, #PlayerX
+	MOV r1, #50
+	STRB r1, [r0]
+	
+	MOV r0, #PlayerY
+	MOV r1, #50
+	STRB r1, [r0]
+	
 	BL ScreenInit
-	
-	LDR r5, SpriteTestAddress
-	MOV r4, #32
-	MOV r3, #32
-	MOV r2, #20
-	MOV r1, #20
-	
-	BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -102,14 +105,62 @@ Main:
 	;BL NewLine
 	
 GameLoop:
-	;MOV r1, #Key_Up					;Pass up key mask to input function
-	;BL ReadInput					;Call function, value returned in r0
+		;MOV r1, #Key_Up					;Pass up key mask to input function
+		;BL ReadInput					;Call function, value returned in r0
 	
-	;CMPS r0, #0						;Set flag register to check input
-	;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
-	;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
+		;CMPS r0, #0						;Set flag register to check input
+		;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
+		;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
 	
-	;BL ClearToColor					;Update color
+		;BL ClearToColor					;Update color
+		
+		MOV r5, #PlayerX
+		LDRB r7, [r5]
+		MOV r6, #PlayerY
+		LDRB r8, [r6]
+		
+		;LDR r5, SpriteTestAddress
+		;MOV r4, #32
+		;MOV r3, #32
+		;MOV r2, r8
+		;MOV r1, r7
+		;BL DrawSprite
+	
+		MOV r1, #Key_Up
+		BL ReadInput
+		CMPS r0, #0
+		ADDNE r8, r8, #1
+	
+	
+		MOV r1, #Key_Down
+		BL ReadInput
+		CMPS r0, #0
+		SUBNE r8, r8, #1
+	
+	
+		MOV r1, #Key_Right
+		BL ReadInput
+		CMPS r0, #0
+		ADDNE r7, r7, #1
+	
+	
+		MOV r1, #Key_Left
+		BL ReadInput
+		CMPS r0, #0
+		SUBNE r7, r7, #1
+	
+		;Update memory with new position
+		STRB r8, [r6]
+		STRB r7, [r5]
+
+	
+		LDR r5, SpriteTestAddress
+		MOV r4, #32
+		MOV r3, #32
+		MOV r2, r8
+		MOV r1, r7
+	
+		BL DrawSprite
 	
 	B GameLoop
 	
@@ -213,6 +264,8 @@ DrawSprite:
 			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter and needs to be reset, VRAM location (r7) must be at farthest left position when we call GetNextLine since it only really moves the VRAM down one pixel, not back to the beginning of the line
 			SpriteNextPixel:
 				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
+				;LDRH r6, [r7]
+				;EOR r8, r8, r6
 				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
 			
 				SUBS r3, r3, #1		;Decrement width as loop counter
