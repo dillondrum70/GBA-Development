@@ -37,7 +37,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-B ProgramStart	;Branch to start of program
+B Main	;Branch to start of program
 
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 ;GBA Header
@@ -72,10 +72,18 @@ B ProgramStart	;Branch to start of program
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-ProgramStart:
+Main:
 	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
 	BL ScreenInit
+	
+	LDR r5, SpriteTestAddress
+	MOV r4, #32
+	MOV r3, #32
+	MOV r2, #20
+	MOV r1, #20
+	
+	BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -94,14 +102,14 @@ ProgramStart:
 	;BL NewLine
 	
 GameLoop:
-	MOV r1, #Key_Up					;Pass up key mask to input function
-	BL ReadInput					;Call function, value returned in r0
+	;MOV r1, #Key_Up					;Pass up key mask to input function
+	;BL ReadInput					;Call function, value returned in r0
 	
-	CMPS r0, #0						;Set flag register to check input
-	MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
-	MOVNE r1, #BackgroundColor		;Stay background gray otherwise
+	;CMPS r0, #0						;Set flag register to check input
+	;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
+	;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
 	
-	BL ClearToColor					;Update color
+	;BL ClearToColor					;Update color
 	
 	B GameLoop
 	
@@ -131,6 +139,14 @@ AsciiTest4:
 	.ALIGN 4
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Bitmap includes
+
+SpriteTestAddress:
+	.LONG SpriteTest
+SpriteTest:
+	.incbin "\Bitmaps\TestPlayer.RAW"
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ScreenInit:
 	STMFD sp!, {r0-r12, lr}
@@ -158,6 +174,63 @@ FillScreen:
 	LDMFD sp!, {r1-r12, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;r1 = X, r2 = Y
+;Return VRAM position of (x,Y)
+;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
+GetScreenPos:
+	STMFD sp!, {r1-r3, lr}
+		MOV r0, #VramBase	;Vram
+		MOV r3, #240		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2)
+		MUL r2, r3, r2		;Multiply Y by line byte count
+		ADD r0, r0, r2		;Add number of bytes for y position
+		ADD r0, r0, r1		;Add number of bytes for x position
+	LDMFD sp!, {r1-r3, pc}
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;r1 = current VRAM position
+;Return VRAM position shifted down one line
+;https://www.chibialiens.com/arm/platform.php#LessonP2
+GetNextLine:
+	ADD r0, r1, #240*2		;Simple add
+	MOV pc, lr				;Return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;r1 = x position
+;r2 = y position
+;r3 = width
+;r4	= height
+;r5 = SpriteAddress
+;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
+;Redesigned slightly, GetNextLine was extracted into it's own function
+DrawSprite:
+	STMFD sp!, {r1-r12, lr}
+		;x and y position already in r1 and r2
+		BL GetScreenPos
+		
+		MOV r7, r0
+		
+		SpriteNextLine:
+			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter and needs to be reset, VRAM location (r7) must be at farthest left position when we call GetNextLine since it only really moves the VRAM down one pixel, not back to the beginning of the line
+			SpriteNextPixel:
+				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
+				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
+			
+				SUBS r3, r3, #1		;Decrement width as loop counter
+			BNE SpriteNextPixel		;Exit loop once at end of width
+			LDMFD sp!, {r3, r7}
+			
+			;GetNextLine doesn't save any registers, we just need the one line to change the value in r1 so we manage memory outside of the function
+			STMFD sp!, {r1}		;Save r1 so it can be used as a parameter again
+				MOV r1, r7			;Move y position into r1 and pass into GetNextLine
+				BL GetNextLine
+				MOV r7, r0			;Move returned value back into r7
+			LDMFD sp!, {r1}		;Load r1 back so we don't lose the parameter passed to DrawSprite
+			
+			SUBS r4, r4, #1		;Decrement height
+		BNE SpriteNextLine		;Exit once at end of height
+	LDMFD sp!, {r1-r12, pc}
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Use E conditional to check if pressed
 ;r1 = key mask
 ;Returns keymask in r0
@@ -173,6 +246,7 @@ ReadInput:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+;Comments added by me, Dillon Drummond
 NewLine:
 	STMFD sp!, {r0-r12, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the last function
 		MOV r0, #CursorX	;Get address of cursor x
@@ -275,7 +349,7 @@ LineDone:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;Starts at ASCII number 32, simplifying by starting at 0
-;I translated the Presst Start 2P Google Font into 8-tuples of byte sized hex codes
+;I translated the Presst Start 2P Google Font into 8 element arrays of byte sized hex codes
 ;This effectively defines an 8x8 bitmap of a character
 ;Method learned from https://www.chibialiens.com/arm/helloworld.php#LessonH2
 BitmapFont:
