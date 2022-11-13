@@ -26,12 +26,12 @@ F00:0025       .EQU Key_A, 			0b0000000000000001
 F00:0026       .EQU Key_B, 			0b0000000000000010
 F00:0027       .EQU Key_Select, 		0b0000000000000100
 F00:0028       .EQU Key_Start, 		0b0000000000001000
-F00:0029       .EQU Key_RightBump, 	0b0000000000010000
-F00:0030       .EQU Key_LeftBump, 		0b0000000000100000
+F00:0029       .EQU Key_Right, 		0b0000000000010000
+F00:0030       .EQU Key_Left, 			0b0000000000100000
 F00:0031       .EQU Key_Up, 			0b0000000001000000
 F00:0032       .EQU Key_Down, 			0b0000000010000000
-F00:0033       .EQU Key_Right, 		0b0000000100000000
-F00:0034       .EQU Key_Left, 			0b0000001000000000
+F00:0033       .EQU Key_RightBump, 	0b0000000100000000
+F00:0034       .EQU Key_LeftBump, 		0b0000001000000000
 F00:0035       
 F00:0036       .EQU MaskKey, 			0b1111110000000000	;Mask out other bits
 F00:0037       
@@ -255,15 +255,15 @@ F00:0079
 F00:0080       	;Set player start position
 F00:0081       	MOV r0, #PlayerX
                S01:080000EC:  02 04 A0 E3 22 00 80 E3
-F00:0082       	MOV r1, #50
-               S01:080000F4:  32 10 A0 E3
+F00:0082       	MOV r1, #0
+               S01:080000F4:  00 10 A0 E3
 F00:0083       	STRB r1, [r0]
                S01:080000F8:  00 10 C0 E5
 F00:0084       	
 F00:0085       	MOV r0, #PlayerY
                S01:080000FC:  02 04 A0 E3 23 00 80 E3
-F00:0086       	MOV r1, #50
-               S01:08000104:  32 10 A0 E3
+F00:0086       	MOV r1, #0
+               S01:08000104:  00 10 A0 E3
 F00:0087       	STRB r1, [r0]
                S01:08000108:  00 10 C0 E5
 F00:0088       	
@@ -333,23 +333,23 @@ F00:0138       		SUBNE r8, r8, #1
 F00:0139       	
 F00:0140       	
 F00:0141       		MOV r1, #Key_Right
-               S01:08000148:  01 1C A0 E3
+               S01:08000148:  10 10 A0 E3
 F00:0142       		BL ReadInput
                S01:0800014C:  5E 02 00 EB
 F00:0143       		CMPS r0, #0
                S01:08000150:  00 00 50 E3
-F00:0144       		ADDNE r7, r7, #1
-               S01:08000154:  01 70 87 12
+F00:0144       		SUBNE r7, r7, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switc
+               S01:08000154:  01 70 47 12
 F00:0145       	
 F00:0146       	
 F00:0147       		MOV r1, #Key_Left
-               S01:08000158:  02 1C A0 E3
+               S01:08000158:  20 10 A0 E3
 F00:0148       		BL ReadInput
                S01:0800015C:  5A 02 00 EB
 F00:0149       		CMPS r0, #0
                S01:08000160:  00 00 50 E3
-F00:0150       		SUBNE r7, r7, #1
-               S01:08000164:  01 70 47 12
+F00:0150       		ADDNE r7, r7, #1;;;;;;;;;;;;;;;;;;;;***********
+               S01:08000164:  01 70 87 12
 F00:0151       	
 F00:0152       		;Update memory with new position
 F00:0153       		STRB r8, [r6]
@@ -1636,12 +1636,12 @@ ScreenInit EXPR(134220324=0x8000a24) ABS
 Main EXPR(134217960=0x80000e8) ABS 
 BackgroundColor EXPR(49680=0xc210) 
 MaskKey EXPR(64512=0xfc00) 
-Key_Left EXPR(512=0x200) 
-Key_Right EXPR(256=0x100) 
+Key_LeftBump EXPR(512=0x200) UNUSED 
+Key_RightBump EXPR(256=0x100) UNUSED 
 Key_Down EXPR(128=0x80) 
 Key_Up EXPR(64=0x40) 
-Key_LeftBump EXPR(32=0x20) UNUSED 
-Key_RightBump EXPR(16=0x10) UNUSED 
+Key_Left EXPR(32=0x20) 
+Key_Right EXPR(16=0x10) 
 Key_Start EXPR(8=0x8) UNUSED 
 Key_Select EXPR(4=0x4) UNUSED 
 Key_B EXPR(2=0x2) UNUSED 

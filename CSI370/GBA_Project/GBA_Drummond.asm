@@ -26,12 +26,12 @@
 .EQU Key_B, 			0b0000000000000010
 .EQU Key_Select, 		0b0000000000000100
 .EQU Key_Start, 		0b0000000000001000
-.EQU Key_RightBump, 	0b0000000000010000
-.EQU Key_LeftBump, 		0b0000000000100000
+.EQU Key_Right, 		0b0000000000010000
+.EQU Key_Left, 			0b0000000000100000
 .EQU Key_Up, 			0b0000000001000000
 .EQU Key_Down, 			0b0000000010000000
-.EQU Key_Right, 		0b0000000100000000
-.EQU Key_Left, 			0b0000001000000000
+.EQU Key_RightBump, 	0b0000000100000000
+.EQU Key_LeftBump, 		0b0000001000000000
 
 .EQU MaskKey, 			0b1111110000000000	;Mask out other bits
 
@@ -79,11 +79,11 @@ Main:
 	
 	;Set player start position
 	MOV r0, #PlayerX
-	MOV r1, #50
+	MOV r1, #0
 	STRB r1, [r0]
 	
 	MOV r0, #PlayerY
-	MOV r1, #50
+	MOV r1, #0
 	STRB r1, [r0]
 	
 	BL ScreenInit
@@ -141,13 +141,13 @@ GameLoop:
 		MOV r1, #Key_Right
 		BL ReadInput
 		CMPS r0, #0
-		ADDNE r7, r7, #1
+		SUBNE r7, r7, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
 	
 	
 		MOV r1, #Key_Left
 		BL ReadInput
 		CMPS r0, #0
-		SUBNE r7, r7, #1
+		ADDNE r7, r7, #1;;;;;;;;;;;;;;;;;;;;***********
 	
 		;Update memory with new position
 		STRB r8, [r6]
