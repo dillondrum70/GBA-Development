@@ -166,8 +166,6 @@ GameLoop:
 		;Update memory with new position
 		STRB r8, [r6]
 		STRB r9, [r7]
-		
-
 	
 		LDR r5, SpriteTestAddress
 		MOV r4, #PlayerHeight
@@ -178,7 +176,7 @@ GameLoop:
 		BL DrawSprite
 		
 		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
-		MOV r0, #0x01FFF
+		MOV r0, #0x1FFF
 		Delay:
 			SUBS r0, r0, #1
 			BNE Delay
@@ -287,8 +285,8 @@ DrawSprite:
 			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter and needs to be reset, VRAM location (r7) must be at farthest left position when we call GetNextLine since it only really moves the VRAM down one pixel, not back to the beginning of the line
 			SpriteNextPixel:
 				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
-				LDRH r6, [r7]
-				EOR r8, r8, r6
+				LDRH r6, [r7]		;Load value currently in VRAM
+				EOR r8, r8, r6		;XOR current value in VRAM with value in file (erases bitmap if it has already been drawn, faster than redrawing screen)
 				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
 			
 				SUBS r3, r3, #1		;Decrement width as loop counter
