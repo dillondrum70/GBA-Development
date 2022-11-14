@@ -110,6 +110,7 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="r11" />
         <Find name="GetNextLine" />
         <Find name="WriteText" />
         <Find name=" " />
@@ -119,7 +120,6 @@
         <Find name=" cmp " />
         <Find name=" bpl " />
         <Find name="push" />
-        <Find name="ldr" />
         <Replace name=" " />
         <Replace name="000" />
         <Replace name="0" />
@@ -129,8 +129,6 @@
         <Replace name="$" />
     </FindHistory>
     <History nbMaxFile="15" inSubMenu="no" customLength="-1">
-        <File filename="M:\sources\HelloWorld\NDS_Hello.asm" />
-        <File filename="M:\sources\Thumb_Lesson2.asm" />
         <File filename="M:\sources\Thumb_Lesson1.asm" />
         <File filename="M:\sources\HelloWorld\GBA_Hello_Advance.asm" />
         <File filename="M:\sources\Lesson3.asm" />
@@ -144,6 +142,8 @@
         <File filename="M:\Utils\Vasm\vasmNDS.bat" />
         <File filename="M:\sources\HelloWorld\GBA_Hello.asm" />
         <File filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" />
+        <File filename="M:\Examples\SrcGBA\V1_BitmapMemory.asm" />
+        <File filename="M:\Examples\sources\Lesson2.asm" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />

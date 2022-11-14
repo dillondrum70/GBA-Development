@@ -14,6 +14,9 @@
 .EQU PlayerX, Ram+34	;Player's x position
 .EQU PlayerY, Ram+35	;Player's y position
 
+.EQU PlayerWidth, 16
+.EQU PlayerHeight, 16
+
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
 .ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
@@ -92,8 +95,8 @@ Main:
 	
 	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
 	LDR r5, SpriteTestAddress
-	MOV r4, #32
-	MOV r3, #32
+	MOV r4, #PlayerHeight
+	MOV r3, #PlayerWidth
 	MOV r2, r7
 	MOV r1, r6
 	BL DrawSprite
@@ -131,8 +134,8 @@ GameLoop:
 		LDRB r9, [r7]
 		
 		LDR r5, SpriteTestAddress
-		MOV r4, #32
-		MOV r3, #32
+		MOV r4, #PlayerHeight
+		MOV r3, #PlayerWidth
 		MOV r2, r9
 		MOV r1, r8
 		BL DrawSprite
@@ -167,8 +170,8 @@ GameLoop:
 
 	
 		LDR r5, SpriteTestAddress
-		MOV r4, #32
-		MOV r3, #32
+		MOV r4, #PlayerHeight
+		MOV r3, #PlayerWidth
 		MOV r2, r9
 		MOV r1, r8
 	
@@ -213,7 +216,7 @@ AsciiTest4:
 SpriteTestAddress:
 	.LONG SpriteTest
 SpriteTest:
-	.incbin "\Bitmaps\TestPlayer.RAW"
+	.incbin "\Bitmaps\StickPlayer.RAW"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
