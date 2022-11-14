@@ -11,8 +11,8 @@
 
 .EQU CursorX, Ram+32	;32 bits past ram start
 .EQU CursorY, Ram+33	;1 bit past CursorX
-;.EQU PlayerX, Ram+34	;Player's x position
-;.EQU PlayerY, Ram+35	;Player's y position
+.EQU PlayerX, Ram+34	;Player's x position
+.EQU PlayerY, Ram+35	;Player's y position
 
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
@@ -78,15 +78,15 @@ Main:
 	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
 	;Initialize player start position
-	;MOV r0, #PlayerX
-	;MOV r1, #50
-	;STRB r1, [r0]
+	MOV r0, #PlayerX
+	MOV r6, #50
+	STRB r6, [r0]
 	
-	;MOV r0, #PlayerY
-	;MOV r1, #50
-	;STRB r1, [r0]
-	MOV r11, #50
-	MOV r12, #50
+	MOV r0, #PlayerY
+	MOV r7, #50
+	STRB r7, [r0]
+	;MOV r11, #50
+	;MOV r12, #50
 	
 	BL ScreenInit
 	
@@ -94,8 +94,8 @@ Main:
 	LDR r5, SpriteTestAddress
 	MOV r4, #32
 	MOV r3, #32
-	MOV r2, r12
-	MOV r1, r11
+	MOV r2, r7
+	MOV r1, r6
 	BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
@@ -125,51 +125,52 @@ GameLoop:
 		;BL ClearToColor					;Update color
 		
 		;Load in current player position
-		;MOV r5, #PlayerX
-		;LDRB r7, [r5]
-		;MOV r6, #PlayerY
-		;LDRB r8, [r6]
+		MOV r6, #PlayerX
+		LDRB r8, [r6]
+		MOV r7, #PlayerY
+		LDRB r9, [r7]
 		
 		LDR r5, SpriteTestAddress
 		MOV r4, #32
 		MOV r3, #32
-		MOV r2, r12
-		MOV r1, r11
+		MOV r2, r9
+		MOV r1, r8
 		BL DrawSprite
 	
 		MOV r1, #Key_Up
 		BL ReadInput
 		CMPS r0, #0
-		ADDNE r12, r12, #1
+		ADDNE r9, r9, #1
 	
 	
 		MOV r1, #Key_Down
 		BL ReadInput
 		CMPS r0, #0
-		SUBNE r12, r12, #1
+		SUBNE r9, r9, #1
 	
 	
 		MOV r1, #Key_Right
 		BL ReadInput
 		CMPS r0, #0
-		SUBNE r11, r11, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
+		SUBNE r8, r8, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
 	
 	
 		MOV r1, #Key_Left
 		BL ReadInput
 		CMPS r0, #0
-		ADDNE r11, r11, #1;;;;;;;;;;;;;;;;;;;;***********
+		ADDNE r8, r8, #1;;;;;;;;;;;;;;;;;;;;***********
 	
 		;Update memory with new position
-		;STRB r8, [r6]
-		;STRB r7, [r5]
+		STRB r8, [r6]
+		STRB r9, [r7]
+		
 
 	
 		LDR r5, SpriteTestAddress
 		MOV r4, #32
 		MOV r3, #32
-		MOV r2, r12
-		MOV r1, r11
+		MOV r2, r9
+		MOV r1, r8
 	
 		BL DrawSprite
 		
