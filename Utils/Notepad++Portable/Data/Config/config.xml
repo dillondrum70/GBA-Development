@@ -110,6 +110,7 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="CMPS" />
         <Find name="r11" />
         <Find name="GetNextLine" />
         <Find name="WriteText" />
@@ -119,7 +120,6 @@
         <Find name="DrawLine" />
         <Find name=" cmp " />
         <Find name=" bpl " />
-        <Find name="push" />
         <Replace name=" " />
         <Replace name="000" />
         <Replace name="0" />

@@ -22,36 +22,38 @@ F00:0021       .EQU ScreenYBound, 160
 F00:0022       
 F00:0023       .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 F00:0024       
-F00:0025       .ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
-F00:0026       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0027       
-F00:0028       .EQU InputLocation, 0x04000130	;Location in memory where input is stored
+F00:0025       .EQU ScanlineCounter, 0x04000006	;Stores how many lines have been written
+F00:0026       
+F00:0027       .ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
+F00:0028       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 F00:0029       
-F00:0030       ;OR these masks with data at input location to get input, returns 0 if pressed
-F00:0031       .EQU Key_A, 			0b0000000000000001				
-F00:0032       .EQU Key_B, 			0b0000000000000010
-F00:0033       .EQU Key_Select, 		0b0000000000000100
-F00:0034       .EQU Key_Start, 		0b0000000000001000
-F00:0035       .EQU Key_Right, 		0b0000000000010000
-F00:0036       .EQU Key_Left, 			0b0000000000100000
-F00:0037       .EQU Key_Up, 			0b0000000001000000
-F00:0038       .EQU Key_Down, 			0b0000000010000000
-F00:0039       .EQU Key_RightBump, 	0b0000000100000000
-F00:0040       .EQU Key_LeftBump, 		0b0000001000000000
-F00:0041       
-F00:0042       .EQU MaskKey, 			0b1111110000000000	;Mask out other bits
+F00:0030       .EQU InputLocation, 0x04000130	;Location in memory where input is stored
+F00:0031       
+F00:0032       ;OR these masks with data at input location to get input, returns 0 if pressed
+F00:0033       .EQU Key_A, 			0b0000000000000001				
+F00:0034       .EQU Key_B, 			0b0000000000000010
+F00:0035       .EQU Key_Select, 		0b0000000000000100
+F00:0036       .EQU Key_Start, 		0b0000000000001000
+F00:0037       .EQU Key_Right, 		0b0000000000010000
+F00:0038       .EQU Key_Left, 			0b0000000000100000
+F00:0039       .EQU Key_Up, 			0b0000000001000000
+F00:0040       .EQU Key_Down, 			0b0000000010000000
+F00:0041       .EQU Key_RightBump, 	0b0000000100000000
+F00:0042       .EQU Key_LeftBump, 		0b0000001000000000
 F00:0043       
-F00:0044       .EQU BackgroundColor, 0b1100001000010000
+F00:0044       .EQU MaskKey, 			0b1111110000000000	;Mask out other bits
 F00:0045       
-F00:0046       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0046       .EQU BackgroundColor, 0b1100001000010000
 F00:0047       
-F00:0048       B Main	;Branch to start of program
-               S01:08000000:  38 00 00 EA
+F00:0048       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 F00:0049       
-F00:0050       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
-F00:0051       ;GBA Header
-F00:0052       ;004h    156   Nintendo Logo    (compressed bitmap, required!)
-F00:0053       	.BYTE 0xC8,0x60,0x4F,0xE2,0x01,0x70,0x8F,0xE2,0x17,0xFF,0x2F,0xE1,0x12,0x4F,0x11,0x48     ; C
+F00:0050       B Main	;Branch to start of program
+               S01:08000000:  38 00 00 EA
+F00:0051       
+F00:0052       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+F00:0053       ;GBA Header
+F00:0054       ;004h    156   Nintendo Logo    (compressed bitmap, required!)
+F00:0055       	.BYTE 0xC8,0x60,0x4F,0xE2,0x01,0x70,0x8F,0xE2,0x17,0xFF,0x2F,0xE1,0x12,0x4F,0x11,0x48     ; C
                S01:08000004:  C8
                S01:08000005:  60
                S01:08000006:  4F
@@ -68,7 +70,7 @@ F00:0053       	.BYTE 0xC8,0x60,0x4F,0xE2,0x01,0x70,0x8F,0xE2,0x17,0xFF,0x2F,0xE
                S01:08000011:  4F
                S01:08000012:  11
                S01:08000013:  48
-F00:0054       	.BYTE 0x12,0x4C,0x20,0x60,0x64,0x60,0x7C,0x62,0x30,0x1C,0x39,0x1C,0x10,0x4A,0x00,0xF0     ; D
+F00:0056       	.BYTE 0x12,0x4C,0x20,0x60,0x64,0x60,0x7C,0x62,0x30,0x1C,0x39,0x1C,0x10,0x4A,0x00,0xF0     ; D
                S01:08000014:  12
                S01:08000015:  4C
                S01:08000016:  20
@@ -85,7 +87,7 @@ F00:0054       	.BYTE 0x12,0x4C,0x20,0x60,0x64,0x60,0x7C,0x62,0x30,0x1C,0x39,0x1
                S01:08000021:  4A
                S01:08000022:  00
                S01:08000023:  F0
-F00:0055           .BYTE 0x14,0xF8,0x30,0x6A,0x80,0x19,0xB1,0x6A,0xF2,0x6A,0x00,0xF0,0x0B,0xF8,0x30,0x6B     ; E
+F00:0057           .BYTE 0x14,0xF8,0x30,0x6A,0x80,0x19,0xB1,0x6A,0xF2,0x6A,0x00,0xF0,0x0B,0xF8,0x30,0x6B     ; E
                S01:08000024:  14
                S01:08000025:  F8
                S01:08000026:  30
@@ -102,7 +104,7 @@ F00:0055           .BYTE 0x14,0xF8,0x30,0x6A,0x80,0x19,0xB1,0x6A,0xF2,0x6A,0x00,
                S01:08000031:  F8
                S01:08000032:  30
                S01:08000033:  6B
-F00:0056           .BYTE 0x80,0x19,0xB1,0x6B,0xF2,0x6B,0x00,0xF0,0x08,0xF8,0x70,0x6A,0x77,0x6B,0x07,0x4C     ; F
+F00:0058           .BYTE 0x80,0x19,0xB1,0x6B,0xF2,0x6B,0x00,0xF0,0x08,0xF8,0x70,0x6A,0x77,0x6B,0x07,0x4C     ; F
                S01:08000034:  80
                S01:08000035:  19
                S01:08000036:  B1
@@ -119,7 +121,7 @@ F00:0056           .BYTE 0x80,0x19,0xB1,0x6B,0xF2,0x6B,0x00,0xF0,0x08,0xF8,0x70,
                S01:08000041:  6B
                S01:08000042:  07
                S01:08000043:  4C
-F00:0057           .BYTE 0x60,0x60,0x38,0x47,0x07,0x4B,0xD2,0x18,0x9A,0x43,0x07,0x4B,0x92,0x08,0xD2,0x18     ; 10
+F00:0059           .BYTE 0x60,0x60,0x38,0x47,0x07,0x4B,0xD2,0x18,0x9A,0x43,0x07,0x4B,0x92,0x08,0xD2,0x18     ; 10
                S01:08000044:  60
                S01:08000045:  60
                S01:08000046:  38
@@ -136,7 +138,7 @@ F00:0057           .BYTE 0x60,0x60,0x38,0x47,0x07,0x4B,0xD2,0x18,0x9A,0x43,0x07,
                S01:08000051:  08
                S01:08000052:  D2
                S01:08000053:  18
-F00:0058           .BYTE 0x0C,0xDF,0xF7,0x46,0x04,0xF0,0x1F,0xE5,0x00,0xFE,0x7F,0x02,0xF0,0xFF,0x7F,0x02     ; 11
+F00:0060           .BYTE 0x0C,0xDF,0xF7,0x46,0x04,0xF0,0x1F,0xE5,0x00,0xFE,0x7F,0x02,0xF0,0xFF,0x7F,0x02     ; 11
                S01:08000054:  0C
                S01:08000055:  DF
                S01:08000056:  F7
@@ -153,7 +155,7 @@ F00:0058           .BYTE 0x0C,0xDF,0xF7,0x46,0x04,0xF0,0x1F,0xE5,0x00,0xFE,0x7F,
                S01:08000061:  FF
                S01:08000062:  7F
                S01:08000063:  02
-F00:0059           .BYTE 0xF0,0x01,0x00,0x00,0xFF,0x01,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00     ; 12
+F00:0061           .BYTE 0xF0,0x01,0x00,0x00,0xFF,0x01,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00     ; 12
                S01:08000064:  F0
                S01:08000065:  01
                S01:08000066:  00
@@ -170,7 +172,7 @@ F00:0059           .BYTE 0xF0,0x01,0x00,0x00,0xFF,0x01,0x00,0x00,0x00,0x00,0x00,
                S01:08000071:  00
                S01:08000072:  00
                S01:08000073:  00
-F00:0060           .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 13
+F00:0062           .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 13
                S01:08000074:  00
                S01:08000075:  00
                S01:08000076:  00
@@ -187,7 +189,7 @@ F00:0060           .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
                S01:08000081:  00
                S01:08000082:  00
                S01:08000083:  00
-F00:0061           .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 14
+F00:0063           .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00     ; 14
                S01:08000084:  00
                S01:08000085:  00
                S01:08000086:  00
@@ -204,7 +206,7 @@ F00:0061           .BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
                S01:08000091:  00
                S01:08000092:  00
                S01:08000093:  00
-F00:0062       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x1A,0x9E,0x7B,0xEB     ; 15
+F00:0064       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x1A,0x9E,0x7B,0xEB     ; 15
                S01:08000094:  00
                S01:08000095:  00
                S01:08000096:  00
@@ -221,1456 +223,1483 @@ F00:0062       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0
                S01:080000A1:  9E
                S01:080000A2:  7B
                S01:080000A3:  EB
-F00:0063       	
-F00:0064           ;		123456789012
-F00:0065           .ASCII "DRUMMOND.NET";0A0h    12    Game Title       (uppercase ascii, max 12 characters)	
+F00:0065       	
+F00:0066           ;		123456789012
+F00:0067           .ASCII "DRUMMOND.NET";0A0h    12    Game Title       (uppercase ascii, max 12 characters)	
                S01:080000A4:  44 52 55 4D 4D 4F 4E 44 2E 4E 45 54
-F00:0066           .ASCII "0000"	;0ACh    4     Game Code        (uppercase ascii, 4 characters)
+F00:0068           .ASCII "0000"	;0ACh    4     Game Code        (uppercase ascii, 4 characters)
                S01:080000B0:  30 30 30 30
-F00:0067           .ASCII "00"		;0B0h    2     Maker Code       (uppercase ascii, 2 characters)
+F00:0069           .ASCII "00"		;0B0h    2     Maker Code       (uppercase ascii, 2 characters)
                S01:080000B4:  30 30
-F00:0068       	.BYTE 0x96		;0B2h    1     Fixed value      (must be 96h, required!)
+F00:0070       	.BYTE 0x96		;0B2h    1     Fixed value      (must be 96h, required!)
                S01:080000B6:  96
-F00:0069       	.BYTE 0			;0B3h    1     Main unit code   (00h for current GBA models)
+F00:0071       	.BYTE 0			;0B3h    1     Main unit code   (00h for current GBA models)
                S01:080000B7:  00
-F00:0070       	.BYTE 0			;0B4h    1     Device type      (usually 00h) (bit7=DACS/debug related)
+F00:0072       	.BYTE 0			;0B4h    1     Device type      (usually 00h) (bit7=DACS/debug related)
                S01:080000B8:  00
-F00:0071       	.SPACE 7		;0B5h    7     Reserved Area    (should be zero filled)
-F00:0072       	.BYTE 0			;0BCh    1     Software version (usually 00h)
+F00:0073       	.SPACE 7		;0B5h    7     Reserved Area    (should be zero filled)
+F00:0074       	.BYTE 0			;0BCh    1     Software version (usually 00h)
                S01:080000C0:  00
-F00:0073       	.BYTE 0			;0BDh    1     Complement check (header checksum, required!)
+F00:0075       	.BYTE 0			;0BDh    1     Complement check (header checksum, required!)
                S01:080000C1:  00
-F00:0074       	.WORD 0			;0BEh    2     Reserved Area    (should be zero filled)
+F00:0076       	.WORD 0			;0BEh    2     Reserved Area    (should be zero filled)
                S01:080000C2:  00 00
-F00:0075       	.LONG 0			;0C0h    4     RAM Entry Point  (32bit ARM branch opcode, eg. "B ram_start")
+F00:0077       	.LONG 0			;0C0h    4     RAM Entry Point  (32bit ARM branch opcode, eg. "B ram_start")
                S01:080000C4:  00 00 00 00
-F00:0076       	.BYTE 0			;0C4h    1     Boot mode        (init as 00h - BIOS overwrites this value!)
+F00:0078       	.BYTE 0			;0C4h    1     Boot mode        (init as 00h - BIOS overwrites this value!)
                S01:080000C8:  00
-F00:0077       	.BYTE 0			;0C5h    1     Slave ID Number  (init as 00h - BIOS overwrites this value!)
+F00:0079       	.BYTE 0			;0C5h    1     Slave ID Number  (init as 00h - BIOS overwrites this value!)
                S01:080000C9:  00
-F00:0078       	.SPACE 26		;0C6h    26    Not used         (seems to be unused)
-F00:0079       	.LONG 0			;0E0h    4     JOYBUS Entry Pt. (32bit ARM branch opcode, eg. "B joy_start")
+F00:0080       	.SPACE 26		;0C6h    26    Not used         (seems to be unused)
+F00:0081       	.LONG 0			;0E0h    4     JOYBUS Entry Pt. (32bit ARM branch opcode, eg. "B joy_start")
                S01:080000E4:  00 00 00 00
-F00:0080       
-F00:0081       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 F00:0082       
-F00:0083       Main:
-F00:0084       	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
+F00:0083       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0084       
+F00:0085       Main:
+F00:0086       	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
                S01:080000E8:  03 D4 A0 E3
-F00:0085       	
-F00:0086       	;Initialize player start position
-F00:0087       	MOV r0, #PlayerX
+F00:0087       	
+F00:0088       	;Initialize player start position
+F00:0089       	MOV r0, #PlayerX
                S01:080000EC:  02 04 A0 E3 22 00 80 E3
-F00:0088       	MOV r6, #50
+F00:0090       	MOV r6, #50
                S01:080000F4:  32 60 A0 E3
-F00:0089       	STRB r6, [r0]
+F00:0091       	STRB r6, [r0]
                S01:080000F8:  00 60 C0 E5
-F00:0090       	
-F00:0091       	MOV r0, #PlayerY
+F00:0092       	
+F00:0093       	MOV r0, #PlayerY
                S01:080000FC:  02 04 A0 E3 23 00 80 E3
-F00:0092       	MOV r7, #50
+F00:0094       	MOV r7, #50
                S01:08000104:  32 70 A0 E3
-F00:0093       	STRB r7, [r0]
+F00:0095       	STRB r7, [r0]
                S01:08000108:  00 70 C0 E5
-F00:0094       	;MOV r11, #50
-F00:0095       	;MOV r12, #50
-F00:0096       	
-F00:0097       	BL ScreenInit
-               S01:0800010C:  E4 00 00 EB
+F00:0096       	;MOV r11, #50
+F00:0097       	;MOV r12, #50
 F00:0098       	
-F00:0099       	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
-F00:0100       	LDR r5, SpriteTestAddress
-               S01:08000110:  88 51 9F E5
-F00:0101       	MOV r4, #PlayerHeight
+F00:0099       	BL ScreenInit
+               S01:0800010C:  F4 00 00 EB
+F00:0100       	
+F00:0101       	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
+F00:0102       	LDR r5, SpriteTestAddress
+               S01:08000110:  C8 51 9F E5
+F00:0103       	MOV r4, #PlayerHeight
                S01:08000114:  10 40 A0 E3
-F00:0102       	MOV r3, #PlayerWidth
+F00:0104       	MOV r3, #PlayerWidth
                S01:08000118:  10 30 A0 E3
-F00:0103       	MOV r2, r7
+F00:0105       	MOV r2, r7
                S01:0800011C:  07 20 A0 E1
-F00:0104       	MOV r1, r6
+F00:0106       	MOV r1, r6
                S01:08000120:  06 10 A0 E1
-F00:0105       	BL DrawSprite
-               S01:08000124:  F6 00 00 EB
-F00:0106       	
-F00:0107       	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
-F00:0108       	;BL WriteText
-F00:0109       	;BL NewLine
-F00:0110       	
-F00:0111       	;LDR r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
-F00:0112       	;BL WriteText
-F00:0113       	;BL NewLine
-F00:0114       	
-F00:0115       	;LDR r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
-F00:0116       	;BL WriteText
-F00:0117       	;BL NewLine
-F00:0118       	
-F00:0119       	;LDR r1, AsciiTestAddress4	;Load test address into r1, parameter 1	
-F00:0120       	;BL WriteText
-F00:0121       	;BL NewLine
-F00:0122       	
-F00:0123       GameLoop:
-F00:0124       		;MOV r1, #Key_Up					;Pass up key mask to input function
-F00:0125       		;BL ReadInput					;Call function, value returned in r0
-F00:0126       	
-F00:0127       		;CMPS r0, #0						;Set flag register to check input
-F00:0128       		;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
-F00:0129       		;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
-F00:0130       	
-F00:0131       		;BL ClearToColor					;Update color
-F00:0132       		
-F00:0133       		;Load in current player position
-F00:0134       		MOV r6, #PlayerX
+F00:0107       	BL DrawSprite
+               S01:08000124:  06 01 00 EB
+F00:0108       	
+F00:0109       	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
+F00:0110       	;BL WriteText
+F00:0111       	;BL NewLine
+F00:0112       	
+F00:0113       	;LDR r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
+F00:0114       	;BL WriteText
+F00:0115       	;BL NewLine
+F00:0116       	
+F00:0117       	;LDR r1, AsciiTestAddress3	;Load test address into r1, parameter 1	
+F00:0118       	;BL WriteText
+F00:0119       	;BL NewLine
+F00:0120       	
+F00:0121       	;LDR r1, AsciiTestAddress4	;Load test address into r1, parameter 1	
+F00:0122       	;BL WriteText
+F00:0123       	;BL NewLine
+F00:0124       	
+F00:0125       GameLoop:
+F00:0126       		;MOV r1, #Key_Up					;Pass up key mask to input function
+F00:0127       		;BL ReadInput					;Call function, value returned in r0
+F00:0128       	
+F00:0129       		;CMPS r0, #0						;Set flag register to check input
+F00:0130       		;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
+F00:0131       		;MOVNE r1, #BackgroundColor		;Stay background gray otherwise
+F00:0132       	
+F00:0133       		;BL ClearToColor					;Update color
+F00:0134       		
+F00:0135       		;Load in current player position
+F00:0136       		MOV r6, #PlayerX
                S01:08000128:  02 64 A0 E3 22 60 86 E3
-F00:0135       		LDRB r8, [r6]
+F00:0137       		LDRB r8, [r6]
                S01:08000130:  00 80 D6 E5
-F00:0136       		MOV r7, #PlayerY
+F00:0138       		MOV r7, #PlayerY
                S01:08000134:  02 74 A0 E3 23 70 87 E3
-F00:0137       		LDRB r9, [r7]
+F00:0139       		LDRB r9, [r7]
                S01:0800013C:  00 90 D7 E5
-F00:0138       		
-F00:0139       		LDR r5, SpriteTestAddress
-               S01:08000140:  58 51 9F E5
-F00:0140       		MOV r4, #PlayerHeight
+F00:0140       		
+F00:0141       		LDR r5, SpriteTestAddress
+               S01:08000140:  98 51 9F E5
+F00:0142       		MOV r4, #PlayerHeight
                S01:08000144:  10 40 A0 E3
-F00:0141       		MOV r3, #PlayerWidth
+F00:0143       		MOV r3, #PlayerWidth
                S01:08000148:  10 30 A0 E3
-F00:0142       		MOV r2, r9
+F00:0144       		MOV r2, r9
                S01:0800014C:  09 20 A0 E1
-F00:0143       		MOV r1, r8
+F00:0145       		MOV r1, r8
                S01:08000150:  08 10 A0 E1
-F00:0144       		BL DrawSprite
-               S01:08000154:  EA 00 00 EB
-F00:0145       	
-F00:0146       		MOV r1, #Key_Up
+F00:0146       		BL DrawSprite
+               S01:08000154:  FA 00 00 EB
+F00:0147       	
+F00:0148       		MOV r1, #Key_Up
                S01:08000158:  40 10 A0 E3
-F00:0147       		BL ReadInput
-               S01:0800015C:  FB 00 00 EB
-F00:0148       		CMPS r0, #0
+F00:0149       		BL ReadInput
+               S01:0800015C:  0B 01 00 EB
+F00:0150       		CMPS r0, #0
                S01:08000160:  00 00 50 E3
-F00:0149       		ADDNE r9, r9, #1
+F00:0151       		ADDNE r9, r9, #1
                S01:08000164:  01 90 89 12
-F00:0150       	
-F00:0151       		MOV r1, #Key_Down
+F00:0152       	
+F00:0153       		MOV r1, #Key_Down
                S01:08000168:  80 10 A0 E3
-F00:0152       		BL ReadInput
-               S01:0800016C:  F7 00 00 EB
-F00:0153       		CMPS r0, #0
+F00:0154       		BL ReadInput
+               S01:0800016C:  07 01 00 EB
+F00:0155       		CMPS r0, #0
                S01:08000170:  00 00 50 E3
-F00:0154       		SUBNE r9, r9, #1
+F00:0156       		SUBNE r9, r9, #1
                S01:08000174:  01 90 49 12
-F00:0155       		
-F00:0156       		;Check greater than lower bound
-F00:0157       		MOV r2, #0			;Take 0
+F00:0157       		
+F00:0158       		;Check greater than lower bound
+F00:0159       		MOV r2, #0			;Take 0
                S01:08000178:  00 20 A0 E3
-F00:0158       		CMPS r9, r2			;Check if right side of player is out of bounds
+F00:0160       		CMPS r9, r2			;Check if right side of player is out of bounds
                S01:0800017C:  02 00 59 E1
-F00:0159       		MOVLT r9, r2		;If so, move 0 into y position
+F00:0161       		MOVLT r9, r2		;If so, move 0 into y position
                S01:08000180:  02 90 A0 B1
-F00:0160       		
-F00:0161       		;Check less than upper bound
-F00:0162       		ADD r1, r4, r9		;Sum next position and height
+F00:0162       		
+F00:0163       		;Check less than upper bound
+F00:0164       		ADD r1, r4, r9		;Sum next position and height
                S01:08000184:  09 10 84 E0
-F00:0163       		MOV r2, #ScreenYBound	;Take Screen bound
+F00:0165       		MOV r2, #ScreenYBound	;Take Screen bound
                S01:08000188:  A0 20 A0 E3
-F00:0164       		CMPS r1, r2				;Check if right side of player is out of bounds
+F00:0166       		CMPS r1, r2				;Check if right side of player is out of bounds
                S01:0800018C:  02 00 51 E1
-F00:0165       		SUBGT r2, r2, r4		;If so, Subtract height from screen Y bound...
+F00:0167       		SUBGT r2, r2, r4		;If so, Subtract height from screen Y bound...
                S01:08000190:  04 20 42 C0
-F00:0166       		MOVGT r9, r2			;And move that into y position
+F00:0168       		MOVGT r9, r2			;And move that into y position
                S01:08000194:  02 90 A0 C1
-F00:0167       	
-F00:0168       		MOV r1, #Key_Right
+F00:0169       	
+F00:0170       		MOV r1, #Key_Right
                S01:08000198:  10 10 A0 E3
-F00:0169       		BL ReadInput
-               S01:0800019C:  EB 00 00 EB
-F00:0170       		CMPS r0, #0
+F00:0171       		BL ReadInput
+               S01:0800019C:  FB 00 00 EB
+F00:0172       		CMPS r0, #0
                S01:080001A0:  00 00 50 E3
-F00:0171       		SUBNE r8, r8, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switc
+F00:0173       		SUBNE r8, r8, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switc
                S01:080001A4:  01 80 48 12
-F00:0172       	
-F00:0173       		MOV r1, #Key_Left
+F00:0174       	
+F00:0175       		MOV r1, #Key_Left
                S01:080001A8:  20 10 A0 E3
-F00:0174       		BL ReadInput
-               S01:080001AC:  E7 00 00 EB
-F00:0175       		CMPS r0, #0
+F00:0176       		BL ReadInput
+               S01:080001AC:  F7 00 00 EB
+F00:0177       		CMPS r0, #0
                S01:080001B0:  00 00 50 E3
-F00:0176       		ADDNE r8, r8, #1;;;;;;;;;;;;;;;;;;;;***********
+F00:0178       		ADDNE r8, r8, #1;;;;;;;;;;;;;;;;;;;;***********
                S01:080001B4:  01 80 88 12
-F00:0177       		
-F00:0178       		;Check greater than lower bound
-F00:0179       		MOV r2, #0			;Take 0
+F00:0179       		
+F00:0180       		;Check greater than lower bound
+F00:0181       		MOV r2, #0			;Take 0
                S01:080001B8:  00 20 A0 E3
-F00:0180       		CMPS r8, r2			;Check if right side of player is out of bounds
+F00:0182       		CMPS r8, r2			;Check if right side of player is out of bounds
                S01:080001BC:  02 00 58 E1
-F00:0181       		MOVLT r8, r2		;If so, move 0 into x position
+F00:0183       		MOVLT r8, r2		;If so, move 0 into x position
                S01:080001C0:  02 80 A0 B1
-F00:0182       		
-F00:0183       		;Check less than upper bound
-F00:0184       		ADD r1, r3, r8		;Sum next position and width
+F00:0184       		
+F00:0185       		;Check less than upper bound
+F00:0186       		ADD r1, r3, r8		;Sum next position and width
                S01:080001C4:  08 10 83 E0
-F00:0185       		MOV r2, #ScreenXBound	;Take Screen bound
+F00:0187       		MOV r2, #ScreenXBound	;Take Screen bound
                S01:080001C8:  F0 20 A0 E3
-F00:0186       		CMPS r1, r2				;Check if right side of player is out of bounds
+F00:0188       		CMPS r1, r2				;Check if right side of player is out of bounds
                S01:080001CC:  02 00 51 E1
-F00:0187       		SUBGT r2, r2, r3		;If so, Subtract width from screen x bound...
+F00:0189       		SUBGT r2, r2, r3		;If so, Subtract width from screen x bound...
                S01:080001D0:  03 20 42 C0
-F00:0188       		MOVGT r8, r2			;And move that into x position
+F00:0190       		MOVGT r8, r2			;And move that into x position
                S01:080001D4:  02 80 A0 C1
-F00:0189       	
-F00:0190       		;Update memory with new position
-F00:0191       		STRB r8, [r6]
+F00:0191       	
+F00:0192       		;Update memory with new position
+F00:0193       		STRB r8, [r6]
                S01:080001D8:  00 80 C6 E5
-F00:0192       		STRB r9, [r7]
+F00:0194       		STRB r9, [r7]
                S01:080001DC:  00 90 C7 E5
-F00:0193       	
-F00:0194       		LDR r5, SpriteTestAddress
-               S01:080001E0:  B8 50 9F E5
-F00:0195       		MOV r4, #PlayerHeight
+F00:0195       	
+F00:0196       		LDR r5, SpriteTestAddress
+               S01:080001E0:  F8 50 9F E5
+F00:0197       		MOV r4, #PlayerHeight
                S01:080001E4:  10 40 A0 E3
-F00:0196       		MOV r3, #PlayerWidth
+F00:0198       		MOV r3, #PlayerWidth
                S01:080001E8:  10 30 A0 E3
-F00:0197       		MOV r2, r9
+F00:0199       		MOV r2, r9
                S01:080001EC:  09 20 A0 E1
-F00:0198       		MOV r1, r8
+F00:0200       		MOV r1, r8
                S01:080001F0:  08 10 A0 E1
-F00:0199       	
-F00:0200       		BL DrawSprite
-               S01:080001F4:  C2 00 00 EB
-F00:0201       		
-F00:0202       		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
-F00:0203       		MOV r0, #0x1FFF
+F00:0201       	
+F00:0202       		BL DrawSprite
+               S01:080001F4:  D2 00 00 EB
+F00:0203       		
+F00:0204       		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
+F00:0205       		MOV r0, #0x1FFF
                S01:080001F8:  1F 0C A0 E3 FF 00 80 E3
-F00:0204       		Delay:
-F00:0205       			SUBS r0, r0, #1
+F00:0206       		DelayFrame:
+F00:0207       			SUBS r0, r0, #1
                S01:08000200:  01 00 50 E2
-F00:0206       			BNE Delay
+F00:0208       			BNE DelayFrame
                S01:08000204:  FD FF FF 1A
-F00:0207       	
-F00:0208       	B GameLoop
-               S01:08000208:  C6 FF FF EA
-F00:0209       	
-F00:0210       AsciiTestAddress1:
-F00:0211       	.LONG AsciiTest1	;Address of Ascii string
-               S01:0800020C:  10 02 00 08
-F00:0212       AsciiTest1:
-F00:0213       	.BYTE " !\"#$%&'()*+,-./0123456789:;<=",255	;All characters in font, 255 terminated
-               S01:08000210:  20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F
-               S01:08000220:  30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D
-               S01:0800022E:  FF
-F00:0214       	;.BYTE "Test f",255
-F00:0215       	.ALIGN 4	;Align to 4 bytes
-F00:0216       	
-F00:0217       AsciiTestAddress2:
-F00:0218       	.LONG AsciiTest2
-               S01:08000230:  34 02 00 08
-F00:0219       AsciiTest2:
-F00:0220       	.BYTE ">?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[",255
-               S01:08000234:  3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D
-               S01:08000244:  4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B
-               S01:08000252:  FF
-F00:0221       	.ALIGN 4
-F00:0222       	
-F00:0223       AsciiTestAddress3:
-F00:0224       	.LONG AsciiTest3
-               S01:08000260:  64 02 00 08
-F00:0225       AsciiTest3:
-F00:0226       	.BYTE "\\]^_`abcdefghijklmnopqrstuvwxy",255
-               S01:08000264:  5C 5D 5E 5F 60 61 62 63 64 65 66 67 68 69 6A 6B
-               S01:08000274:  6C 6D 6E 6F 70 71 72 73 74 75 76 77 78 79
-               S01:08000282:  FF
-F00:0227       	.ALIGN 4
-F00:0228       	
-F00:0229       AsciiTestAddress4:
-F00:0230       	.LONG AsciiTest4
-               S01:08000290:  94 02 00 08
-F00:0231       AsciiTest4:
-F00:0232       	.BYTE "z{|}~",255
-               S01:08000294:  7A 7B 7C 7D 7E
-               S01:08000299:  FF
-F00:0233       	.ALIGN 4
-F00:0234       	
-F00:0235       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0236       ;Bitmap includes
-F00:0237       
-F00:0238       SpriteTestAddress:
-F00:0239       	.LONG SpriteTest
+F00:0209       		DelayNextDraw:
+F00:0210       			SUBS r0, r0, #1
+               S01:08000208:  01 00 50 E2
+F00:0211       			MOV r0, #ScanlineCounter
+               S01:0800020C:  01 03 A0 E3 06 00 80 E3
+F00:0212       			LDR r1, [r0]
+               S01:08000214:  00 10 90 E5
+F00:0213       			MOV r0, #ScreenYBound
+               S01:08000218:  A0 00 A0 E3
+F00:0214       			CMPS r1, r0
+               S01:0800021C:  00 00 51 E1
+F00:0215       			BGE DelayNextDraw
+               S01:08000220:  F8 FF FF AA
+F00:0216       		DelayNextBlank:
+F00:0217       			SUBS r0, r0, #1
+               S01:08000224:  01 00 50 E2
+F00:0218       			MOV r0, #ScanlineCounter
+               S01:08000228:  01 03 A0 E3 06 00 80 E3
+F00:0219       			LDR r1, [r0]
+               S01:08000230:  00 10 90 E5
+F00:0220       			MOV r0, #ScreenYBound
+               S01:08000234:  A0 00 A0 E3
+F00:0221       			CMPS r1, r0
+               S01:08000238:  00 00 51 E1
+F00:0222       			BLT DelayNextBlank
+               S01:0800023C:  F8 FF FF BA
+F00:0223       		
+F00:0224       	
+F00:0225       	B GameLoop
+               S01:08000240:  B8 FF FF EA
+F00:0226       	
+F00:0227       AsciiTestAddress1:
+F00:0228       	.LONG AsciiTest1	;Address of Ascii string
+               S01:08000244:  48 02 00 08
+F00:0229       AsciiTest1:
+F00:0230       	.BYTE " !\"#$%&'()*+,-./0123456789:;<=",255	;All characters in font, 255 terminated
+               S01:08000248:  20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F
+               S01:08000258:  30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D
+               S01:08000266:  FF
+F00:0231       	;.BYTE "Test f",255
+F00:0232       	.ALIGN 4	;Align to 4 bytes
+F00:0233       	
+F00:0234       AsciiTestAddress2:
+F00:0235       	.LONG AsciiTest2
+               S01:08000270:  74 02 00 08
+F00:0236       AsciiTest2:
+F00:0237       	.BYTE ">?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[",255
+               S01:08000274:  3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D
+               S01:08000284:  4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B
+               S01:08000292:  FF
+F00:0238       	.ALIGN 4
+F00:0239       	
+F00:0240       AsciiTestAddress3:
+F00:0241       	.LONG AsciiTest3
                S01:080002A0:  A4 02 00 08
-F00:0240       SpriteTest:
-F00:0241       	.incbin "\Bitmaps\StickPlayer.RAW"
-               S01:080002A4:  00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC
-               S01:080002B4:  00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC
-F00:0242       	
-F00:0243       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0244       
-F00:0245       ScreenInit:
-F00:0246       	STMFD sp!, {r0-r3, lr}
-               S01:080004A4:  0F 40 2D E9
-F00:0247       		;Actual screen initialization, tells console which mode we're in
-F00:0248       		MOV r3, #0x04000000		;DISPCNT - LCD Control
-               S01:080004A8:  01 33 A0 E3
-F00:0249       		MOV r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
-               S01:080004AC:  01 2B A0 E3 03 20 82 E3
-F00:0250       		STR r2, [r3]			;Store layer and screen mode in LCD Control address
-               S01:080004B4:  00 20 83 E5
-F00:0251       		
-F00:0252       		;MOV r0, #BackgroundColor		;Color to fill
-F00:0253       		;BL ClearToColor
-F00:0254       	LDMFD sp!, {r0-r3, pc}
-               S01:080004B8:  0F 80 BD E8
-F00:0255       	
-F00:0256       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0257       ;r1 = color halfword
-F00:0258       ClearToColor:
-F00:0259       	STMFD sp!, {r1-r3, lr}
-               S01:080004BC:  0E 40 2D E9
-F00:0260       		MOV r3, #VramBase	;Start with vram base
-               S01:080004C0:  06 34 A0 E3
-F00:0261       		MOV r2, #240*160	;Take number of pixels in screen
-               S01:080004C4:  96 2C A0 E3
-F00:0262       		
-F00:0263       FillScreen:
-F00:0264       		STRH r1, [r3], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
-               S01:080004C8:  B2 10 C3 E0
-F00:0265       		SUBS r2, r2, #1		;Decrement and set signs of loop counter
-               S01:080004CC:  01 20 52 E2
-F00:0266       		BNE FillScreen		;Loop to fill screen
-               S01:080004D0:  FC FF FF 1A
-F00:0267       		
-F00:0268       	LDMFD sp!, {r1-r3, pc}
-               S01:080004D4:  0E 80 BD E8
-F00:0269       	
-F00:0270       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0271       ;r1 = X, r2 = Y
-F00:0272       ;Return VRAM position of (x,Y)
-F00:0273       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
-F00:0274       GetScreenPos:
-F00:0275       	STMFD sp!, {r1-r4, lr}
-               S01:080004D8:  1E 40 2D E9
-F00:0276       		MOV r0, #VramBase	;Vram
-               S01:080004DC:  06 04 A0 E3
-F00:0277       		MOV r3, #240*2		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2
-               S01:080004E0:  1E 3E A0 E3
-F00:0278       		MUL r2, r3, r2		;Multiply Y by line byte count
-               S01:080004E4:  93 02 02 E0
-F00:0279       		ADD r0, r0, r2		;Add number of bytes for y position
-               S01:080004E8:  02 00 80 E0
-F00:0280       		MOV r4, #2			;Move 2 into r4
-               S01:080004EC:  02 40 A0 E3
-F00:0281       		MUL r1, r4, r1		;Multiply x by 2, 2 bytes per pixel
-               S01:080004F0:  94 01 01 E0
-F00:0282       		ADD r0, r0, r1		;Add number of bytes for x position
-               S01:080004F4:  01 00 80 E0
-F00:0283       	LDMFD sp!, {r1-r4, pc}
-               S01:080004F8:  1E 80 BD E8
-F00:0284       	
-F00:0285       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0286       ;r1 = current VRAM position
-F00:0287       ;Return VRAM position shifted down one line
-F00:0288       ;https://www.chibialiens.com/arm/platform.php#LessonP2
-F00:0289       GetNextLine:
-F00:0290       	ADD r0, r1, #240*2		;Simple add
-               S01:080004FC:  1E 0E 81 E2
-F00:0291       	MOV pc, lr				;Return
-               S01:08000500:  0E F0 A0 E1
-F00:0292       
-F00:0293       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0294       ;r1 = x position
-F00:0295       ;r2 = y position
-F00:0296       ;r3 = width
-F00:0297       ;r4	= height
-F00:0298       ;r5 = SpriteAddress
-F00:0299       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
-F00:0300       ;Redesigned slightly, GetNextLine was extracted into it's own function
-F00:0301       DrawSprite:
-F00:0302       	STMFD sp!, {r1-r8, lr}
-               S01:08000504:  FE 41 2D E9
-F00:0303       		;x and y position already in r1 and r2
-F00:0304       		BL GetScreenPos
-               S01:08000508:  F2 FF FF EB
-F00:0305       		
-F00:0306       		MOV r7, r0
-               S01:0800050C:  00 70 A0 E1
-F00:0307       		
-F00:0308       		SpriteNextLine:
-F00:0309       			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter a
-               S01:08000510:  88 00 2D E9
-F00:0310       			SpriteNextPixel:
-F00:0311       				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
-               S01:08000514:  B2 80 D5 E0
-F00:0312       				LDRH r6, [r7]		;Load value currently in VRAM
-               S01:08000518:  B0 60 57 E1
-F00:0313       				EOR r8, r8, r6		;XOR current value in VRAM with value in file (erases bitmap if it has already been drawn, faster th
-               S01:0800051C:  06 80 28 E0
-F00:0314       				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
-               S01:08000520:  B2 80 C7 E0
-F00:0315       			
-F00:0316       				SUBS r3, r3, #1		;Decrement width as loop counter
-               S01:08000524:  01 30 53 E2
-F00:0317       			BNE SpriteNextPixel		;Exit loop once at end of width
-               S01:08000528:  F9 FF FF 1A
-F00:0318       			LDMFD sp!, {r3, r7}
-               S01:0800052C:  88 00 BD E8
-F00:0319       			
-F00:0320       			;GetNextLine doesn't save any registers, we just need the one line to change the value in r1 so we manage memory outs
-F00:0321       			STMFD sp!, {r1}		;Save r1 so it can be used as a parameter again
-               S01:08000530:  02 00 2D E9
-F00:0322       				MOV r1, r7			;Move y position into r1 and pass into GetNextLine
-               S01:08000534:  07 10 A0 E1
-F00:0323       				BL GetNextLine
-               S01:08000538:  EF FF FF EB
-F00:0324       				MOV r7, r0			;Move returned value back into r7
-               S01:0800053C:  00 70 A0 E1
-F00:0325       			LDMFD sp!, {r1}		;Load r1 back so we don't lose the parameter passed to DrawSprite
-               S01:08000540:  02 00 BD E8
-F00:0326       			
-F00:0327       			SUBS r4, r4, #1		;Decrement height
-               S01:08000544:  01 40 54 E2
-F00:0328       		BNE SpriteNextLine		;Exit once at end of height
-               S01:08000548:  F0 FF FF 1A
-F00:0329       	LDMFD sp!, {r1-r8, pc}
-               S01:0800054C:  FE 81 BD E8
-F00:0330       	
-F00:0331       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0332       ;Use E conditional to check if pressed
-F00:0333       ;r1 = key mask
-F00:0334       ;Returns keymask in r0
-F00:0335       ReadInput:
-F00:0336       	STMFD sp!, {r1-r2, lr}
-               S01:08000550:  06 40 2D E9
-F00:0337       		EOR r0, r0, r0
-               S01:08000554:  00 00 20 E0
-F00:0338       		MOV r2, #InputLocation	;Input memory location
-               S01:08000558:  13 2E A0 E3 01 23 82 E3
-F00:0339       		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
-               S01:08000560:  B0 00 52 E1
-F00:0340       		MOV r2, #MaskKey		;Mask out superfluous bits
-               S01:08000564:  3F 2B A0 E3
-F00:0341       		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
-               S01:08000568:  02 00 C0 E1
-F00:0342       		AND r0, r0, r1			;AND return register with input bits with the passed key mask
-               S01:0800056C:  01 00 00 E0
-F00:0343       	LDMFD sp!, {r1-r2, pc}
-               S01:08000570:  06 80 BD E8
-F00:0344       
-F00:0345       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0346       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
-F00:0347       ;Comments added by me, Dillon Drummond
-F00:0348       NewLine:
-F00:0349       	STMFD sp!, {r0-r1, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the 
-               S01:08000574:  03 40 2D E9
-F00:0350       		MOV r0, #CursorX	;Get address of cursor x
-               S01:08000578:  02 04 A0 E3 20 00 80 E3
-F00:0351       		EOR r1, r1, r1		;Clear r1
-               S01:08000580:  01 10 21 E0
-F00:0352       		STRB r1, [r0]		;Store 0 from r1 in CursorX, move cursor back to left side of screen
-               S01:08000584:  00 10 C0 E5
-F00:0353       		
-F00:0354       		MOV r0, #CursorY	;Get Y address
-               S01:08000588:  02 04 A0 E3 21 00 80 E3
-F00:0355       		LDRB r1, [r0]		;Store CursorY valye in r1
-               S01:08000590:  00 10 D0 E5
-F00:0356       		ADD r1, r1, #1		;Add 1 to CursorY
-               S01:08000594:  01 10 81 E2
-F00:0357       		STRB r1, [r0]		;Store the incremented CursorY vlaue in CursorY, moves cursor down
-               S01:08000598:  00 10 C0 E5
-F00:0358       	LDMFD sp!, {r0-r1, pc}	;Load registers from stack, put link register in program counter to return
-               S01:0800059C:  03 80 BD E8
-F00:0359       
-F00:0360       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0361       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
-F00:0362       ;Comments added by me, Dillon Drummond
-F00:0363       ;Some changes made
-F00:0364       ;Paramters: r1 = string address
-F00:0365       WriteText:
-F00:0366       	STMFD sp!, {r0-r2, lr}
-               S01:080005A0:  07 40 2D E9
-F00:0367       		MOV r2, r1			;Store parameter in temp variable so new parameter can be passed to WriteChar
-               S01:080005A4:  01 20 A0 E1
-F00:0368       		
-F00:0369       RepeatWriteText:
-F00:0370       		LDRB r1, [r2], #1 	;Load byte then shift by 1
-               S01:080005A8:  01 10 D2 E4
-F00:0371       		CMPS r1, #255		;Check if char is null terminator
-               S01:080005AC:  FF 00 51 E3
-F00:0372       		BEQ WriteTextDone	;If null terminator, exit
-               S01:080005B0:  01 00 00 0A
-F00:0373       		BL WriteChar		;Otherwise, write character
-               S01:080005B4:  01 00 00 EB
-F00:0374       		B RepeatWriteText	;Go back to begining of this block and check if there is another character or if at null terminator
-               S01:080005B8:  FA FF FF EA
-F00:0375       	
-F00:0376       WriteTextDone:
-F00:0377       	LDMFD sp!, {r0-r2, pc}
-               S01:080005BC:  07 80 BD E8
-F00:0378       	
-F00:0379       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0380       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
-F00:0381       ;Comments added by me, Dillon Drummond
-F00:0382       ;r1 = character to write
-F00:0383       WriteChar:
-F00:0384       	STMFD sp!, {r0-r12, lr}	;Store registers and link register
-               S01:080005C0:  FF 5F 2D E9
-F00:0385       		;Clear r4 and r5
-F00:0386       		EOR r4, r4, r4
-               S01:080005C4:  04 40 24 E0
-F00:0387       		EOR r5, r5, r5
-               S01:080005C8:  05 50 25 E0
-F00:0388       		
-F00:0389       		;Loading address of cursor x and y then loading values into r4 and r5
-F00:0390       		MOV r3, #CursorX
-               S01:080005CC:  02 34 A0 E3 20 30 83 E3
-F00:0391       		LDRB r4, [r3]
-               S01:080005D4:  00 40 D3 E5
-F00:0392       		MOV r3, #CursorY
-               S01:080005D8:  02 34 A0 E3 21 30 83 E3
-F00:0393       		LDRB r5, [r3]
-               S01:080005E0:  00 50 D3 E5
-F00:0394       		
-F00:0395       		;r4 = cursor x position, r5 = cursor y position
-F00:0396       		
-F00:0397       		MOV r3, #VramBase	;Load VRAM base address in, addresses after this point will modify screen, 2 bytes, half word, 16 bi
-               S01:080005E4:  06 34 A0 E3
-F00:0398       		
-F00:0399       		;Each char is 8 x 8 pixels
-F00:0400       		;Each pixel is 2 bytes
-F00:0401       		;8 lines of 16 bytes
-F00:0402       		MOV r6, #16		;Bytes in a line of character
-               S01:080005E8:  10 60 A0 E3
-F00:0403       		MUL r2, r4, r6	;Multiply cursor x position by 16
-               S01:080005EC:  94 06 02 E0
-F00:0404       		ADD r3, r3, r2	;Add that position to r2 so we are at that x position in VRAM
-               S01:080005F0:  02 30 83 E0
+F00:0242       AsciiTest3:
+F00:0243       	.BYTE "\\]^_`abcdefghijklmnopqrstuvwxy",255
+               S01:080002A4:  5C 5D 5E 5F 60 61 62 63 64 65 66 67 68 69 6A 6B
+               S01:080002B4:  6C 6D 6E 6F 70 71 72 73 74 75 76 77 78 79
+               S01:080002C2:  FF
+F00:0244       	.ALIGN 4
+F00:0245       	
+F00:0246       AsciiTestAddress4:
+F00:0247       	.LONG AsciiTest4
+               S01:080002D0:  D4 02 00 08
+F00:0248       AsciiTest4:
+F00:0249       	.BYTE "z{|}~",255
+               S01:080002D4:  7A 7B 7C 7D 7E
+               S01:080002D9:  FF
+F00:0250       	.ALIGN 4
+F00:0251       	
+F00:0252       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0253       ;Bitmap includes
+F00:0254       
+F00:0255       SpriteTestAddress:
+F00:0256       	.LONG SpriteTest
+               S01:080002E0:  E4 02 00 08
+F00:0257       SpriteTest:
+F00:0258       	.incbin "\Bitmaps\StickPlayer.RAW"
+               S01:080002E4:  00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC
+               S01:080002F4:  00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC 00 FC
+F00:0259       	
+F00:0260       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0261       
+F00:0262       ScreenInit:
+F00:0263       	STMFD sp!, {r0-r3, lr}
+               S01:080004E4:  0F 40 2D E9
+F00:0264       		;Actual screen initialization, tells console which mode we're in
+F00:0265       		MOV r3, #0x04000000		;DISPCNT - LCD Control
+               S01:080004E8:  01 33 A0 E3
+F00:0266       		MOV r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
+               S01:080004EC:  01 2B A0 E3 03 20 82 E3
+F00:0267       		STR r2, [r3]			;Store layer and screen mode in LCD Control address
+               S01:080004F4:  00 20 83 E5
+F00:0268       		
+F00:0269       		;MOV r1, #BackgroundColor		;Color to fill
+F00:0270       		;BL ClearToColor
+F00:0271       	LDMFD sp!, {r0-r3, pc}
+               S01:080004F8:  0F 80 BD E8
+F00:0272       	
+F00:0273       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0274       ;r1 = color halfword
+F00:0275       ClearToColor:
+F00:0276       	STMFD sp!, {r1-r3, lr}
+               S01:080004FC:  0E 40 2D E9
+F00:0277       		MOV r3, #VramBase	;Start with vram base
+               S01:08000500:  06 34 A0 E3
+F00:0278       		MOV r2, #240*160	;Take number of pixels in screen
+               S01:08000504:  96 2C A0 E3
+F00:0279       		
+F00:0280       FillScreen:
+F00:0281       		STRH r1, [r3], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
+               S01:08000508:  B2 10 C3 E0
+F00:0282       		SUBS r2, r2, #1		;Decrement and set signs of loop counter
+               S01:0800050C:  01 20 52 E2
+F00:0283       		BNE FillScreen		;Loop to fill screen
+               S01:08000510:  FC FF FF 1A
+F00:0284       		
+F00:0285       	LDMFD sp!, {r1-r3, pc}
+               S01:08000514:  0E 80 BD E8
+F00:0286       	
+F00:0287       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0288       ;r1 = X, r2 = Y
+F00:0289       ;Return VRAM position of (x,Y)
+F00:0290       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
+F00:0291       GetScreenPos:
+F00:0292       	STMFD sp!, {r1-r4, lr}
+               S01:08000518:  1E 40 2D E9
+F00:0293       		MOV r0, #VramBase	;Vram
+               S01:0800051C:  06 04 A0 E3
+F00:0294       		MOV r3, #240*2		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2
+               S01:08000520:  1E 3E A0 E3
+F00:0295       		MUL r2, r3, r2		;Multiply Y by line byte count
+               S01:08000524:  93 02 02 E0
+F00:0296       		ADD r0, r0, r2		;Add number of bytes for y position
+               S01:08000528:  02 00 80 E0
+F00:0297       		MOV r4, #2			;Move 2 into r4
+               S01:0800052C:  02 40 A0 E3
+F00:0298       		MUL r1, r4, r1		;Multiply x by 2, 2 bytes per pixel
+               S01:08000530:  94 01 01 E0
+F00:0299       		ADD r0, r0, r1		;Add number of bytes for x position
+               S01:08000534:  01 00 80 E0
+F00:0300       	LDMFD sp!, {r1-r4, pc}
+               S01:08000538:  1E 80 BD E8
+F00:0301       	
+F00:0302       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0303       ;r1 = current VRAM position
+F00:0304       ;Return VRAM position shifted down one line
+F00:0305       ;https://www.chibialiens.com/arm/platform.php#LessonP2
+F00:0306       GetNextLine:
+F00:0307       	ADD r0, r1, #240*2		;Simple add
+               S01:0800053C:  1E 0E 81 E2
+F00:0308       	MOV pc, lr				;Return
+               S01:08000540:  0E F0 A0 E1
+F00:0309       
+F00:0310       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0311       ;r1 = x position
+F00:0312       ;r2 = y position
+F00:0313       ;r3 = width
+F00:0314       ;r4	= height
+F00:0315       ;r5 = SpriteAddress
+F00:0316       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
+F00:0317       ;Redesigned slightly, GetNextLine was extracted into it's own function
+F00:0318       DrawSprite:
+F00:0319       	STMFD sp!, {r1-r8, lr}
+               S01:08000544:  FE 41 2D E9
+F00:0320       		;x and y position already in r1 and r2
+F00:0321       		BL GetScreenPos
+               S01:08000548:  F2 FF FF EB
+F00:0322       		
+F00:0323       		MOV r7, r0
+               S01:0800054C:  00 70 A0 E1
+F00:0324       		
+F00:0325       		SpriteNextLine:
+F00:0326       			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter a
+               S01:08000550:  88 00 2D E9
+F00:0327       			SpriteNextPixel:
+F00:0328       				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
+               S01:08000554:  B2 80 D5 E0
+F00:0329       				LDRH r6, [r7]		;Load value currently in VRAM
+               S01:08000558:  B0 60 57 E1
+F00:0330       				EOR r8, r8, r6		;XOR current value in VRAM with value in file (erases bitmap if it has already been drawn, faster th
+               S01:0800055C:  06 80 28 E0
+F00:0331       				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
+               S01:08000560:  B2 80 C7 E0
+F00:0332       			
+F00:0333       				SUBS r3, r3, #1		;Decrement width as loop counter
+               S01:08000564:  01 30 53 E2
+F00:0334       			BNE SpriteNextPixel		;Exit loop once at end of width
+               S01:08000568:  F9 FF FF 1A
+F00:0335       			LDMFD sp!, {r3, r7}
+               S01:0800056C:  88 00 BD E8
+F00:0336       			
+F00:0337       			;GetNextLine doesn't save any registers, we just need the one line to change the value in r1 so we manage memory outs
+F00:0338       			STMFD sp!, {r1}		;Save r1 so it can be used as a parameter again
+               S01:08000570:  02 00 2D E9
+F00:0339       				MOV r1, r7			;Move y position into r1 and pass into GetNextLine
+               S01:08000574:  07 10 A0 E1
+F00:0340       				BL GetNextLine
+               S01:08000578:  EF FF FF EB
+F00:0341       				MOV r7, r0			;Move returned value back into r7
+               S01:0800057C:  00 70 A0 E1
+F00:0342       			LDMFD sp!, {r1}		;Load r1 back so we don't lose the parameter passed to DrawSprite
+               S01:08000580:  02 00 BD E8
+F00:0343       			
+F00:0344       			SUBS r4, r4, #1		;Decrement height
+               S01:08000584:  01 40 54 E2
+F00:0345       		BNE SpriteNextLine		;Exit once at end of height
+               S01:08000588:  F0 FF FF 1A
+F00:0346       	LDMFD sp!, {r1-r8, pc}
+               S01:0800058C:  FE 81 BD E8
+F00:0347       	
+F00:0348       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0349       ;Use E conditional to check if pressed
+F00:0350       ;r1 = key mask
+F00:0351       ;Returns keymask in r0
+F00:0352       ReadInput:
+F00:0353       	STMFD sp!, {r1-r2, lr}
+               S01:08000590:  06 40 2D E9
+F00:0354       		EOR r0, r0, r0
+               S01:08000594:  00 00 20 E0
+F00:0355       		MOV r2, #InputLocation	;Input memory location
+               S01:08000598:  13 2E A0 E3 01 23 82 E3
+F00:0356       		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
+               S01:080005A0:  B0 00 52 E1
+F00:0357       		MOV r2, #MaskKey		;Mask out superfluous bits
+               S01:080005A4:  3F 2B A0 E3
+F00:0358       		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
+               S01:080005A8:  02 00 C0 E1
+F00:0359       		AND r0, r0, r1			;AND return register with input bits with the passed key mask
+               S01:080005AC:  01 00 00 E0
+F00:0360       	LDMFD sp!, {r1-r2, pc}
+               S01:080005B0:  06 80 BD E8
+F00:0361       
+F00:0362       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0363       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+F00:0364       ;Comments added by me, Dillon Drummond
+F00:0365       NewLine:
+F00:0366       	STMFD sp!, {r0-r1, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the 
+               S01:080005B4:  03 40 2D E9
+F00:0367       		MOV r0, #CursorX	;Get address of cursor x
+               S01:080005B8:  02 04 A0 E3 20 00 80 E3
+F00:0368       		EOR r1, r1, r1		;Clear r1
+               S01:080005C0:  01 10 21 E0
+F00:0369       		STRB r1, [r0]		;Store 0 from r1 in CursorX, move cursor back to left side of screen
+               S01:080005C4:  00 10 C0 E5
+F00:0370       		
+F00:0371       		MOV r0, #CursorY	;Get Y address
+               S01:080005C8:  02 04 A0 E3 21 00 80 E3
+F00:0372       		LDRB r1, [r0]		;Store CursorY valye in r1
+               S01:080005D0:  00 10 D0 E5
+F00:0373       		ADD r1, r1, #1		;Add 1 to CursorY
+               S01:080005D4:  01 10 81 E2
+F00:0374       		STRB r1, [r0]		;Store the incremented CursorY vlaue in CursorY, moves cursor down
+               S01:080005D8:  00 10 C0 E5
+F00:0375       	LDMFD sp!, {r0-r1, pc}	;Load registers from stack, put link register in program counter to return
+               S01:080005DC:  03 80 BD E8
+F00:0376       
+F00:0377       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0378       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+F00:0379       ;Comments added by me, Dillon Drummond
+F00:0380       ;Some changes made
+F00:0381       ;Paramters: r1 = string address
+F00:0382       WriteText:
+F00:0383       	STMFD sp!, {r0-r2, lr}
+               S01:080005E0:  07 40 2D E9
+F00:0384       		MOV r2, r1			;Store parameter in temp variable so new parameter can be passed to WriteChar
+               S01:080005E4:  01 20 A0 E1
+F00:0385       		
+F00:0386       RepeatWriteText:
+F00:0387       		LDRB r1, [r2], #1 	;Load byte then shift by 1
+               S01:080005E8:  01 10 D2 E4
+F00:0388       		CMPS r1, #255		;Check if char is null terminator
+               S01:080005EC:  FF 00 51 E3
+F00:0389       		BEQ WriteTextDone	;If null terminator, exit
+               S01:080005F0:  01 00 00 0A
+F00:0390       		BL WriteChar		;Otherwise, write character
+               S01:080005F4:  01 00 00 EB
+F00:0391       		B RepeatWriteText	;Go back to begining of this block and check if there is another character or if at null terminator
+               S01:080005F8:  FA FF FF EA
+F00:0392       	
+F00:0393       WriteTextDone:
+F00:0394       	LDMFD sp!, {r0-r2, pc}
+               S01:080005FC:  07 80 BD E8
+F00:0395       	
+F00:0396       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0397       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
+F00:0398       ;Comments added by me, Dillon Drummond
+F00:0399       ;r1 = character to write
+F00:0400       WriteChar:
+F00:0401       	STMFD sp!, {r0-r12, lr}	;Store registers and link register
+               S01:08000600:  FF 5F 2D E9
+F00:0402       		;Clear r4 and r5
+F00:0403       		EOR r4, r4, r4
+               S01:08000604:  04 40 24 E0
+F00:0404       		EOR r5, r5, r5
+               S01:08000608:  05 50 25 E0
 F00:0405       		
-F00:0406       		MOV r4, #240*8*2	;240 pixels per row, 8 lines per char, 2 bytes per pixel, (no longer need cursor x position, can writ
-               S01:080005F4:  0F 4C A0 E3
-F00:0407       		MUL r2, r5, r4		;cursor y position * bytes per char row (8 screen lines, 240 pixels per line, 2 bytes per pixel)
-               S01:080005F8:  95 04 02 E0
-F00:0408       		ADD r3, r3, r2		;Add number of bytes to move over in x direction (r3) and number of bytes to move down in the y direct
-               S01:080005FC:  02 30 83 E0
-F00:0409       		
-F00:0410       		;I added this, could potentially cause problems
-F00:0411       		;Within each 8x8 space for chars, they are offset to the right by one pixel for some reason.  Since r3 is the location
-F00:0412       		;;;;;;;;;;;;;;;;;;;;;;;
-F00:0413       		SUB r3, r3, #2	;Subtract 1 byte from position, solves 1 byte right offset within each char space, may have something t
-               S01:08000600:  02 30 43 E2
-F00:0414       		;;;;;;;;;;;;;;;;;;;;;;;
+F00:0406       		;Loading address of cursor x and y then loading values into r4 and r5
+F00:0407       		MOV r3, #CursorX
+               S01:0800060C:  02 34 A0 E3 20 30 83 E3
+F00:0408       		LDRB r4, [r3]
+               S01:08000614:  00 40 D3 E5
+F00:0409       		MOV r3, #CursorY
+               S01:08000618:  02 34 A0 E3 21 30 83 E3
+F00:0410       		LDRB r5, [r3]
+               S01:08000620:  00 50 D3 E5
+F00:0411       		
+F00:0412       		;r4 = cursor x position, r5 = cursor y position
+F00:0413       		
+F00:0414       		MOV r3, #VramBase	;Load VRAM base address in, addresses after this point will modify screen, 2 bytes, half word, 16 bi
+               S01:08000624:  06 34 A0 E3
 F00:0415       		
-F00:0416       		ADR r4,BitmapFont 	;Load address of font into r4
-               S01:08000604:  58 40 8F E2
-F00:0417       		
-F00:0418       		SUB r1,r1,#32			;Subtract 32 from value in first paramter 
-               S01:08000608:  20 10 41 E2
-F00:0419       		ADD r4,r4,r1,asl #3		;Add the value to the bitmap font and shift left 3 to multiply by 8 and get address of the passed
-               S01:0800060C:  81 41 84 E0
-F00:0420       		
-F00:0421       		MOV r10,#8			;Loop counter for lines
-               S01:08000610:  08 A0 A0 E3
-F00:0422       WriteLine:
-F00:0423       		MOV r7,#8 			;Loop counter for pixels
-               S01:08000614:  08 70 A0 E3
-F00:0424       		LDRB r8,[r4],#1				;Load bitmap font value into r8
-               S01:08000618:  01 80 D4 E4
-F00:0425       		MOV r9,#0b100000000			;Bitmask gets shifted over 1 through each loop
-               S01:0800061C:  01 9C A0 E3
-F00:0426       				
-F00:0427       		MOV r2, #0b1111111101000000; Color: ABBBBBGGGGGRRRRR	A=Alpha
-               S01:08000620:  FF 2C A0 E3 40 20 82 E3
-F00:0428       DrawPixel:
-F00:0429       		TST r8,r9			;Test r8 and r9, CMP but with AND function, uses bitmask on bitmap font to check if current pixel in r3 sh
-               S01:08000628:  09 00 18 E1
-F00:0430       		STRNEH r2,[r3]		;SToRe if Not Equal Halfword, stores halfword if test is not equal, sets pixel at r3 to the color in r
-               S01:0800062C:  B0 20 43 11
-F00:0431       		ADD r3,r3,#2		;Increment r3 by 1 byte
-               S01:08000630:  02 30 83 E2
-F00:0432       		MOV r9,r9,ror #1	;Rotate bitmask (0b10000000 checks leftmost pixel, 0b01000000 checks the next one, etc.)
-               S01:08000634:  E9 90 A0 E1
-F00:0433       		SUBS r7,r7,#1		;Decrement loop counter for pixels, set signs to check if after 8 pixels
-               S01:08000638:  01 70 57 E2
-F00:0434       		BNE DrawPixel		;Loop for 8 pixels, until zero flag is set
-               S01:0800063C:  F9 FF FF 1A
-F00:0435       		
-F00:0436       		ADD r3,r3,#480-16	;240 pixels * 2 bytes per pixel - 16 
-               S01:08000640:  1D 3E 83 E2
-F00:0437       		SUBS r10,r10,#1		;Decrement loop counter for lines, set signs to see if after 8 lines	
-               S01:08000644:  01 A0 5A E2
-F00:0438       		BNE WriteLine		;If zeor flag set, exit.  Otherwise, repeat, go to next line
-               S01:08000648:  F1 FF FF 1A
-F00:0439       LineDone:	
-F00:0440       		MOV r3,#CursorX		;Get CursorX address
-               S01:0800064C:  02 34 A0 E3 20 30 83 E3
-F00:0441       		LDRB r1,[r3]		;Get CursorX value
-               S01:08000654:  00 10 D3 E5
-F00:0442       		ADD r1,r1,#1		;Increment cursor by 1 position
-               S01:08000658:  01 10 81 E2
-F00:0443       		STRB r1,[r3]		;Store incremented value back in address
-               S01:0800065C:  00 10 C3 E5
-F00:0444       		
-F00:0445       	LDMFD sp!, {r0-r12, pc}	;Return
-               S01:08000660:  FF 9F BD E8
-F00:0446       	
-F00:0447       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0448       
-F00:0449       ;Starts at ASCII number 32, simplifying by starting at 0
-F00:0450       ;I translated the Presst Start 2P Google Font into 8 element arrays of byte sized hex codes
-F00:0451       ;This effectively defines an 8x8 bitmap of a character
-F00:0452       ;Method learned from https://www.chibialiens.com/arm/helloworld.php#LessonH2
-F00:0453       BitmapFont:
-F00:0454       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00	;0 - Space
-               S01:08000664:  00
-               S01:08000665:  00
-               S01:08000666:  00
-               S01:08000667:  00
-               S01:08000668:  00
-               S01:08000669:  00
-               S01:0800066A:  00
-               S01:0800066B:  00
-F00:0455       	.BYTE 0x70,0x70,0x70,0x60,0x60,0x00,0x60,0x00	;1 - !
-               S01:0800066C:  70
-               S01:0800066D:  70
-               S01:0800066E:  70
-               S01:0800066F:  60
-               S01:08000670:  60
-               S01:08000671:  00
-               S01:08000672:  60
-               S01:08000673:  00
-F00:0456       	.BYTE 0x00,0x66,0x66,0x66,0x00,0x00,0x00,0x00	;2 - "
-               S01:08000674:  00
-               S01:08000675:  66
-               S01:08000676:  66
-               S01:08000677:  66
-               S01:08000678:  00
-               S01:08000679:  00
-               S01:0800067A:  00
-               S01:0800067B:  00
-F00:0457       	.BYTE 0x00,0x6C,0xFE,0x6C,0x6C,0x6C,0xFE,0x6C	;3 - #
-               S01:0800067C:  00
-               S01:0800067D:  6C
-               S01:0800067E:  FE
-               S01:0800067F:  6C
-               S01:08000680:  6C
-               S01:08000681:  6C
-               S01:08000682:  FE
-               S01:08000683:  6C
-F00:0458       	.BYTE 0x00,0x10,0x7C,0xD0,0x7C,0x16,0xFC,0x10	;4 - $
-               S01:08000684:  00
-               S01:08000685:  10
-               S01:08000686:  7C
-               S01:08000687:  D0
-               S01:08000688:  7C
-               S01:08000689:  16
-               S01:0800068A:  FC
-               S01:0800068B:  10
-F00:0459       	.BYTE 0x00,0x62,0xA4,0xC8,0x10,0x26,0x4A,0x8C	;5 - %
-               S01:0800068C:  00
-               S01:0800068D:  62
-               S01:0800068E:  A4
-               S01:0800068F:  C8
-               S01:08000690:  10
-               S01:08000691:  26
-               S01:08000692:  4A
-               S01:08000693:  8C
-F00:0460       	.BYTE 0x00,0x70,0xD8,0xD8,0x70,0xDA,0xCC,0x7E	;6 - &
-               S01:08000694:  00
-               S01:08000695:  70
-               S01:08000696:  D8
-               S01:08000697:  D8
-               S01:08000698:  70
-               S01:08000699:  DA
-               S01:0800069A:  CC
-               S01:0800069B:  7E
-F00:0461       	.BYTE 0x00,0x30,0x30,0x60,0x00,0x00,0x00,0x00	;7 - '
-               S01:0800069C:  00
-               S01:0800069D:  30
-               S01:0800069E:  30
-               S01:0800069F:  60
-               S01:080006A0:  00
-               S01:080006A1:  00
-               S01:080006A2:  00
-               S01:080006A3:  00
-F00:0462       	.BYTE 0x00,0x0C,0x18,0x30,0x30,0x30,0x18,0x0C	;8 - (
+F00:0416       		;Each char is 8 x 8 pixels
+F00:0417       		;Each pixel is 2 bytes
+F00:0418       		;8 lines of 16 bytes
+F00:0419       		MOV r6, #16		;Bytes in a line of character
+               S01:08000628:  10 60 A0 E3
+F00:0420       		MUL r2, r4, r6	;Multiply cursor x position by 16
+               S01:0800062C:  94 06 02 E0
+F00:0421       		ADD r3, r3, r2	;Add that position to r2 so we are at that x position in VRAM
+               S01:08000630:  02 30 83 E0
+F00:0422       		
+F00:0423       		MOV r4, #240*8*2	;240 pixels per row, 8 lines per char, 2 bytes per pixel, (no longer need cursor x position, can writ
+               S01:08000634:  0F 4C A0 E3
+F00:0424       		MUL r2, r5, r4		;cursor y position * bytes per char row (8 screen lines, 240 pixels per line, 2 bytes per pixel)
+               S01:08000638:  95 04 02 E0
+F00:0425       		ADD r3, r3, r2		;Add number of bytes to move over in x direction (r3) and number of bytes to move down in the y direct
+               S01:0800063C:  02 30 83 E0
+F00:0426       		
+F00:0427       		;I added this, could potentially cause problems
+F00:0428       		;Within each 8x8 space for chars, they are offset to the right by one pixel for some reason.  Since r3 is the location
+F00:0429       		;;;;;;;;;;;;;;;;;;;;;;;
+F00:0430       		SUB r3, r3, #2	;Subtract 1 byte from position, solves 1 byte right offset within each char space, may have something t
+               S01:08000640:  02 30 43 E2
+F00:0431       		;;;;;;;;;;;;;;;;;;;;;;;
+F00:0432       		
+F00:0433       		ADR r4,BitmapFont 	;Load address of font into r4
+               S01:08000644:  58 40 8F E2
+F00:0434       		
+F00:0435       		SUB r1,r1,#32			;Subtract 32 from value in first paramter 
+               S01:08000648:  20 10 41 E2
+F00:0436       		ADD r4,r4,r1,asl #3		;Add the value to the bitmap font and shift left 3 to multiply by 8 and get address of the passed
+               S01:0800064C:  81 41 84 E0
+F00:0437       		
+F00:0438       		MOV r10,#8			;Loop counter for lines
+               S01:08000650:  08 A0 A0 E3
+F00:0439       WriteLine:
+F00:0440       		MOV r7,#8 			;Loop counter for pixels
+               S01:08000654:  08 70 A0 E3
+F00:0441       		LDRB r8,[r4],#1				;Load bitmap font value into r8
+               S01:08000658:  01 80 D4 E4
+F00:0442       		MOV r9,#0b100000000			;Bitmask gets shifted over 1 through each loop
+               S01:0800065C:  01 9C A0 E3
+F00:0443       				
+F00:0444       		MOV r2, #0b1111111101000000; Color: ABBBBBGGGGGRRRRR	A=Alpha
+               S01:08000660:  FF 2C A0 E3 40 20 82 E3
+F00:0445       DrawPixel:
+F00:0446       		TST r8,r9			;Test r8 and r9, CMP but with AND function, uses bitmask on bitmap font to check if current pixel in r3 sh
+               S01:08000668:  09 00 18 E1
+F00:0447       		STRNEH r2,[r3]		;SToRe if Not Equal Halfword, stores halfword if test is not equal, sets pixel at r3 to the color in r
+               S01:0800066C:  B0 20 43 11
+F00:0448       		ADD r3,r3,#2		;Increment r3 by 1 byte
+               S01:08000670:  02 30 83 E2
+F00:0449       		MOV r9,r9,ror #1	;Rotate bitmask (0b10000000 checks leftmost pixel, 0b01000000 checks the next one, etc.)
+               S01:08000674:  E9 90 A0 E1
+F00:0450       		SUBS r7,r7,#1		;Decrement loop counter for pixels, set signs to check if after 8 pixels
+               S01:08000678:  01 70 57 E2
+F00:0451       		BNE DrawPixel		;Loop for 8 pixels, until zero flag is set
+               S01:0800067C:  F9 FF FF 1A
+F00:0452       		
+F00:0453       		ADD r3,r3,#480-16	;240 pixels * 2 bytes per pixel - 16 
+               S01:08000680:  1D 3E 83 E2
+F00:0454       		SUBS r10,r10,#1		;Decrement loop counter for lines, set signs to see if after 8 lines	
+               S01:08000684:  01 A0 5A E2
+F00:0455       		BNE WriteLine		;If zeor flag set, exit.  Otherwise, repeat, go to next line
+               S01:08000688:  F1 FF FF 1A
+F00:0456       LineDone:	
+F00:0457       		MOV r3,#CursorX		;Get CursorX address
+               S01:0800068C:  02 34 A0 E3 20 30 83 E3
+F00:0458       		LDRB r1,[r3]		;Get CursorX value
+               S01:08000694:  00 10 D3 E5
+F00:0459       		ADD r1,r1,#1		;Increment cursor by 1 position
+               S01:08000698:  01 10 81 E2
+F00:0460       		STRB r1,[r3]		;Store incremented value back in address
+               S01:0800069C:  00 10 C3 E5
+F00:0461       		
+F00:0462       	LDMFD sp!, {r0-r12, pc}	;Return
+               S01:080006A0:  FF 9F BD E8
+F00:0463       	
+F00:0464       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0465       
+F00:0466       ;Starts at ASCII number 32, simplifying by starting at 0
+F00:0467       ;I translated the Presst Start 2P Google Font into 8 element arrays of byte sized hex codes
+F00:0468       ;This effectively defines an 8x8 bitmap of a character
+F00:0469       ;Method learned from https://www.chibialiens.com/arm/helloworld.php#LessonH2
+F00:0470       BitmapFont:
+F00:0471       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00	;0 - Space
                S01:080006A4:  00
-               S01:080006A5:  0C
-               S01:080006A6:  18
-               S01:080006A7:  30
-               S01:080006A8:  30
-               S01:080006A9:  30
-               S01:080006AA:  18
-               S01:080006AB:  0C
-F00:0463       	.BYTE 0x00,0x30,0x18,0x0C,0x0C,0x0C,0x18,0x30	;9 - )
-               S01:080006AC:  00
-               S01:080006AD:  30
-               S01:080006AE:  18
-               S01:080006AF:  0C
-               S01:080006B0:  0C
-               S01:080006B1:  0C
-               S01:080006B2:  18
-               S01:080006B3:  30
-F00:0464       	.BYTE 0x00,0x6C,0x38,0xFE,0x38,0x6C,0x00,0x00	;10 - *
+               S01:080006A5:  00
+               S01:080006A6:  00
+               S01:080006A7:  00
+               S01:080006A8:  00
+               S01:080006A9:  00
+               S01:080006AA:  00
+               S01:080006AB:  00
+F00:0472       	.BYTE 0x70,0x70,0x70,0x60,0x60,0x00,0x60,0x00	;1 - !
+               S01:080006AC:  70
+               S01:080006AD:  70
+               S01:080006AE:  70
+               S01:080006AF:  60
+               S01:080006B0:  60
+               S01:080006B1:  00
+               S01:080006B2:  60
+               S01:080006B3:  00
+F00:0473       	.BYTE 0x00,0x66,0x66,0x66,0x00,0x00,0x00,0x00	;2 - "
                S01:080006B4:  00
-               S01:080006B5:  6C
-               S01:080006B6:  38
-               S01:080006B7:  FE
-               S01:080006B8:  38
-               S01:080006B9:  6C
+               S01:080006B5:  66
+               S01:080006B6:  66
+               S01:080006B7:  66
+               S01:080006B8:  00
+               S01:080006B9:  00
                S01:080006BA:  00
                S01:080006BB:  00
-F00:0465       	.BYTE 0x00,0x18,0x18,0x7E,0x7E,0x18,0x18,0x00	;11 - +
+F00:0474       	.BYTE 0x00,0x6C,0xFE,0x6C,0x6C,0x6C,0xFE,0x6C	;3 - #
                S01:080006BC:  00
-               S01:080006BD:  18
-               S01:080006BE:  18
-               S01:080006BF:  7E
-               S01:080006C0:  7E
-               S01:080006C1:  18
-               S01:080006C2:  18
-               S01:080006C3:  00
-F00:0466       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x30,0x30,0x60	;12 - ,
+               S01:080006BD:  6C
+               S01:080006BE:  FE
+               S01:080006BF:  6C
+               S01:080006C0:  6C
+               S01:080006C1:  6C
+               S01:080006C2:  FE
+               S01:080006C3:  6C
+F00:0475       	.BYTE 0x00,0x10,0x7C,0xD0,0x7C,0x16,0xFC,0x10	;4 - $
                S01:080006C4:  00
-               S01:080006C5:  00
-               S01:080006C6:  00
-               S01:080006C7:  00
-               S01:080006C8:  00
-               S01:080006C9:  30
-               S01:080006CA:  30
-               S01:080006CB:  60
-F00:0467       	.BYTE 0x00,0x00,0x00,0x3C,0x00,0x00,0x00,0x00	;12 - -
+               S01:080006C5:  10
+               S01:080006C6:  7C
+               S01:080006C7:  D0
+               S01:080006C8:  7C
+               S01:080006C9:  16
+               S01:080006CA:  FC
+               S01:080006CB:  10
+F00:0476       	.BYTE 0x00,0x62,0xA4,0xC8,0x10,0x26,0x4A,0x8C	;5 - %
                S01:080006CC:  00
-               S01:080006CD:  00
-               S01:080006CE:  00
-               S01:080006CF:  3C
-               S01:080006D0:  00
-               S01:080006D1:  00
-               S01:080006D2:  00
-               S01:080006D3:  00
-F00:0468       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x30,0x30	;13 - .
+               S01:080006CD:  62
+               S01:080006CE:  A4
+               S01:080006CF:  C8
+               S01:080006D0:  10
+               S01:080006D1:  26
+               S01:080006D2:  4A
+               S01:080006D3:  8C
+F00:0477       	.BYTE 0x00,0x70,0xD8,0xD8,0x70,0xDA,0xCC,0x7E	;6 - &
                S01:080006D4:  00
-               S01:080006D5:  00
-               S01:080006D6:  00
-               S01:080006D7:  00
-               S01:080006D8:  00
-               S01:080006D9:  00
-               S01:080006DA:  30
-               S01:080006DB:  30
-F00:0469       	.BYTE 0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80	;14 - /
-               S01:080006DC:  01
-               S01:080006DD:  02
-               S01:080006DE:  04
-               S01:080006DF:  08
-               S01:080006E0:  10
-               S01:080006E1:  20
-               S01:080006E2:  40
-               S01:080006E3:  80
-F00:0470       	.BYTE 0x38,0x4C,0xC6,0xC6,0xC6,0xC6,0x64,0x38	;15 - 0
-               S01:080006E4:  38
-               S01:080006E5:  4C
-               S01:080006E6:  C6
-               S01:080006E7:  C6
-               S01:080006E8:  C6
-               S01:080006E9:  C6
-               S01:080006EA:  64
-               S01:080006EB:  38
-F00:0471       	.BYTE 0x00,0x18,0x38,0x18,0x18,0x18,0x18,0x7E	;16 - 1
+               S01:080006D5:  70
+               S01:080006D6:  D8
+               S01:080006D7:  D8
+               S01:080006D8:  70
+               S01:080006D9:  DA
+               S01:080006DA:  CC
+               S01:080006DB:  7E
+F00:0478       	.BYTE 0x00,0x30,0x30,0x60,0x00,0x00,0x00,0x00	;7 - '
+               S01:080006DC:  00
+               S01:080006DD:  30
+               S01:080006DE:  30
+               S01:080006DF:  60
+               S01:080006E0:  00
+               S01:080006E1:  00
+               S01:080006E2:  00
+               S01:080006E3:  00
+F00:0479       	.BYTE 0x00,0x0C,0x18,0x30,0x30,0x30,0x18,0x0C	;8 - (
+               S01:080006E4:  00
+               S01:080006E5:  0C
+               S01:080006E6:  18
+               S01:080006E7:  30
+               S01:080006E8:  30
+               S01:080006E9:  30
+               S01:080006EA:  18
+               S01:080006EB:  0C
+F00:0480       	.BYTE 0x00,0x30,0x18,0x0C,0x0C,0x0C,0x18,0x30	;9 - )
                S01:080006EC:  00
-               S01:080006ED:  18
-               S01:080006EE:  38
-               S01:080006EF:  18
-               S01:080006F0:  18
-               S01:080006F1:  18
+               S01:080006ED:  30
+               S01:080006EE:  18
+               S01:080006EF:  0C
+               S01:080006F0:  0C
+               S01:080006F1:  0C
                S01:080006F2:  18
-               S01:080006F3:  7E
-F00:0472       	.BYTE 0x00,0x7C,0xC6,0x0E,0x3C,0x78,0xE0,0xFE	;17 - 2
+               S01:080006F3:  30
+F00:0481       	.BYTE 0x00,0x6C,0x38,0xFE,0x38,0x6C,0x00,0x00	;10 - *
                S01:080006F4:  00
-               S01:080006F5:  7C
-               S01:080006F6:  C6
-               S01:080006F7:  0E
-               S01:080006F8:  3C
-               S01:080006F9:  78
-               S01:080006FA:  E0
-               S01:080006FB:  FE
-F00:0473       	.BYTE 0x00,0x7E,0x0C,0x18,0x3C,0x06,0xC6,0x7C	;18 - 3
+               S01:080006F5:  6C
+               S01:080006F6:  38
+               S01:080006F7:  FE
+               S01:080006F8:  38
+               S01:080006F9:  6C
+               S01:080006FA:  00
+               S01:080006FB:  00
+F00:0482       	.BYTE 0x00,0x18,0x18,0x7E,0x7E,0x18,0x18,0x00	;11 - +
                S01:080006FC:  00
-               S01:080006FD:  7E
-               S01:080006FE:  0C
-               S01:080006FF:  18
-               S01:08000700:  3C
-               S01:08000701:  06
-               S01:08000702:  C6
-               S01:08000703:  7C
-F00:0474       	.BYTE 0x00,0x1C,0x3C,0x6C,0xCC,0xFE,0x0C,0x0C	;19 - 4
+               S01:080006FD:  18
+               S01:080006FE:  18
+               S01:080006FF:  7E
+               S01:08000700:  7E
+               S01:08000701:  18
+               S01:08000702:  18
+               S01:08000703:  00
+F00:0483       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x30,0x30,0x60	;12 - ,
                S01:08000704:  00
-               S01:08000705:  1C
-               S01:08000706:  3C
-               S01:08000707:  6C
-               S01:08000708:  CC
-               S01:08000709:  FE
-               S01:0800070A:  0C
-               S01:0800070B:  0C
-F00:0475       	.BYTE 0x00,0xFC,0xC0,0xFC,0x06,0x06,0xC6,0x7C	;20 - 5
+               S01:08000705:  00
+               S01:08000706:  00
+               S01:08000707:  00
+               S01:08000708:  00
+               S01:08000709:  30
+               S01:0800070A:  30
+               S01:0800070B:  60
+F00:0484       	.BYTE 0x00,0x00,0x00,0x3C,0x00,0x00,0x00,0x00	;12 - -
                S01:0800070C:  00
-               S01:0800070D:  FC
-               S01:0800070E:  C0
-               S01:0800070F:  FC
-               S01:08000710:  06
-               S01:08000711:  06
-               S01:08000712:  C6
-               S01:08000713:  7C
-F00:0476       	.BYTE 0x00,0x3C,0x60,0xC0,0xFC,0xC6,0xC6,0x7C	;21 - 6
+               S01:0800070D:  00
+               S01:0800070E:  00
+               S01:0800070F:  3C
+               S01:08000710:  00
+               S01:08000711:  00
+               S01:08000712:  00
+               S01:08000713:  00
+F00:0485       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x30,0x30	;13 - .
                S01:08000714:  00
-               S01:08000715:  3C
-               S01:08000716:  60
-               S01:08000717:  C0
-               S01:08000718:  FC
-               S01:08000719:  C6
-               S01:0800071A:  C6
-               S01:0800071B:  7C
-F00:0477       	.BYTE 0x00,0xFE,0xC6,0x0C,0x18,0x30,0x30,0x30	;22 - 7
-               S01:0800071C:  00
-               S01:0800071D:  FE
-               S01:0800071E:  C6
-               S01:0800071F:  0C
-               S01:08000720:  18
-               S01:08000721:  30
-               S01:08000722:  30
-               S01:08000723:  30
-F00:0478       	.BYTE 0x00,0x78,0xC4,0xE4,0x78,0x9E,0x86,0x7C	;23 - 8
-               S01:08000724:  00
-               S01:08000725:  78
-               S01:08000726:  C4
-               S01:08000727:  E4
-               S01:08000728:  78
-               S01:08000729:  9E
-               S01:0800072A:  86
-               S01:0800072B:  7C
-F00:0479       	.BYTE 0x00,0x7C,0xC6,0xC6,0x7E,0x06,0x0C,0x78	;24 - 9
+               S01:08000715:  00
+               S01:08000716:  00
+               S01:08000717:  00
+               S01:08000718:  00
+               S01:08000719:  00
+               S01:0800071A:  30
+               S01:0800071B:  30
+F00:0486       	.BYTE 0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80	;14 - /
+               S01:0800071C:  01
+               S01:0800071D:  02
+               S01:0800071E:  04
+               S01:0800071F:  08
+               S01:08000720:  10
+               S01:08000721:  20
+               S01:08000722:  40
+               S01:08000723:  80
+F00:0487       	.BYTE 0x38,0x4C,0xC6,0xC6,0xC6,0xC6,0x64,0x38	;15 - 0
+               S01:08000724:  38
+               S01:08000725:  4C
+               S01:08000726:  C6
+               S01:08000727:  C6
+               S01:08000728:  C6
+               S01:08000729:  C6
+               S01:0800072A:  64
+               S01:0800072B:  38
+F00:0488       	.BYTE 0x00,0x18,0x38,0x18,0x18,0x18,0x18,0x7E	;16 - 1
                S01:0800072C:  00
-               S01:0800072D:  7C
-               S01:0800072E:  C6
-               S01:0800072F:  C6
-               S01:08000730:  7E
-               S01:08000731:  06
-               S01:08000732:  0C
-               S01:08000733:  78
-F00:0480       	.BYTE 0x00,0x30,0x30,0x00,0x00,0x30,0x30,0x00	;25 - :
+               S01:0800072D:  18
+               S01:0800072E:  38
+               S01:0800072F:  18
+               S01:08000730:  18
+               S01:08000731:  18
+               S01:08000732:  18
+               S01:08000733:  7E
+F00:0489       	.BYTE 0x00,0x7C,0xC6,0x0E,0x3C,0x78,0xE0,0xFE	;17 - 2
                S01:08000734:  00
-               S01:08000735:  30
-               S01:08000736:  30
-               S01:08000737:  00
-               S01:08000738:  00
-               S01:08000739:  30
-               S01:0800073A:  30
-               S01:0800073B:  00
-F00:0481       	.BYTE 0x00,0x30,0x30,0x00,0x30,0x30,0x60,0x00	;26 - ;
+               S01:08000735:  7C
+               S01:08000736:  C6
+               S01:08000737:  0E
+               S01:08000738:  3C
+               S01:08000739:  78
+               S01:0800073A:  E0
+               S01:0800073B:  FE
+F00:0490       	.BYTE 0x00,0x7E,0x0C,0x18,0x3C,0x06,0xC6,0x7C	;18 - 3
                S01:0800073C:  00
-               S01:0800073D:  30
-               S01:0800073E:  30
-               S01:0800073F:  00
-               S01:08000740:  30
-               S01:08000741:  30
-               S01:08000742:  60
-               S01:08000743:  00
-F00:0482       	.BYTE 0x00,0x0C,0x18,0x30,0x18,0x0C,0x00,0x00	;27 - <
+               S01:0800073D:  7E
+               S01:0800073E:  0C
+               S01:0800073F:  18
+               S01:08000740:  3C
+               S01:08000741:  06
+               S01:08000742:  C6
+               S01:08000743:  7C
+F00:0491       	.BYTE 0x00,0x1C,0x3C,0x6C,0xCC,0xFE,0x0C,0x0C	;19 - 4
                S01:08000744:  00
-               S01:08000745:  0C
-               S01:08000746:  18
-               S01:08000747:  30
-               S01:08000748:  18
-               S01:08000749:  0C
-               S01:0800074A:  00
-               S01:0800074B:  00
-F00:0483       	.BYTE 0x00,0x00,0x7E,0x00,0x7E,0x00,0x00,0x00	;28 - =
+               S01:08000745:  1C
+               S01:08000746:  3C
+               S01:08000747:  6C
+               S01:08000748:  CC
+               S01:08000749:  FE
+               S01:0800074A:  0C
+               S01:0800074B:  0C
+F00:0492       	.BYTE 0x00,0xFC,0xC0,0xFC,0x06,0x06,0xC6,0x7C	;20 - 5
                S01:0800074C:  00
-               S01:0800074D:  00
-               S01:0800074E:  7E
-               S01:0800074F:  00
-               S01:08000750:  7E
-               S01:08000751:  00
-               S01:08000752:  00
-               S01:08000753:  00
-F00:0484       	.BYTE 0x00,0x30,0x18,0x0C,0x18,0x30,0x00,0x00	;29 - >
+               S01:0800074D:  FC
+               S01:0800074E:  C0
+               S01:0800074F:  FC
+               S01:08000750:  06
+               S01:08000751:  06
+               S01:08000752:  C6
+               S01:08000753:  7C
+F00:0493       	.BYTE 0x00,0x3C,0x60,0xC0,0xFC,0xC6,0xC6,0x7C	;21 - 6
                S01:08000754:  00
-               S01:08000755:  30
-               S01:08000756:  18
-               S01:08000757:  0C
-               S01:08000758:  18
-               S01:08000759:  30
-               S01:0800075A:  00
-               S01:0800075B:  00
-F00:0485       	.BYTE 0x00,0x7C,0xFE,0xC6,0x0C,0x38,0x00,0x38	;30 - ?
+               S01:08000755:  3C
+               S01:08000756:  60
+               S01:08000757:  C0
+               S01:08000758:  FC
+               S01:08000759:  C6
+               S01:0800075A:  C6
+               S01:0800075B:  7C
+F00:0494       	.BYTE 0x00,0xFE,0xC6,0x0C,0x18,0x30,0x30,0x30	;22 - 7
                S01:0800075C:  00
-               S01:0800075D:  7C
-               S01:0800075E:  FE
-               S01:0800075F:  C6
-               S01:08000760:  0C
-               S01:08000761:  38
-               S01:08000762:  00
-               S01:08000763:  38
-F00:0486       	.BYTE 0x00,0x7C,0x82,0xBA,0xAA,0xBE,0x80,0x7C	;31 - @
+               S01:0800075D:  FE
+               S01:0800075E:  C6
+               S01:0800075F:  0C
+               S01:08000760:  18
+               S01:08000761:  30
+               S01:08000762:  30
+               S01:08000763:  30
+F00:0495       	.BYTE 0x00,0x78,0xC4,0xE4,0x78,0x9E,0x86,0x7C	;23 - 8
                S01:08000764:  00
-               S01:08000765:  7C
-               S01:08000766:  82
-               S01:08000767:  BA
-               S01:08000768:  AA
-               S01:08000769:  BE
-               S01:0800076A:  80
+               S01:08000765:  78
+               S01:08000766:  C4
+               S01:08000767:  E4
+               S01:08000768:  78
+               S01:08000769:  9E
+               S01:0800076A:  86
                S01:0800076B:  7C
-F00:0487       	.BYTE 0x00,0x38,0x6C,0xC6,0xC6,0xFE,0xC6,0xC6	;32 - A
+F00:0496       	.BYTE 0x00,0x7C,0xC6,0xC6,0x7E,0x06,0x0C,0x78	;24 - 9
                S01:0800076C:  00
-               S01:0800076D:  38
-               S01:0800076E:  6C
+               S01:0800076D:  7C
+               S01:0800076E:  C6
                S01:0800076F:  C6
-               S01:08000770:  C6
-               S01:08000771:  FE
-               S01:08000772:  C6
-               S01:08000773:  C6
-F00:0488       	.BYTE 0x00,0xFC,0xC6,0xC6,0xFC,0xC6,0xC6,0xFC	;33 - B
+               S01:08000770:  7E
+               S01:08000771:  06
+               S01:08000772:  0C
+               S01:08000773:  78
+F00:0497       	.BYTE 0x00,0x30,0x30,0x00,0x00,0x30,0x30,0x00	;25 - :
                S01:08000774:  00
-               S01:08000775:  FC
-               S01:08000776:  C6
-               S01:08000777:  C6
-               S01:08000778:  FC
-               S01:08000779:  C6
-               S01:0800077A:  C6
-               S01:0800077B:  FC
-F00:0489       	.BYTE 0x00,0x3C,0x66,0xC0,0xC0,0xC0,0x66,0x3C	;34 - C
+               S01:08000775:  30
+               S01:08000776:  30
+               S01:08000777:  00
+               S01:08000778:  00
+               S01:08000779:  30
+               S01:0800077A:  30
+               S01:0800077B:  00
+F00:0498       	.BYTE 0x00,0x30,0x30,0x00,0x30,0x30,0x60,0x00	;26 - ;
                S01:0800077C:  00
-               S01:0800077D:  3C
-               S01:0800077E:  66
-               S01:0800077F:  C0
-               S01:08000780:  C0
-               S01:08000781:  C0
-               S01:08000782:  66
-               S01:08000783:  3C
-F00:0490       	.BYTE 0x00,0xF8,0xCC,0xC6,0xC6,0xC6,0xCC,0xF8	;35 - D
+               S01:0800077D:  30
+               S01:0800077E:  30
+               S01:0800077F:  00
+               S01:08000780:  30
+               S01:08000781:  30
+               S01:08000782:  60
+               S01:08000783:  00
+F00:0499       	.BYTE 0x00,0x0C,0x18,0x30,0x18,0x0C,0x00,0x00	;27 - <
                S01:08000784:  00
-               S01:08000785:  F8
-               S01:08000786:  CC
-               S01:08000787:  C6
-               S01:08000788:  C6
-               S01:08000789:  C6
-               S01:0800078A:  CC
-               S01:0800078B:  F8
-F00:0491       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xFE	;36 - E
+               S01:08000785:  0C
+               S01:08000786:  18
+               S01:08000787:  30
+               S01:08000788:  18
+               S01:08000789:  0C
+               S01:0800078A:  00
+               S01:0800078B:  00
+F00:0500       	.BYTE 0x00,0x00,0x7E,0x00,0x7E,0x00,0x00,0x00	;28 - =
                S01:0800078C:  00
-               S01:0800078D:  FE
-               S01:0800078E:  C0
-               S01:0800078F:  C0
-               S01:08000790:  FC
-               S01:08000791:  C0
-               S01:08000792:  C0
-               S01:08000793:  FE
-F00:0492       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xC0	;37 - F
+               S01:0800078D:  00
+               S01:0800078E:  7E
+               S01:0800078F:  00
+               S01:08000790:  7E
+               S01:08000791:  00
+               S01:08000792:  00
+               S01:08000793:  00
+F00:0501       	.BYTE 0x00,0x30,0x18,0x0C,0x18,0x30,0x00,0x00	;29 - >
                S01:08000794:  00
-               S01:08000795:  FE
-               S01:08000796:  C0
-               S01:08000797:  C0
-               S01:08000798:  FC
-               S01:08000799:  C0
-               S01:0800079A:  C0
-               S01:0800079B:  C0
-F00:0493       	.BYTE 0x00,0x3E,0x60,0xC0,0xCE,0xC6,0x66,0x3E	;38 - G
+               S01:08000795:  30
+               S01:08000796:  18
+               S01:08000797:  0C
+               S01:08000798:  18
+               S01:08000799:  30
+               S01:0800079A:  00
+               S01:0800079B:  00
+F00:0502       	.BYTE 0x00,0x7C,0xFE,0xC6,0x0C,0x38,0x00,0x38	;30 - ?
                S01:0800079C:  00
-               S01:0800079D:  3E
-               S01:0800079E:  60
-               S01:0800079F:  C0
-               S01:080007A0:  CE
-               S01:080007A1:  C6
-               S01:080007A2:  66
-               S01:080007A3:  3E
-F00:0494       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xFE,0xC6,0xC6	;39 - H
+               S01:0800079D:  7C
+               S01:0800079E:  FE
+               S01:0800079F:  C6
+               S01:080007A0:  0C
+               S01:080007A1:  38
+               S01:080007A2:  00
+               S01:080007A3:  38
+F00:0503       	.BYTE 0x00,0x7C,0x82,0xBA,0xAA,0xBE,0x80,0x7C	;31 - @
                S01:080007A4:  00
-               S01:080007A5:  C6
-               S01:080007A6:  C6
-               S01:080007A7:  C6
-               S01:080007A8:  C6
-               S01:080007A9:  FE
-               S01:080007AA:  C6
-               S01:080007AB:  C6
-F00:0495       	.BYTE 0x00,0x7E,0x18,0x18,0x18,0x18,0x18,0x7E	;40 - I
+               S01:080007A5:  7C
+               S01:080007A6:  82
+               S01:080007A7:  BA
+               S01:080007A8:  AA
+               S01:080007A9:  BE
+               S01:080007AA:  80
+               S01:080007AB:  7C
+F00:0504       	.BYTE 0x00,0x38,0x6C,0xC6,0xC6,0xFE,0xC6,0xC6	;32 - A
                S01:080007AC:  00
-               S01:080007AD:  7E
-               S01:080007AE:  18
-               S01:080007AF:  18
-               S01:080007B0:  18
-               S01:080007B1:  18
-               S01:080007B2:  18
-               S01:080007B3:  7E
-F00:0496       	.BYTE 0x00,0x06,0x06,0x06,0x06,0x06,0xC6,0x7C	;41 - J
+               S01:080007AD:  38
+               S01:080007AE:  6C
+               S01:080007AF:  C6
+               S01:080007B0:  C6
+               S01:080007B1:  FE
+               S01:080007B2:  C6
+               S01:080007B3:  C6
+F00:0505       	.BYTE 0x00,0xFC,0xC6,0xC6,0xFC,0xC6,0xC6,0xFC	;33 - B
                S01:080007B4:  00
-               S01:080007B5:  06
-               S01:080007B6:  06
-               S01:080007B7:  06
-               S01:080007B8:  06
-               S01:080007B9:  06
+               S01:080007B5:  FC
+               S01:080007B6:  C6
+               S01:080007B7:  C6
+               S01:080007B8:  FC
+               S01:080007B9:  C6
                S01:080007BA:  C6
-               S01:080007BB:  7C
-F00:0497       	.BYTE 0x00,0xC6,0xCC,0xD8,0xF0,0xF8,0xDC,0xCE	;42 - K
+               S01:080007BB:  FC
+F00:0506       	.BYTE 0x00,0x3C,0x66,0xC0,0xC0,0xC0,0x66,0x3C	;34 - C
                S01:080007BC:  00
-               S01:080007BD:  C6
-               S01:080007BE:  CC
-               S01:080007BF:  D8
-               S01:080007C0:  F0
-               S01:080007C1:  F8
-               S01:080007C2:  DC
-               S01:080007C3:  CE
-F00:0498       	.BYTE 0x00,0x60,0x60,0x60,0x60,0x60,0x60,0x7E	;43 - L
+               S01:080007BD:  3C
+               S01:080007BE:  66
+               S01:080007BF:  C0
+               S01:080007C0:  C0
+               S01:080007C1:  C0
+               S01:080007C2:  66
+               S01:080007C3:  3C
+F00:0507       	.BYTE 0x00,0xF8,0xCC,0xC6,0xC6,0xC6,0xCC,0xF8	;35 - D
                S01:080007C4:  00
-               S01:080007C5:  60
-               S01:080007C6:  60
-               S01:080007C7:  60
-               S01:080007C8:  60
-               S01:080007C9:  60
-               S01:080007CA:  60
-               S01:080007CB:  7E
-F00:0499       	.BYTE 0x00,0xC6,0xEE,0xFE,0xD6,0xD6,0xC6,0xC6	;44 - M
+               S01:080007C5:  F8
+               S01:080007C6:  CC
+               S01:080007C7:  C6
+               S01:080007C8:  C6
+               S01:080007C9:  C6
+               S01:080007CA:  CC
+               S01:080007CB:  F8
+F00:0508       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xFE	;36 - E
                S01:080007CC:  00
-               S01:080007CD:  C6
-               S01:080007CE:  EE
-               S01:080007CF:  FE
-               S01:080007D0:  D6
-               S01:080007D1:  D6
-               S01:080007D2:  C6
-               S01:080007D3:  C6
-F00:0500       	.BYTE 0x00,0xC6,0xE6,0xF6,0xDE,0xDE,0xC6,0xC6	;45 - N
+               S01:080007CD:  FE
+               S01:080007CE:  C0
+               S01:080007CF:  C0
+               S01:080007D0:  FC
+               S01:080007D1:  C0
+               S01:080007D2:  C0
+               S01:080007D3:  FE
+F00:0509       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xC0	;37 - F
                S01:080007D4:  00
-               S01:080007D5:  C6
-               S01:080007D6:  E6
-               S01:080007D7:  F6
-               S01:080007D8:  DE
-               S01:080007D9:  DE
-               S01:080007DA:  C6
-               S01:080007DB:  C6
-F00:0501       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;46 - O
+               S01:080007D5:  FE
+               S01:080007D6:  C0
+               S01:080007D7:  C0
+               S01:080007D8:  FC
+               S01:080007D9:  C0
+               S01:080007DA:  C0
+               S01:080007DB:  C0
+F00:0510       	.BYTE 0x00,0x3E,0x60,0xC0,0xCE,0xC6,0x66,0x3E	;38 - G
                S01:080007DC:  00
-               S01:080007DD:  7C
-               S01:080007DE:  C6
-               S01:080007DF:  C6
-               S01:080007E0:  C6
+               S01:080007DD:  3E
+               S01:080007DE:  60
+               S01:080007DF:  C0
+               S01:080007E0:  CE
                S01:080007E1:  C6
-               S01:080007E2:  C6
-               S01:080007E3:  7C
-F00:0502       	.BYTE 0x00,0xFC,0xC6,0xC6,0xC6,0xFC,0xC0,0xC0	;47 - P
+               S01:080007E2:  66
+               S01:080007E3:  3E
+F00:0511       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xFE,0xC6,0xC6	;39 - H
                S01:080007E4:  00
-               S01:080007E5:  FC
+               S01:080007E5:  C6
                S01:080007E6:  C6
                S01:080007E7:  C6
                S01:080007E8:  C6
-               S01:080007E9:  FC
-               S01:080007EA:  C0
-               S01:080007EB:  C0
-F00:0503       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xDE,0xCC,0x7A	;48 - Q
+               S01:080007E9:  FE
+               S01:080007EA:  C6
+               S01:080007EB:  C6
+F00:0512       	.BYTE 0x00,0x7E,0x18,0x18,0x18,0x18,0x18,0x7E	;40 - I
                S01:080007EC:  00
-               S01:080007ED:  7C
-               S01:080007EE:  C6
-               S01:080007EF:  C6
-               S01:080007F0:  C6
-               S01:080007F1:  DE
-               S01:080007F2:  CC
-               S01:080007F3:  7A
-F00:0504       	.BYTE 0x00,0xFC,0xC6,0xC6,0xCE,0xF8,0xDC,0xCE	;49 - R
+               S01:080007ED:  7E
+               S01:080007EE:  18
+               S01:080007EF:  18
+               S01:080007F0:  18
+               S01:080007F1:  18
+               S01:080007F2:  18
+               S01:080007F3:  7E
+F00:0513       	.BYTE 0x00,0x06,0x06,0x06,0x06,0x06,0xC6,0x7C	;41 - J
                S01:080007F4:  00
-               S01:080007F5:  FC
-               S01:080007F6:  C6
-               S01:080007F7:  C6
-               S01:080007F8:  CE
-               S01:080007F9:  F8
-               S01:080007FA:  DC
-               S01:080007FB:  CE
-F00:0505       	.BYTE 0x00,0x7C,0xC6,0xC0,0x7C,0x06,0xC6,0x7C	;50 - S
+               S01:080007F5:  06
+               S01:080007F6:  06
+               S01:080007F7:  06
+               S01:080007F8:  06
+               S01:080007F9:  06
+               S01:080007FA:  C6
+               S01:080007FB:  7C
+F00:0514       	.BYTE 0x00,0xC6,0xCC,0xD8,0xF0,0xF8,0xDC,0xCE	;42 - K
                S01:080007FC:  00
-               S01:080007FD:  7C
-               S01:080007FE:  C6
-               S01:080007FF:  C0
-               S01:08000800:  7C
-               S01:08000801:  06
-               S01:08000802:  C6
-               S01:08000803:  7C
-F00:0506       	.BYTE 0x00,0x7E,0x18,0x18,0x18,0x18,0x18,0x18	;51 - T
+               S01:080007FD:  C6
+               S01:080007FE:  CC
+               S01:080007FF:  D8
+               S01:08000800:  F0
+               S01:08000801:  F8
+               S01:08000802:  DC
+               S01:08000803:  CE
+F00:0515       	.BYTE 0x00,0x60,0x60,0x60,0x60,0x60,0x60,0x7E	;43 - L
                S01:08000804:  00
-               S01:08000805:  7E
-               S01:08000806:  18
-               S01:08000807:  18
-               S01:08000808:  18
-               S01:08000809:  18
-               S01:0800080A:  18
-               S01:0800080B:  18
-F00:0507       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;52 - U
+               S01:08000805:  60
+               S01:08000806:  60
+               S01:08000807:  60
+               S01:08000808:  60
+               S01:08000809:  60
+               S01:0800080A:  60
+               S01:0800080B:  7E
+F00:0516       	.BYTE 0x00,0xC6,0xEE,0xFE,0xD6,0xD6,0xC6,0xC6	;44 - M
                S01:0800080C:  00
                S01:0800080D:  C6
-               S01:0800080E:  C6
-               S01:0800080F:  C6
-               S01:08000810:  C6
-               S01:08000811:  C6
+               S01:0800080E:  EE
+               S01:0800080F:  FE
+               S01:08000810:  D6
+               S01:08000811:  D6
                S01:08000812:  C6
-               S01:08000813:  7C
-F00:0508       	.BYTE 0x00,0xC6,0xC6,0xC6,0xEE,0x7C,0x38,0x10	;53 - V
+               S01:08000813:  C6
+F00:0517       	.BYTE 0x00,0xC6,0xE6,0xF6,0xDE,0xDE,0xC6,0xC6	;45 - N
                S01:08000814:  00
                S01:08000815:  C6
-               S01:08000816:  C6
-               S01:08000817:  C6
-               S01:08000818:  EE
-               S01:08000819:  7C
-               S01:0800081A:  38
-               S01:0800081B:  10
-F00:0509       	.BYTE 0x00,0xD6,0xD6,0xD6,0xD6,0xFE,0xEE,0x44	;54 - W
+               S01:08000816:  E6
+               S01:08000817:  F6
+               S01:08000818:  DE
+               S01:08000819:  DE
+               S01:0800081A:  C6
+               S01:0800081B:  C6
+F00:0518       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;46 - O
                S01:0800081C:  00
-               S01:0800081D:  D6
-               S01:0800081E:  D6
-               S01:0800081F:  D6
-               S01:08000820:  D6
-               S01:08000821:  FE
-               S01:08000822:  EE
-               S01:08000823:  44
-F00:0510       	.BYTE 0x00,0xC6,0xC6,0x6C,0x38,0x6C,0xC6,0xC6	;55 - X
+               S01:0800081D:  7C
+               S01:0800081E:  C6
+               S01:0800081F:  C6
+               S01:08000820:  C6
+               S01:08000821:  C6
+               S01:08000822:  C6
+               S01:08000823:  7C
+F00:0519       	.BYTE 0x00,0xFC,0xC6,0xC6,0xC6,0xFC,0xC0,0xC0	;47 - P
                S01:08000824:  00
-               S01:08000825:  C6
+               S01:08000825:  FC
                S01:08000826:  C6
-               S01:08000827:  6C
-               S01:08000828:  38
-               S01:08000829:  6C
-               S01:0800082A:  C6
-               S01:0800082B:  C6
-F00:0511       	.BYTE 0x00,0x66,0x66,0x66,0x3C,0x18,0x18,0x18	;56 - Y
+               S01:08000827:  C6
+               S01:08000828:  C6
+               S01:08000829:  FC
+               S01:0800082A:  C0
+               S01:0800082B:  C0
+F00:0520       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xDE,0xCC,0x7A	;48 - Q
                S01:0800082C:  00
-               S01:0800082D:  66
-               S01:0800082E:  66
-               S01:0800082F:  66
-               S01:08000830:  3C
-               S01:08000831:  18
-               S01:08000832:  18
-               S01:08000833:  18
-F00:0512       	.BYTE 0x00,0xFE,0x0E,0x1C,0x38,0x70,0xE0,0xFE	;57 - Z
+               S01:0800082D:  7C
+               S01:0800082E:  C6
+               S01:0800082F:  C6
+               S01:08000830:  C6
+               S01:08000831:  DE
+               S01:08000832:  CC
+               S01:08000833:  7A
+F00:0521       	.BYTE 0x00,0xFC,0xC6,0xC6,0xCE,0xF8,0xDC,0xCE	;49 - R
                S01:08000834:  00
-               S01:08000835:  FE
-               S01:08000836:  0E
-               S01:08000837:  1C
-               S01:08000838:  38
-               S01:08000839:  70
-               S01:0800083A:  E0
-               S01:0800083B:  FE
-F00:0513       	.BYTE 0x00,0x3C,0x30,0x30,0x30,0x30,0x30,0x3C	;58 - [
+               S01:08000835:  FC
+               S01:08000836:  C6
+               S01:08000837:  C6
+               S01:08000838:  CE
+               S01:08000839:  F8
+               S01:0800083A:  DC
+               S01:0800083B:  CE
+F00:0522       	.BYTE 0x00,0x7C,0xC6,0xC0,0x7C,0x06,0xC6,0x7C	;50 - S
                S01:0800083C:  00
-               S01:0800083D:  3C
-               S01:0800083E:  30
-               S01:0800083F:  30
-               S01:08000840:  30
-               S01:08000841:  30
-               S01:08000842:  30
-               S01:08000843:  3C
-F00:0514       	.BYTE 0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01	;59 - \ 
-               S01:08000844:  80
-               S01:08000845:  40
-               S01:08000846:  20
-               S01:08000847:  10
-               S01:08000848:  08
-               S01:08000849:  04
-               S01:0800084A:  02
-               S01:0800084B:  01
-F00:0515       	.BYTE 0x00,0x3C,0x0C,0x0C,0x0C,0x0C,0x0C,0x3C	;60 - ]
+               S01:0800083D:  7C
+               S01:0800083E:  C6
+               S01:0800083F:  C0
+               S01:08000840:  7C
+               S01:08000841:  06
+               S01:08000842:  C6
+               S01:08000843:  7C
+F00:0523       	.BYTE 0x00,0x7E,0x18,0x18,0x18,0x18,0x18,0x18	;51 - T
+               S01:08000844:  00
+               S01:08000845:  7E
+               S01:08000846:  18
+               S01:08000847:  18
+               S01:08000848:  18
+               S01:08000849:  18
+               S01:0800084A:  18
+               S01:0800084B:  18
+F00:0524       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;52 - U
                S01:0800084C:  00
-               S01:0800084D:  3C
-               S01:0800084E:  0C
-               S01:0800084F:  0C
-               S01:08000850:  0C
-               S01:08000851:  0C
-               S01:08000852:  0C
-               S01:08000853:  3C
-F00:0516       	.BYTE 0x00,0x38,0x6C,0x00,0x00,0x00,0x00,0x00	;61 - ^
+               S01:0800084D:  C6
+               S01:0800084E:  C6
+               S01:0800084F:  C6
+               S01:08000850:  C6
+               S01:08000851:  C6
+               S01:08000852:  C6
+               S01:08000853:  7C
+F00:0525       	.BYTE 0x00,0xC6,0xC6,0xC6,0xEE,0x7C,0x38,0x10	;53 - V
                S01:08000854:  00
-               S01:08000855:  38
-               S01:08000856:  6C
-               S01:08000857:  00
-               S01:08000858:  00
-               S01:08000859:  00
-               S01:0800085A:  00
-               S01:0800085B:  00
-F00:0517       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFE	;62 - _
+               S01:08000855:  C6
+               S01:08000856:  C6
+               S01:08000857:  C6
+               S01:08000858:  EE
+               S01:08000859:  7C
+               S01:0800085A:  38
+               S01:0800085B:  10
+F00:0526       	.BYTE 0x00,0xD6,0xD6,0xD6,0xD6,0xFE,0xEE,0x44	;54 - W
                S01:0800085C:  00
-               S01:0800085D:  00
-               S01:0800085E:  00
-               S01:0800085F:  00
-               S01:08000860:  00
-               S01:08000861:  00
-               S01:08000862:  00
-               S01:08000863:  FE
-F00:0518       	.BYTE 0x00,0x10,0x08,0x00,0x00,0x00,0x00,0x00 	;63 - `
+               S01:0800085D:  D6
+               S01:0800085E:  D6
+               S01:0800085F:  D6
+               S01:08000860:  D6
+               S01:08000861:  FE
+               S01:08000862:  EE
+               S01:08000863:  44
+F00:0527       	.BYTE 0x00,0xC6,0xC6,0x6C,0x38,0x6C,0xC6,0xC6	;55 - X
                S01:08000864:  00
-               S01:08000865:  10
-               S01:08000866:  08
-               S01:08000867:  00
-               S01:08000868:  00
-               S01:08000869:  00
-               S01:0800086A:  00
-               S01:0800086B:  00
-F00:0519       	.BYTE 0x00,0x00,0x00,0x7C,0x06,0x7E,0xC6,0x7E	;64 - a
+               S01:08000865:  C6
+               S01:08000866:  C6
+               S01:08000867:  6C
+               S01:08000868:  38
+               S01:08000869:  6C
+               S01:0800086A:  C6
+               S01:0800086B:  C6
+F00:0528       	.BYTE 0x00,0x66,0x66,0x66,0x3C,0x18,0x18,0x18	;56 - Y
                S01:0800086C:  00
-               S01:0800086D:  00
-               S01:0800086E:  00
-               S01:0800086F:  7C
-               S01:08000870:  06
-               S01:08000871:  7E
-               S01:08000872:  C6
-               S01:08000873:  7E
-F00:0520       	.BYTE 0x00,0xC0,0xC0,0xFC,0xC6,0xC6,0xC6,0x7C	;65 - b
+               S01:0800086D:  66
+               S01:0800086E:  66
+               S01:0800086F:  66
+               S01:08000870:  3C
+               S01:08000871:  18
+               S01:08000872:  18
+               S01:08000873:  18
+F00:0529       	.BYTE 0x00,0xFE,0x0E,0x1C,0x38,0x70,0xE0,0xFE	;57 - Z
                S01:08000874:  00
-               S01:08000875:  C0
-               S01:08000876:  C0
-               S01:08000877:  FC
-               S01:08000878:  C6
-               S01:08000879:  C6
-               S01:0800087A:  C6
-               S01:0800087B:  7C
-F00:0521       	.BYTE 0x00,0x00,0x00,0x7E,0xC0,0xC0,0xC0,0x7E	;66 - c
+               S01:08000875:  FE
+               S01:08000876:  0E
+               S01:08000877:  1C
+               S01:08000878:  38
+               S01:08000879:  70
+               S01:0800087A:  E0
+               S01:0800087B:  FE
+F00:0530       	.BYTE 0x00,0x3C,0x30,0x30,0x30,0x30,0x30,0x3C	;58 - [
                S01:0800087C:  00
-               S01:0800087D:  00
-               S01:0800087E:  00
-               S01:0800087F:  7E
-               S01:08000880:  C0
-               S01:08000881:  C0
-               S01:08000882:  C0
-               S01:08000883:  7E
-F00:0522       	.BYTE 0x00,0x06,0x06,0x7E,0xC6,0xC6,0xC6,0x7E	;67 - d
-               S01:08000884:  00
-               S01:08000885:  06
-               S01:08000886:  06
-               S01:08000887:  7E
-               S01:08000888:  C6
-               S01:08000889:  C6
-               S01:0800088A:  C6
-               S01:0800088B:  7E
-F00:0523       	.BYTE 0x00,0x00,0x00,0x7C,0xC6,0xFE,0xC0,0x7C	;68 - e
+               S01:0800087D:  3C
+               S01:0800087E:  30
+               S01:0800087F:  30
+               S01:08000880:  30
+               S01:08000881:  30
+               S01:08000882:  30
+               S01:08000883:  3C
+F00:0531       	.BYTE 0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01	;59 - \ 
+               S01:08000884:  80
+               S01:08000885:  40
+               S01:08000886:  20
+               S01:08000887:  10
+               S01:08000888:  08
+               S01:08000889:  04
+               S01:0800088A:  02
+               S01:0800088B:  01
+F00:0532       	.BYTE 0x00,0x3C,0x0C,0x0C,0x0C,0x0C,0x0C,0x3C	;60 - ]
                S01:0800088C:  00
-               S01:0800088D:  00
-               S01:0800088E:  00
-               S01:0800088F:  7C
-               S01:08000890:  C6
-               S01:08000891:  FE
-               S01:08000892:  C0
-               S01:08000893:  7C
-F00:0524       	.BYTE 0x00,0x0E,0x18,0x7E,0x18,0x18,0x18,0x18	;69 - f
+               S01:0800088D:  3C
+               S01:0800088E:  0C
+               S01:0800088F:  0C
+               S01:08000890:  0C
+               S01:08000891:  0C
+               S01:08000892:  0C
+               S01:08000893:  3C
+F00:0533       	.BYTE 0x00,0x38,0x6C,0x00,0x00,0x00,0x00,0x00	;61 - ^
                S01:08000894:  00
-               S01:08000895:  0E
-               S01:08000896:  18
-               S01:08000897:  7E
-               S01:08000898:  18
-               S01:08000899:  18
-               S01:0800089A:  18
-               S01:0800089B:  18
-F00:0525       	.BYTE 0x00,0x00,0x7E,0xC6,0xC6,0x7E,0x06,0x7C	;70 - g
+               S01:08000895:  38
+               S01:08000896:  6C
+               S01:08000897:  00
+               S01:08000898:  00
+               S01:08000899:  00
+               S01:0800089A:  00
+               S01:0800089B:  00
+F00:0534       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFE	;62 - _
                S01:0800089C:  00
                S01:0800089D:  00
-               S01:0800089E:  7E
-               S01:0800089F:  C6
-               S01:080008A0:  C6
-               S01:080008A1:  7E
-               S01:080008A2:  06
-               S01:080008A3:  7C
-F00:0526       	.BYTE 0x00,0xC0,0xC0,0xFC,0xC6,0xC6,0xC6,0xC6	;71 - h
+               S01:0800089E:  00
+               S01:0800089F:  00
+               S01:080008A0:  00
+               S01:080008A1:  00
+               S01:080008A2:  00
+               S01:080008A3:  FE
+F00:0535       	.BYTE 0x00,0x10,0x08,0x00,0x00,0x00,0x00,0x00 	;63 - `
                S01:080008A4:  00
-               S01:080008A5:  C0
-               S01:080008A6:  C0
-               S01:080008A7:  FC
-               S01:080008A8:  C6
-               S01:080008A9:  C6
-               S01:080008AA:  C6
-               S01:080008AB:  C6
-F00:0527       	.BYTE 0x00,0x18,0x00,0x38,0x18,0x18,0x18,0x7E	;72 - i
+               S01:080008A5:  10
+               S01:080008A6:  08
+               S01:080008A7:  00
+               S01:080008A8:  00
+               S01:080008A9:  00
+               S01:080008AA:  00
+               S01:080008AB:  00
+F00:0536       	.BYTE 0x00,0x00,0x00,0x7C,0x06,0x7E,0xC6,0x7E	;64 - a
                S01:080008AC:  00
-               S01:080008AD:  18
+               S01:080008AD:  00
                S01:080008AE:  00
-               S01:080008AF:  38
-               S01:080008B0:  18
-               S01:080008B1:  18
-               S01:080008B2:  18
+               S01:080008AF:  7C
+               S01:080008B0:  06
+               S01:080008B1:  7E
+               S01:080008B2:  C6
                S01:080008B3:  7E
-F00:0528       	.BYTE 0x00,0x0C,0x00,0x1C,0x0C,0x0C,0x0C,0x78	;73 - j
+F00:0537       	.BYTE 0x00,0xC0,0xC0,0xFC,0xC6,0xC6,0xC6,0x7C	;65 - b
                S01:080008B4:  00
-               S01:080008B5:  0C
-               S01:080008B6:  00
-               S01:080008B7:  1C
-               S01:080008B8:  0C
-               S01:080008B9:  0C
-               S01:080008BA:  0C
-               S01:080008BB:  78
-F00:0529       	.BYTE 0x00,0xC0,0xC0,0xC6,0xCC,0xF8,0xCC,0xC6	;74 - k
+               S01:080008B5:  C0
+               S01:080008B6:  C0
+               S01:080008B7:  FC
+               S01:080008B8:  C6
+               S01:080008B9:  C6
+               S01:080008BA:  C6
+               S01:080008BB:  7C
+F00:0538       	.BYTE 0x00,0x00,0x00,0x7E,0xC0,0xC0,0xC0,0x7E	;66 - c
                S01:080008BC:  00
-               S01:080008BD:  C0
-               S01:080008BE:  C0
-               S01:080008BF:  C6
-               S01:080008C0:  CC
-               S01:080008C1:  F8
-               S01:080008C2:  CC
-               S01:080008C3:  C6
-F00:0530       	.BYTE 0x00,0x38,0x18,0x18,0x18,0x18,0x18,0x7E	;75 - l
+               S01:080008BD:  00
+               S01:080008BE:  00
+               S01:080008BF:  7E
+               S01:080008C0:  C0
+               S01:080008C1:  C0
+               S01:080008C2:  C0
+               S01:080008C3:  7E
+F00:0539       	.BYTE 0x00,0x06,0x06,0x7E,0xC6,0xC6,0xC6,0x7E	;67 - d
                S01:080008C4:  00
-               S01:080008C5:  38
-               S01:080008C6:  18
-               S01:080008C7:  18
-               S01:080008C8:  18
-               S01:080008C9:  18
-               S01:080008CA:  18
+               S01:080008C5:  06
+               S01:080008C6:  06
+               S01:080008C7:  7E
+               S01:080008C8:  C6
+               S01:080008C9:  C6
+               S01:080008CA:  C6
                S01:080008CB:  7E
-F00:0531       	.BYTE 0x00,0x00,0x00,0xFC,0xB6,0xB6,0xB6,0xB6	;76 - m
+F00:0540       	.BYTE 0x00,0x00,0x00,0x7C,0xC6,0xFE,0xC0,0x7C	;68 - e
                S01:080008CC:  00
                S01:080008CD:  00
                S01:080008CE:  00
-               S01:080008CF:  FC
-               S01:080008D0:  B6
-               S01:080008D1:  B6
-               S01:080008D2:  B6
-               S01:080008D3:  B6
-F00:0532       	.BYTE 0x00,0x00,0x00,0xFC,0xC6,0xC6,0xC6,0xC6	;77 - n
+               S01:080008CF:  7C
+               S01:080008D0:  C6
+               S01:080008D1:  FE
+               S01:080008D2:  C0
+               S01:080008D3:  7C
+F00:0541       	.BYTE 0x00,0x0E,0x18,0x7E,0x18,0x18,0x18,0x18	;69 - f
                S01:080008D4:  00
-               S01:080008D5:  00
-               S01:080008D6:  00
-               S01:080008D7:  FC
-               S01:080008D8:  C6
-               S01:080008D9:  C6
-               S01:080008DA:  C6
-               S01:080008DB:  C6
-F00:0533       	.BYTE 0x00,0x00,0x00,0x7C,0xC6,0xC6,0xC6,0x7C	;78 - o
+               S01:080008D5:  0E
+               S01:080008D6:  18
+               S01:080008D7:  7E
+               S01:080008D8:  18
+               S01:080008D9:  18
+               S01:080008DA:  18
+               S01:080008DB:  18
+F00:0542       	.BYTE 0x00,0x00,0x7E,0xC6,0xC6,0x7E,0x06,0x7C	;70 - g
                S01:080008DC:  00
                S01:080008DD:  00
-               S01:080008DE:  00
-               S01:080008DF:  7C
+               S01:080008DE:  7E
+               S01:080008DF:  C6
                S01:080008E0:  C6
-               S01:080008E1:  C6
-               S01:080008E2:  C6
+               S01:080008E1:  7E
+               S01:080008E2:  06
                S01:080008E3:  7C
-F00:0534       	.BYTE 0x00,0x00,0xFC,0xC6,0xC6,0xFC,0xC0,0xC0	;79 - p
+F00:0543       	.BYTE 0x00,0xC0,0xC0,0xFC,0xC6,0xC6,0xC6,0xC6	;71 - h
                S01:080008E4:  00
-               S01:080008E5:  00
-               S01:080008E6:  FC
-               S01:080008E7:  C6
+               S01:080008E5:  C0
+               S01:080008E6:  C0
+               S01:080008E7:  FC
                S01:080008E8:  C6
-               S01:080008E9:  FC
-               S01:080008EA:  C0
-               S01:080008EB:  C0
-F00:0535       	.BYTE 0x00,0x00,0x7E,0xC6,0xC6,0x7E,0x06,0x06	;80 - q
+               S01:080008E9:  C6
+               S01:080008EA:  C6
+               S01:080008EB:  C6
+F00:0544       	.BYTE 0x00,0x18,0x00,0x38,0x18,0x18,0x18,0x7E	;72 - i
                S01:080008EC:  00
-               S01:080008ED:  00
-               S01:080008EE:  7E
-               S01:080008EF:  C6
-               S01:080008F0:  C6
-               S01:080008F1:  7E
-               S01:080008F2:  06
-               S01:080008F3:  06
-F00:0536       	.BYTE 0x00,0x00,0x00,0x6E,0x70,0x60,0x60,0x60	;81 - r
+               S01:080008ED:  18
+               S01:080008EE:  00
+               S01:080008EF:  38
+               S01:080008F0:  18
+               S01:080008F1:  18
+               S01:080008F2:  18
+               S01:080008F3:  7E
+F00:0545       	.BYTE 0x00,0x0C,0x00,0x1C,0x0C,0x0C,0x0C,0x78	;73 - j
                S01:080008F4:  00
-               S01:080008F5:  00
+               S01:080008F5:  0C
                S01:080008F6:  00
-               S01:080008F7:  6E
-               S01:080008F8:  70
-               S01:080008F9:  60
-               S01:080008FA:  60
-               S01:080008FB:  60
-F00:0537       	.BYTE 0x00,0x00,0x00,0x7C,0xC0,0x7C,0x06,0xFC	;82 - s
+               S01:080008F7:  1C
+               S01:080008F8:  0C
+               S01:080008F9:  0C
+               S01:080008FA:  0C
+               S01:080008FB:  78
+F00:0546       	.BYTE 0x00,0xC0,0xC0,0xC6,0xCC,0xF8,0xCC,0xC6	;74 - k
                S01:080008FC:  00
-               S01:080008FD:  00
-               S01:080008FE:  00
-               S01:080008FF:  7C
-               S01:08000900:  C0
-               S01:08000901:  7C
-               S01:08000902:  06
-               S01:08000903:  FC
-F00:0538       	.BYTE 0x00,0x18,0x18,0x7E,0x18,0x18,0x18,0x18	;83 - t
+               S01:080008FD:  C0
+               S01:080008FE:  C0
+               S01:080008FF:  C6
+               S01:08000900:  CC
+               S01:08000901:  F8
+               S01:08000902:  CC
+               S01:08000903:  C6
+F00:0547       	.BYTE 0x00,0x38,0x18,0x18,0x18,0x18,0x18,0x7E	;75 - l
                S01:08000904:  00
-               S01:08000905:  18
+               S01:08000905:  38
                S01:08000906:  18
-               S01:08000907:  7E
+               S01:08000907:  18
                S01:08000908:  18
                S01:08000909:  18
                S01:0800090A:  18
-               S01:0800090B:  18
-F00:0539       	.BYTE 0x00,0x00,0x00,0xC6,0xC6,0xC6,0xC6,0x7E	;84 - u
+               S01:0800090B:  7E
+F00:0548       	.BYTE 0x00,0x00,0x00,0xFC,0xB6,0xB6,0xB6,0xB6	;76 - m
                S01:0800090C:  00
                S01:0800090D:  00
                S01:0800090E:  00
-               S01:0800090F:  C6
-               S01:08000910:  C6
-               S01:08000911:  C6
-               S01:08000912:  C6
-               S01:08000913:  7E
-F00:0540       	.BYTE 0x00,0x00,0x00,0x66,0x66,0x66,0x3C,0x18	;85 - v
+               S01:0800090F:  FC
+               S01:08000910:  B6
+               S01:08000911:  B6
+               S01:08000912:  B6
+               S01:08000913:  B6
+F00:0549       	.BYTE 0x00,0x00,0x00,0xFC,0xC6,0xC6,0xC6,0xC6	;77 - n
                S01:08000914:  00
                S01:08000915:  00
                S01:08000916:  00
-               S01:08000917:  66
-               S01:08000918:  66
-               S01:08000919:  66
-               S01:0800091A:  3C
-               S01:0800091B:  18
-F00:0541       	.BYTE 0x00,0x00,0x00,0xD6,0xD6,0xD6,0xD6,0x6C	;86 - w
+               S01:08000917:  FC
+               S01:08000918:  C6
+               S01:08000919:  C6
+               S01:0800091A:  C6
+               S01:0800091B:  C6
+F00:0550       	.BYTE 0x00,0x00,0x00,0x7C,0xC6,0xC6,0xC6,0x7C	;78 - o
                S01:0800091C:  00
                S01:0800091D:  00
                S01:0800091E:  00
-               S01:0800091F:  D6
-               S01:08000920:  D6
-               S01:08000921:  D6
-               S01:08000922:  D6
-               S01:08000923:  6C
-F00:0542       	.BYTE 0x00,0x00,0x00,0xC6,0x6C,0x38,0x6C,0xC6	;87 - x
+               S01:0800091F:  7C
+               S01:08000920:  C6
+               S01:08000921:  C6
+               S01:08000922:  C6
+               S01:08000923:  7C
+F00:0551       	.BYTE 0x00,0x00,0xFC,0xC6,0xC6,0xFC,0xC0,0xC0	;79 - p
                S01:08000924:  00
                S01:08000925:  00
-               S01:08000926:  00
+               S01:08000926:  FC
                S01:08000927:  C6
-               S01:08000928:  6C
-               S01:08000929:  38
-               S01:0800092A:  6C
-               S01:0800092B:  C6
-F00:0543       	.BYTE 0x00,0x00,0xC6,0xC6,0xC6,0x7E,0x06,0x7C	;88 - y
+               S01:08000928:  C6
+               S01:08000929:  FC
+               S01:0800092A:  C0
+               S01:0800092B:  C0
+F00:0552       	.BYTE 0x00,0x00,0x7E,0xC6,0xC6,0x7E,0x06,0x06	;80 - q
                S01:0800092C:  00
                S01:0800092D:  00
-               S01:0800092E:  C6
+               S01:0800092E:  7E
                S01:0800092F:  C6
                S01:08000930:  C6
                S01:08000931:  7E
                S01:08000932:  06
-               S01:08000933:  7C
-F00:0544       	.BYTE 0x00,0x00,0x00,0xFE,0x1C,0x38,0x70,0xFE	;89 - z
+               S01:08000933:  06
+F00:0553       	.BYTE 0x00,0x00,0x00,0x6E,0x70,0x60,0x60,0x60	;81 - r
                S01:08000934:  00
                S01:08000935:  00
                S01:08000936:  00
-               S01:08000937:  FE
-               S01:08000938:  1C
-               S01:08000939:  38
-               S01:0800093A:  70
-               S01:0800093B:  FE
-F00:0545       	.BYTE 0x00,0x0C,0x18,0x18,0x30,0x18,0x18,0x0C	;90 - {
+               S01:08000937:  6E
+               S01:08000938:  70
+               S01:08000939:  60
+               S01:0800093A:  60
+               S01:0800093B:  60
+F00:0554       	.BYTE 0x00,0x00,0x00,0x7C,0xC0,0x7C,0x06,0xFC	;82 - s
                S01:0800093C:  00
-               S01:0800093D:  0C
-               S01:0800093E:  18
-               S01:0800093F:  18
-               S01:08000940:  30
-               S01:08000941:  18
-               S01:08000942:  18
-               S01:08000943:  0C
-F00:0546       	.BYTE 0x00,0x18,0x18,0x18,0x18,0x18,0x18,0x18	;91 - |
+               S01:0800093D:  00
+               S01:0800093E:  00
+               S01:0800093F:  7C
+               S01:08000940:  C0
+               S01:08000941:  7C
+               S01:08000942:  06
+               S01:08000943:  FC
+F00:0555       	.BYTE 0x00,0x18,0x18,0x7E,0x18,0x18,0x18,0x18	;83 - t
                S01:08000944:  00
                S01:08000945:  18
                S01:08000946:  18
-               S01:08000947:  18
+               S01:08000947:  7E
                S01:08000948:  18
                S01:08000949:  18
                S01:0800094A:  18
                S01:0800094B:  18
-F00:0547       	.BYTE 0x00,0x30,0x18,0x18,0x0C,0x18,0x18,0x30	;92 - }
+F00:0556       	.BYTE 0x00,0x00,0x00,0xC6,0xC6,0xC6,0xC6,0x7E	;84 - u
                S01:0800094C:  00
-               S01:0800094D:  30
-               S01:0800094E:  18
-               S01:0800094F:  18
-               S01:08000950:  0C
-               S01:08000951:  18
-               S01:08000952:  18
-               S01:08000953:  30
-F00:0548       	.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
+               S01:0800094D:  00
+               S01:0800094E:  00
+               S01:0800094F:  C6
+               S01:08000950:  C6
+               S01:08000951:  C6
+               S01:08000952:  C6
+               S01:08000953:  7E
+F00:0557       	.BYTE 0x00,0x00,0x00,0x66,0x66,0x66,0x3C,0x18	;85 - v
                S01:08000954:  00
                S01:08000955:  00
-               S01:08000956:  70
-               S01:08000957:  BA
-               S01:08000958:  1C
-               S01:08000959:  00
-               S01:0800095A:  00
-               S01:0800095B:  00
-F00:0549       	;.BYTE 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+               S01:08000956:  00
+               S01:08000957:  66
+               S01:08000958:  66
+               S01:08000959:  66
+               S01:0800095A:  3C
+               S01:0800095B:  18
+F00:0558       	.BYTE 0x00,0x00,0x00,0xD6,0xD6,0xD6,0xD6,0x6C	;86 - w
+               S01:0800095C:  00
+               S01:0800095D:  00
+               S01:0800095E:  00
+               S01:0800095F:  D6
+               S01:08000960:  D6
+               S01:08000961:  D6
+               S01:08000962:  D6
+               S01:08000963:  6C
+F00:0559       	.BYTE 0x00,0x00,0x00,0xC6,0x6C,0x38,0x6C,0xC6	;87 - x
+               S01:08000964:  00
+               S01:08000965:  00
+               S01:08000966:  00
+               S01:08000967:  C6
+               S01:08000968:  6C
+               S01:08000969:  38
+               S01:0800096A:  6C
+               S01:0800096B:  C6
+F00:0560       	.BYTE 0x00,0x00,0xC6,0xC6,0xC6,0x7E,0x06,0x7C	;88 - y
+               S01:0800096C:  00
+               S01:0800096D:  00
+               S01:0800096E:  C6
+               S01:0800096F:  C6
+               S01:08000970:  C6
+               S01:08000971:  7E
+               S01:08000972:  06
+               S01:08000973:  7C
+F00:0561       	.BYTE 0x00,0x00,0x00,0xFE,0x1C,0x38,0x70,0xFE	;89 - z
+               S01:08000974:  00
+               S01:08000975:  00
+               S01:08000976:  00
+               S01:08000977:  FE
+               S01:08000978:  1C
+               S01:08000979:  38
+               S01:0800097A:  70
+               S01:0800097B:  FE
+F00:0562       	.BYTE 0x00,0x0C,0x18,0x18,0x30,0x18,0x18,0x0C	;90 - {
+               S01:0800097C:  00
+               S01:0800097D:  0C
+               S01:0800097E:  18
+               S01:0800097F:  18
+               S01:08000980:  30
+               S01:08000981:  18
+               S01:08000982:  18
+               S01:08000983:  0C
+F00:0563       	.BYTE 0x00,0x18,0x18,0x18,0x18,0x18,0x18,0x18	;91 - |
+               S01:08000984:  00
+               S01:08000985:  18
+               S01:08000986:  18
+               S01:08000987:  18
+               S01:08000988:  18
+               S01:08000989:  18
+               S01:0800098A:  18
+               S01:0800098B:  18
+F00:0564       	.BYTE 0x00,0x30,0x18,0x18,0x0C,0x18,0x18,0x30	;92 - }
+               S01:0800098C:  00
+               S01:0800098D:  30
+               S01:0800098E:  18
+               S01:0800098F:  18
+               S01:08000990:  0C
+               S01:08000991:  18
+               S01:08000992:  18
+               S01:08000993:  30
+F00:0565       	.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
+               S01:08000994:  00
+               S01:08000995:  00
+               S01:08000996:  70
+               S01:08000997:  BA
+               S01:08000998:  1C
+               S01:08000999:  00
+               S01:0800099A:  00
+               S01:0800099B:  00
+F00:0566       	;.BYTE 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
 
 
 Sections:
@@ -1682,36 +1711,38 @@ F00  GBA_Drummond.asm
 
 
 Symbols:
-LineDone EXPR(134219340=0x800064c) UNUSED ABS 
-DrawPixel EXPR(134219304=0x8000628) ABS 
-WriteLine EXPR(134219284=0x8000614) ABS 
-BitmapFont EXPR(134219364=0x8000664) ABS 
-WriteChar EXPR(134219200=0x80005c0) ABS 
-WriteTextDone EXPR(134219196=0x80005bc) ABS 
-RepeatWriteText EXPR(134219176=0x80005a8) ABS 
-WriteText EXPR(134219168=0x80005a0) UNUSED ABS 
-NewLine EXPR(134219124=0x8000574) UNUSED ABS 
-SpriteNextPixel EXPR(134219028=0x8000514) ABS 
-SpriteNextLine EXPR(134219024=0x8000510) ABS 
-GetNextLine EXPR(134219004=0x80004fc) ABS 
-GetScreenPos EXPR(134218968=0x80004d8) ABS 
-FillScreen EXPR(134218952=0x80004c8) ABS 
-ClearToColor EXPR(134218940=0x80004bc) UNUSED ABS 
-SpriteTest EXPR(134218404=0x80002a4) ABS 
-AsciiTest4 EXPR(134218388=0x8000294) ABS 
-AsciiTestAddress4 EXPR(134218384=0x8000290) UNUSED ABS 
-AsciiTest3 EXPR(134218340=0x8000264) ABS 
-AsciiTestAddress3 EXPR(134218336=0x8000260) UNUSED ABS 
-AsciiTest2 EXPR(134218292=0x8000234) ABS 
-AsciiTestAddress2 EXPR(134218288=0x8000230) UNUSED ABS 
-AsciiTest1 EXPR(134218256=0x8000210) ABS 
-AsciiTestAddress1 EXPR(134218252=0x800020c) UNUSED ABS 
-Delay EXPR(134218240=0x8000200) ABS 
-ReadInput EXPR(134219088=0x8000550) ABS 
+LineDone EXPR(134219404=0x800068c) UNUSED ABS 
+DrawPixel EXPR(134219368=0x8000668) ABS 
+WriteLine EXPR(134219348=0x8000654) ABS 
+BitmapFont EXPR(134219428=0x80006a4) ABS 
+WriteChar EXPR(134219264=0x8000600) ABS 
+WriteTextDone EXPR(134219260=0x80005fc) ABS 
+RepeatWriteText EXPR(134219240=0x80005e8) ABS 
+WriteText EXPR(134219232=0x80005e0) UNUSED ABS 
+NewLine EXPR(134219188=0x80005b4) UNUSED ABS 
+SpriteNextPixel EXPR(134219092=0x8000554) ABS 
+SpriteNextLine EXPR(134219088=0x8000550) ABS 
+GetNextLine EXPR(134219068=0x800053c) ABS 
+GetScreenPos EXPR(134219032=0x8000518) ABS 
+FillScreen EXPR(134219016=0x8000508) ABS 
+ClearToColor EXPR(134219004=0x80004fc) UNUSED ABS 
+SpriteTest EXPR(134218468=0x80002e4) ABS 
+AsciiTest4 EXPR(134218452=0x80002d4) ABS 
+AsciiTestAddress4 EXPR(134218448=0x80002d0) UNUSED ABS 
+AsciiTest3 EXPR(134218404=0x80002a4) ABS 
+AsciiTestAddress3 EXPR(134218400=0x80002a0) UNUSED ABS 
+AsciiTest2 EXPR(134218356=0x8000274) ABS 
+AsciiTestAddress2 EXPR(134218352=0x8000270) UNUSED ABS 
+AsciiTest1 EXPR(134218312=0x8000248) ABS 
+AsciiTestAddress1 EXPR(134218308=0x8000244) UNUSED ABS 
+DelayNextBlank EXPR(134218276=0x8000224) ABS 
+DelayNextDraw EXPR(134218248=0x8000208) ABS 
+DelayFrame EXPR(134218240=0x8000200) ABS 
+ReadInput EXPR(134219152=0x8000590) ABS 
 GameLoop EXPR(134218024=0x8000128) ABS 
-DrawSprite EXPR(134219012=0x8000504) ABS 
-SpriteTestAddress EXPR(134218400=0x80002a0) ABS 
-ScreenInit EXPR(134218916=0x80004a4) ABS 
+DrawSprite EXPR(134219076=0x8000544) ABS 
+SpriteTestAddress EXPR(134218464=0x80002e0) ABS 
+ScreenInit EXPR(134218980=0x80004e4) ABS 
 Main EXPR(134217960=0x80000e8) ABS 
 BackgroundColor EXPR(49680=0xc210) UNUSED 
 MaskKey EXPR(64512=0xfc00) 
@@ -1726,6 +1757,7 @@ Key_Select EXPR(4=0x4) UNUSED
 Key_B EXPR(2=0x2) UNUSED 
 Key_A EXPR(1=0x1) UNUSED 
 InputLocation EXPR(67109168=0x4000130) 
+ScanlineCounter EXPR(67108870=0x4000006) 
 VramBase EXPR(100663296=0x6000000) 
 ScreenYBound EXPR(160=0xa0) 
 ScreenXBound EXPR(240=0xf0) 

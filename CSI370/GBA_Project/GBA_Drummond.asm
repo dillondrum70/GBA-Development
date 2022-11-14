@@ -22,6 +22,8 @@
 
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
+.EQU ScanlineCounter, 0x04000006	;Stores how many lines have been written
+
 .ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -201,9 +203,24 @@ GameLoop:
 		
 		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
 		MOV r0, #0x1FFF
-		Delay:
+		DelayFrame:
 			SUBS r0, r0, #1
-			BNE Delay
+			BNE DelayFrame
+		DelayNextDraw:
+			SUBS r0, r0, #1
+			MOV r0, #ScanlineCounter
+			LDR r1, [r0]
+			MOV r0, #ScreenYBound
+			CMPS r1, r0
+			BGE DelayNextDraw
+		DelayNextBlank:
+			SUBS r0, r0, #1
+			MOV r0, #ScanlineCounter
+			LDR r1, [r0]
+			MOV r0, #ScreenYBound
+			CMPS r1, r0
+			BLT DelayNextBlank
+		
 	
 	B GameLoop
 	
@@ -249,7 +266,7 @@ ScreenInit:
 		MOV r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
 		STR r2, [r3]			;Store layer and screen mode in LCD Control address
 		
-		;MOV r0, #BackgroundColor		;Color to fill
+		;MOV r1, #BackgroundColor		;Color to fill
 		;BL ClearToColor
 	LDMFD sp!, {r0-r3, pc}
 	
