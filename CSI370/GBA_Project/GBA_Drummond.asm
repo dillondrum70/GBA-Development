@@ -11,8 +11,8 @@
 
 .EQU CursorX, Ram+32	;32 bits past ram start
 .EQU CursorY, Ram+33	;1 bit past CursorX
-.EQU PlayerX, Ram+34	;Player's x position
-.EQU PlayerY, Ram+35	;Player's y position
+;.EQU PlayerX, Ram+34	;Player's x position
+;.EQU PlayerY, Ram+35	;Player's y position
 
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
@@ -77,16 +77,26 @@ B Main	;Branch to start of program
 Main:
 	MOV sp, #0x03000000		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
-	;Set player start position
-	MOV r0, #PlayerX
-	MOV r1, #0
-	STRB r1, [r0]
+	;Initialize player start position
+	;MOV r0, #PlayerX
+	;MOV r1, #50
+	;STRB r1, [r0]
 	
-	MOV r0, #PlayerY
-	MOV r1, #0
-	STRB r1, [r0]
+	;MOV r0, #PlayerY
+	;MOV r1, #50
+	;STRB r1, [r0]
+	MOV r11, #50
+	MOV r12, #50
 	
 	BL ScreenInit
+	
+	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
+	LDR r5, SpriteTestAddress
+	MOV r4, #32
+	MOV r3, #32
+	MOV r2, r12
+	MOV r1, r11
+	BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -114,53 +124,60 @@ GameLoop:
 	
 		;BL ClearToColor					;Update color
 		
-		MOV r5, #PlayerX
-		LDRB r7, [r5]
-		MOV r6, #PlayerY
-		LDRB r8, [r6]
+		;Load in current player position
+		;MOV r5, #PlayerX
+		;LDRB r7, [r5]
+		;MOV r6, #PlayerY
+		;LDRB r8, [r6]
 		
-		;LDR r5, SpriteTestAddress
-		;MOV r4, #32
-		;MOV r3, #32
-		;MOV r2, r8
-		;MOV r1, r7
-		;BL DrawSprite
+		LDR r5, SpriteTestAddress
+		MOV r4, #32
+		MOV r3, #32
+		MOV r2, r12
+		MOV r1, r11
+		BL DrawSprite
 	
 		MOV r1, #Key_Up
 		BL ReadInput
 		CMPS r0, #0
-		ADDNE r8, r8, #1
+		ADDNE r12, r12, #1
 	
 	
 		MOV r1, #Key_Down
 		BL ReadInput
 		CMPS r0, #0
-		SUBNE r8, r8, #1
+		SUBNE r12, r12, #1
 	
 	
 		MOV r1, #Key_Right
 		BL ReadInput
 		CMPS r0, #0
-		SUBNE r7, r7, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
+		SUBNE r11, r11, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
 	
 	
 		MOV r1, #Key_Left
 		BL ReadInput
 		CMPS r0, #0
-		ADDNE r7, r7, #1;;;;;;;;;;;;;;;;;;;;***********
+		ADDNE r11, r11, #1;;;;;;;;;;;;;;;;;;;;***********
 	
 		;Update memory with new position
-		STRB r8, [r6]
-		STRB r7, [r5]
+		;STRB r8, [r6]
+		;STRB r7, [r5]
 
 	
 		LDR r5, SpriteTestAddress
 		MOV r4, #32
 		MOV r3, #32
-		MOV r2, r8
-		MOV r1, r7
+		MOV r2, r12
+		MOV r1, r11
 	
 		BL DrawSprite
+		
+		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
+		MOV r0, #0x01FFF
+		Delay:
+			SUBS r0, r0, #1
+			BNE Delay
 	
 	B GameLoop
 	
@@ -200,20 +217,20 @@ SpriteTest:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ScreenInit:
-	STMFD sp!, {r0-r12, lr}
+	STMFD sp!, {r0-r3, lr}
 		;Actual screen initialization, tells console which mode we're in
 		MOV r3, #0x04000000		;DISPCNT - LCD Control
 		MOV r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
 		STR r2, [r3]			;Store layer and screen mode in LCD Control address
 		
-		MOV r0, #BackgroundColor		;Color to fill
-		BL ClearToColor
-	LDMFD sp!, {r0-r12, pc}
+		;MOV r0, #BackgroundColor		;Color to fill
+		;BL ClearToColor
+	LDMFD sp!, {r0-r3, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;r1 = color halfword
 ClearToColor:
-	STMFD sp!, {r1-r12, lr}
+	STMFD sp!, {r1-r3, lr}
 		MOV r3, #VramBase	;Start with vram base
 		MOV r2, #240*160	;Take number of pixels in screen
 		
@@ -222,20 +239,22 @@ FillScreen:
 		SUBS r2, r2, #1		;Decrement and set signs of loop counter
 		BNE FillScreen		;Loop to fill screen
 		
-	LDMFD sp!, {r1-r12, pc}
+	LDMFD sp!, {r1-r3, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;r1 = X, r2 = Y
 ;Return VRAM position of (x,Y)
 ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
 GetScreenPos:
-	STMFD sp!, {r1-r3, lr}
+	STMFD sp!, {r1-r4, lr}
 		MOV r0, #VramBase	;Vram
-		MOV r3, #240		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2)
+		MOV r3, #240*2		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2)
 		MUL r2, r3, r2		;Multiply Y by line byte count
 		ADD r0, r0, r2		;Add number of bytes for y position
+		MOV r4, #2			;Move 2 into r4
+		MUL r1, r4, r1		;Multiply x by 2, 2 bytes per pixel
 		ADD r0, r0, r1		;Add number of bytes for x position
-	LDMFD sp!, {r1-r3, pc}
+	LDMFD sp!, {r1-r4, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;r1 = current VRAM position
@@ -254,7 +273,7 @@ GetNextLine:
 ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
 ;Redesigned slightly, GetNextLine was extracted into it's own function
 DrawSprite:
-	STMFD sp!, {r1-r12, lr}
+	STMFD sp!, {r1-r8, lr}
 		;x and y position already in r1 and r2
 		BL GetScreenPos
 		
@@ -264,8 +283,8 @@ DrawSprite:
 			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter and needs to be reset, VRAM location (r7) must be at farthest left position when we call GetNextLine since it only really moves the VRAM down one pixel, not back to the beginning of the line
 			SpriteNextPixel:
 				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
-				;LDRH r6, [r7]
-				;EOR r8, r8, r6
+				LDRH r6, [r7]
+				EOR r8, r8, r6
 				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
 			
 				SUBS r3, r3, #1		;Decrement width as loop counter
@@ -281,27 +300,27 @@ DrawSprite:
 			
 			SUBS r4, r4, #1		;Decrement height
 		BNE SpriteNextLine		;Exit once at end of height
-	LDMFD sp!, {r1-r12, pc}
+	LDMFD sp!, {r1-r8, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Use E conditional to check if pressed
 ;r1 = key mask
 ;Returns keymask in r0
 ReadInput:
-	STMFD sp!, {r1-r12, lr}
+	STMFD sp!, {r1-r2, lr}
 		EOR r0, r0, r0
 		MOV r2, #InputLocation	;Input memory location
 		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
 		MOV r2, #MaskKey		;Mask out superfluous bits
 		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
 		AND r0, r0, r1			;AND return register with input bits with the passed key mask
-	LDMFD sp!, {r1-r12, pc}
+	LDMFD sp!, {r1-r2, pc}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 ;Comments added by me, Dillon Drummond
 NewLine:
-	STMFD sp!, {r0-r12, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the last function
+	STMFD sp!, {r0-r1, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the last function
 		MOV r0, #CursorX	;Get address of cursor x
 		EOR r1, r1, r1		;Clear r1
 		STRB r1, [r0]		;Store 0 from r1 in CursorX, move cursor back to left side of screen
@@ -310,7 +329,7 @@ NewLine:
 		LDRB r1, [r0]		;Store CursorY valye in r1
 		ADD r1, r1, #1		;Add 1 to CursorY
 		STRB r1, [r0]		;Store the incremented CursorY vlaue in CursorY, moves cursor down
-	LDMFD sp!, {r0-r12, pc}	;Load registers from stack, put link register in program counter to return
+	LDMFD sp!, {r0-r1, pc}	;Load registers from stack, put link register in program counter to return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
@@ -318,7 +337,7 @@ NewLine:
 ;Some changes made
 ;Paramters: r1 = string address
 WriteText:
-	STMFD sp!, {r0-r12, lr}
+	STMFD sp!, {r0-r2, lr}
 		MOV r2, r1			;Store parameter in temp variable so new parameter can be passed to WriteChar
 		
 RepeatWriteText:
@@ -329,7 +348,7 @@ RepeatWriteText:
 		B RepeatWriteText	;Go back to begining of this block and check if there is another character or if at null terminator
 	
 WriteTextDone:
-	LDMFD sp!, {r0-r12, pc}
+	LDMFD sp!, {r0-r2, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
