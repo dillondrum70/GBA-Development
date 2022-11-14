@@ -17,6 +17,9 @@
 .EQU PlayerWidth, 16
 .EQU PlayerHeight, 16
 
+.EQU ScreenXBound, 240
+.EQU ScreenYBound, 160
+
 .EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
 
 .ORG 0x08000000	;GBA ROM (the cartridge) Address starts at 0x08000000
@@ -145,23 +148,44 @@ GameLoop:
 		CMPS r0, #0
 		ADDNE r9, r9, #1
 	
-	
 		MOV r1, #Key_Down
 		BL ReadInput
 		CMPS r0, #0
 		SUBNE r9, r9, #1
-	
+		
+		;Check greater than lower bound
+		MOV r2, #0			;Take 0
+		CMPS r9, r2			;Check if right side of player is out of bounds
+		MOVLT r9, r2		;If so, move 0 into y position
+		
+		;Check less than upper bound
+		ADD r1, r4, r9		;Sum next position and height
+		MOV r2, #ScreenYBound	;Take Screen bound
+		CMPS r1, r2				;Check if right side of player is out of bounds
+		SUBGT r2, r2, r4		;If so, Subtract height from screen Y bound...
+		MOVGT r9, r2			;And move that into y position
 	
 		MOV r1, #Key_Right
 		BL ReadInput
 		CMPS r0, #0
 		SUBNE r8, r8, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
 	
-	
 		MOV r1, #Key_Left
 		BL ReadInput
 		CMPS r0, #0
 		ADDNE r8, r8, #1;;;;;;;;;;;;;;;;;;;;***********
+		
+		;Check greater than lower bound
+		MOV r2, #0			;Take 0
+		CMPS r8, r2			;Check if right side of player is out of bounds
+		MOVLT r8, r2		;If so, move 0 into x position
+		
+		;Check less than upper bound
+		ADD r1, r3, r8		;Sum next position and width
+		MOV r2, #ScreenXBound	;Take Screen bound
+		CMPS r1, r2				;Check if right side of player is out of bounds
+		SUBGT r2, r2, r3		;If so, Subtract width from screen x bound...
+		MOVGT r8, r2			;And move that into x position
 	
 		;Update memory with new position
 		STRB r8, [r6]
