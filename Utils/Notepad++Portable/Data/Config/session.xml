@@ -1,0 +1,11 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="0">
+            <File firstVisibleLine="80" xOffset="0" scrollWidth="2891" startPos="4036" endPos="4036" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1668798403" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="2891" startPos="22" endPos="22" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Text.asm" backupFilePath="" originalFileLastModifTimestamp="1668795287" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="2891" startPos="354" endPos="354" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Core.asm" backupFilePath="" originalFileLastModifTimestamp="1668798148" />
+            <File firstVisibleLine="99" xOffset="0" scrollWidth="2891" startPos="0" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="C:\Users\dillon-win\Downloads\ArmSources\sources\GBA_Tilemap.asm" backupFilePath="" originalFileLastModifTimestamp="1668797277" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

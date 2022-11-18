@@ -92,20 +92,43 @@ Main:
 	
 	BL ScreenInit
 	
+	;Load Palette Colors
+	LDR r1, ColorPalette		;Palette Address
+	MOV r2, #PaletteMemory
+	MOV r3, #16*2		;Number of colors * bytes per color
+	BL LoadBytes
+	
+	LDR r1, TilemapFile	;File with tilemap patterns
+	MOV r2, #VramTilemapPattern
+	MOV r3, #TilemapFile_SIZE
+	BL LoadBytes
+	
+	;Load tilemap into VRAM
+	LDR r1, Tilemap
+	MOV r2, #VramBase
+	MOV r3, #32*32*2	;32 x 32 tilemap with 2 bytes per tile
+	BL LoadBytes
+	
+	;Load tilemap into Background Layer VRAM
+	LDR r1, Tilemap
+	MOV r2, #VramBackground
+	MOV r3, #32*32*2	;32 x 32 tilemap with 2 bytes per tile
+	BL LoadBytes
+	
+InfLoop:
+	B InfLoop
+	
 	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
-	LDR r5, SpriteTestAddress
-	MOV r4, #PlayerHeight
-	MOV r3, #PlayerWidth
-	MOV r2, r7
-	MOV r1, r6
-	BL DrawSprite
+	;LDR r5, SpriteTestAddress
+	;MOV r4, #PlayerHeight
+	;MOV r3, #PlayerWidth
+	;MOV r2, r7
+	;MOV r1, r6
+	;BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
 	;BL NewLine
-	
-	InfLoop:
-	B InfLoop
 	
 	;LDR r1, AsciiTestAddress2	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -135,6 +158,7 @@ GameLoop:
 		MOV r7, #PlayerY
 		LDRB r9, [r7]
 		
+		;Erase Sprite
 		LDR r5, SpriteTestAddress
 		MOV r4, #PlayerHeight
 		MOV r3, #PlayerWidth
@@ -142,6 +166,7 @@ GameLoop:
 		MOV r1, r8
 		BL DrawSprite
 	
+		;;Vertical Movement
 		MOV r1, #Key_Up
 		BL ReadInput
 		CMPS r0, #0
@@ -164,6 +189,7 @@ GameLoop:
 		SUBGT r2, r2, r4		;If so, Subtract height from screen Y bound...
 		MOVGT r9, r2			;And move that into y position
 	
+		;Horizontal Movement
 		MOV r1, #Key_Right
 		BL ReadInput
 		CMPS r0, #0
@@ -300,7 +326,17 @@ GetScreenPos:
 ;r1 = Color Palette Location
 ;r2 = GBA Palette Memory Location
 ;r3 = number of bytes (halfwords, we load 2 at a time)
-
+LoadBytes:
+	STMFD sp!, {r0-r5, lr}
+	
+LoadBytesRep:
+		LDRH r4, [r1], #2	;Load current position in color palette into r1 and increment halfword
+		STRH r4, [r2], #2	;Store palette value in GBA Palette memory and increment halfword
+		
+		SUBS r3, r3, #2
+		BNE LoadBytesRep	;Repeat process until number of bytes reached
+	
+	LDMFD sp!, {r0-r5, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;r1 = current VRAM position
@@ -371,13 +407,59 @@ ReadInput:
 
 ;-BBBBBGGGGGRRRRR
 ColorPalette:
-	.WORD 0b0000000000000000
-	.WORD 0b0111111111111111
-	.WORD 0b0111110000000000
-	.WORD 0b0000001111100000
-	.WORD 0b0000000000011111
-	.WORD 0b0111110000011111
-	.WORD 0b0111111111100000
-	.WORD 0b0000001111111111
-	.WORD 0b0111111111111111
+	.WORD 0b0000000000000000; ;0  %-BBBBBGGGGGRRRRR
+    .WORD 0b0010100101001010; ;1  %-BBBBBGGGGGRRRRR
+    .WORD 0b0101011010110101; ;2  %-BBBBBGGGGGRRRRR
+    .WORD 0b0111111111111111; ;3  %-BBBBBGGGGGRRRRR
+    .WORD 0b0100000000000000; ;4  %-BBBBBGGGGGRRRRR
+    .WORD 0b0100000000010000; ;5  %-BBBBBGGGGGRRRRR
+    .WORD 0b0100001000000000; ;6  %-BBBBBGGGGGRRRRR
+    .WORD 0b0100111110010011; ;7  %-BBBBBGGGGGRRRRR
+    .WORD 0b0111110000010000; ;8  %-BBBBBGGGGGRRRRR
+    .WORD 0b0000000000011111; ;9  %-BBBBBGGGGGRRRRR
+    .WORD 0b0000001111100000; ;10  %-BBBBBGGGGGRRRRR
+    .WORD 0b0000001111111111; ;11  %-BBBBBGGGGGRRRRR
+    .WORD 0b0111110000000000; ;12  %-BBBBBGGGGGRRRRR
+    .WORD 0b0111110000011111; ;13  %-BBBBBGGGGGRRRRR
+    .WORD 0b0111111111100000; ;14  %-BBBBBGGGGGRRRRR
+	.WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
+	
+TilemapFile:
+	.incbin "/Tilemaps/TestTilemap.RAW"
+	
+.EQU TilemapFile_SIZE, 128	;Test file is 128 bytes
+	
+Tilemap:
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,1,0,0,2,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
