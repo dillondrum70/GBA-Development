@@ -96,35 +96,35 @@ Main:
 	LDR r1, ColorPalette		;Palette Address
 	MOV r2, #PaletteMemory
 	MOV r3, #16*2		;Number of colors * bytes per color
-	BL LoadBytes
+	BL LoadHalfwords
 	
 	LDR r1, TilemapFile	;File with tilemap patterns
 	MOV r2, #VramTilemapPattern
-	MOV r3, #TilemapFile_SIZE
-	BL LoadBytes
+	MOV r3, #TilemapFile_END-TilemapFile
+	BL LoadHalfwords
 	
 	;Load tilemap into VRAM
 	LDR r1, Tilemap
 	MOV r2, #VramBase
 	MOV r3, #32*32*2	;32 x 32 tilemap with 2 bytes per tile
-	BL LoadBytes
+	BL LoadHalfwords
 	
 	;Load tilemap into Background Layer VRAM
 	LDR r1, Tilemap
 	MOV r2, #VramBackground
 	MOV r3, #32*32*2	;32 x 32 tilemap with 2 bytes per tile
-	BL LoadBytes
+	BL LoadHalfwords
 	
 InfLoop:
 	B InfLoop
 	
 	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
-	;LDR r5, SpriteTestAddress
-	;MOV r4, #PlayerHeight
-	;MOV r3, #PlayerWidth
-	;MOV r2, r7
-	;MOV r1, r6
-	;BL DrawSprite
+	LDR r5, SpriteTestAddress
+	MOV r4, #PlayerHeight
+	MOV r3, #PlayerWidth
+	MOV r2, r7
+	MOV r1, r6
+	BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -286,8 +286,12 @@ ScreenInit:
 	STMFD sp!, {r0-r3, lr}
 		;Actual screen initialization, tells console which mode we're in
 		MOV r3, #LCDControl		;DISPCNT - LCD Control
-		MOV r2, #0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
+		MOV r2, #0x100;0x403			;4 = Layer 2 on, 3 = ScreenMode 3 
 		STR r2, [r3]			;Store layer and screen mode in LCD Control address
+		
+		ADD r3, r3, #0x08;		;Get to BGOCNT - BGO Control at #0x04000008
+		MOV r2, #0x4004			;first 4 = Screen size (64x32 tilemap), last 4 = pattern base address, 0x06004000
+		STR r2, [r3]			;Store the values in BGO control
 		
 		;MOV r1, #BackgroundColor		;Color to fill
 		;BL ClearToColor
@@ -326,15 +330,15 @@ GetScreenPos:
 ;r1 = Color Palette Location
 ;r2 = GBA Palette Memory Location
 ;r3 = number of bytes (halfwords, we load 2 at a time)
-LoadBytes:
+LoadHalfwords:
 	STMFD sp!, {r0-r5, lr}
 	
-LoadBytesRep:
+LoadHalfwordsRep:
 		LDRH r4, [r1], #2	;Load current position in color palette into r1 and increment halfword
 		STRH r4, [r2], #2	;Store palette value in GBA Palette memory and increment halfword
 		
 		SUBS r3, r3, #2
-		BNE LoadBytesRep	;Repeat process until number of bytes reached
+		BNE LoadHalfwordsRep	;Repeat process until number of bytes reached
 	
 	LDMFD sp!, {r0-r5, pc}
 	
@@ -426,11 +430,11 @@ ColorPalette:
 	
 TilemapFile:
 	.incbin "/Tilemaps/TestTilemap.RAW"
-	
-.EQU TilemapFile_SIZE, 128	;Test file is 128 bytes
+TilemapFile_END:	;Points to memory at end of TilemapFile so we can get its size
 	
 Tilemap:
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -454,7 +458,6 @@ Tilemap:
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,1,0,0,2,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

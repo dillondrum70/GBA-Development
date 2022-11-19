@@ -13,7 +13,7 @@
         <GUIConfig name="UserDefineDlg" position="undocked">hide</GUIConfig>
         <GUIConfig name="TabSetting" size="4" replaceBySpace="no" />
         <!--App position-->
-        <GUIConfig name="AppPosition" x="78" y="78" width="1634" height="649" isMaximized="no" />
+        <GUIConfig name="AppPosition" x="78" y="78" width="1634" height="649" isMaximized="yes" />
         <!-- For the primary scintilla view,
              2 status for Attribut lineNumberMargin, bookMarkMargin, indentGuideLine and currentLineHilitingShow: "show" or "hide"
              4 status for Attribut folderMarkStyle : "simple", "arrow", "circle" and "box"  -->
@@ -110,6 +110,9 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="TilePatterns_End" />
+        <Find name="Palettes" />
+        <Find name="loadbyte" />
         <Find name="Palette" />
         <Find name="TilePatterns_End-TilePatterns" />
         <Find name="CMPS" />
@@ -117,9 +120,6 @@
         <Find name="GetNextLine" />
         <Find name="WriteText" />
         <Find name=" " />
-        <Find name="\" />
-        <Find name="NewLine" />
-        <Find name="DrawLine" />
         <Replace name=" " />
         <Replace name="000" />
         <Replace name="0" />
