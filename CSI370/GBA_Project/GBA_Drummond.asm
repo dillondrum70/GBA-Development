@@ -60,19 +60,32 @@ B Main	;Branch to start of program
     ;		123456789012
     .ASCII "DRUMMOND.NET";0A0h    12    Game Title       (uppercase ascii, max 12 characters)	
     .ASCII "0000"	;0ACh    4     Game Code        (uppercase ascii, 4 characters)
-    .ASCII "00"		;0B0h    2     Maker Code       (uppercase ascii, 2 characters)
-	.BYTE 0x96		;0B2h    1     Fixed value      (must be 96h, required!)
-	.BYTE 0			;0B3h    1     Main unit code   (00h for current GBA models)
-	.BYTE 0			;0B4h    1     Device type      (usually 00h) (bit7=DACS/debug related)
-	.SPACE 7		;0B5h    7     Reserved Area    (should be zero filled)
-	.BYTE 0			;0BCh    1     Software version (usually 00h)
-	.BYTE 0			;0BDh    1     Complement check (header checksum, required!)
-	.WORD 0			;0BEh    2     Reserved Area    (should be zero filled)
-	.LONG 0			;0C0h    4     RAM Entry Point  (32bit ARM branch opcode, eg. "B ram_start")
-	.BYTE 0			;0C4h    1     Boot mode        (init as 00h - BIOS overwrites this value!)
-	.BYTE 0			;0C5h    1     Slave ID Number  (init as 00h - BIOS overwrites this value!)
-	.SPACE 26		;0C6h    26    Not used         (seems to be unused)
-	.LONG 0			;0E0h    4     JOYBUS Entry Pt. (32bit ARM branch opcode, eg. "B joy_start")
+;0B0h    2     Maker Code       (uppercase ascii, 2 characters)
+    .BYTE "GB"				;Maker
+;0B2h    1     Fixed value      (must be 96h, required!)
+	.BYTE 0x96
+;0B3h    1     Main unit code   (00h for current GBA models)
+	.BYTE 0x00
+;0B4h    1     Device type      (usually 00h) (bit7=DACS/debug related)
+	.BYTE 0x00
+;0B5h    7     Reserved Area    (should be zero filled)
+	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00
+;0BCh    1     Software version (usually 00h)
+	.BYTE 0x00
+;0BDh    1     Complement check (header checksum, required!)
+	.BYTE 0x00
+;0BEh    2     Reserved Area    (should be zero filled)
+	.BYTE 0x00,0x00
+;0C0h    4     RAM Entry Point  (32bit ARM branch opcode, eg. "B ram_start")
+	.BYTE 0x00,0x00,0x00,0x00
+;0C4h    1     Boot mode        (init as 00h - BIOS overwrites this value!)
+	.BYTE 0x00
+;0C5h    1     Slave ID Number  (init as 00h - BIOS overwrites this value!)
+	.BYTE 0x00
+;0C6h    26    Not used         (seems to be unused)
+	.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+;0E0h    4     JOYBUS Entry Pt. (32bit ARM branch opcode, eg. "B joy_start")
+	.BYTE 0x00,0x00,0x00,0x00
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -93,29 +106,29 @@ Main:
 	BL ScreenInit
 	
 	;Load Palette Colors
-	LDR r1, ColorPalette		;Palette Address
+	ADRL r1, ColorPalette		;Palette Address
 	MOV r2, #PaletteMemory
 	MOV r3, #16*2		;Number of colors * bytes per color
 	BL LoadHalfwords
 	
-	LDR r1, TilemapFile	;File with tilemap patterns
+	ADRL r1, TilemapFile	;File with tilemap patterns
 	MOV r2, #VramTilemapPattern
 	MOV r3, #TilemapFile_END-TilemapFile
 	BL LoadHalfwords
 	
 	;Load tilemap into VRAM
-	LDR r1, Tilemap
+	ADRL r1, Tilemap
 	MOV r2, #VramBase
 	MOV r3, #32*32*2	;32 x 32 tilemap with 2 bytes per tile
 	BL LoadHalfwords
 	
 	;Load tilemap into Background Layer VRAM
-	LDR r1, Tilemap
+	ADRL r1, Tilemap
 	MOV r2, #VramBackground
 	MOV r3, #32*32*2	;32 x 32 tilemap with 2 bytes per tile
 	BL LoadHalfwords
 	
-InfLoop:
+InfLoop:	
 	B InfLoop
 	
 	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
@@ -429,40 +442,40 @@ ColorPalette:
 	.WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
 	
 TilemapFile:
-	.incbin "/Tilemaps/TestTilemap.RAW"
+	.incbin "\Tilemaps\TestTilemap.RAW"
 TilemapFile_END:	;Points to memory at end of TilemapFile so we can get its size
 	
 Tilemap:
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,2,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,2,0,0,0,0,0,0,0,2,0,0,2,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 0,0,0,0,0,3,0,3,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,0
+	.WORD 0,0,3,3,3,4,3,4,3,0,0,0,0,0,0,0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,3
+	.WORD 0,3,4,4,4,4,4,4,4,3,0,5,0,0,0,0,0,3,3,3,4,4,3,3,0,0,0,0,0,3,3,4
+	.WORD 3,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,4,4,4,4,4,4,4,3,3,3,3,3,4,4,4
+	.WORD 3,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,4,4,4,4,4,4,4,3,3,3,3,3,4,4,4
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 3,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,4,4,4,4,4,4,4,3,3,3,3,3,4,4,4
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 3,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,4,4,4,4,4,4,4,3,3,3,3,3,4,4,4
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 3,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,4,4,4,4,4,4,4,3,3,3,3,3,4,4,4
 	
