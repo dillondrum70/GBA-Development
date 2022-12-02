@@ -106,7 +106,36 @@ Main:
 	BL ScreenInit
 	
 	;;;;Load background
-	BL BackgroundInit
+	BL BackgroundAndSpriteInit
+	
+	mov r0,#0x01	   		;Sprite Num
+;S=Shape (Square /HRect / Vrect)  C=Colors(16/256)  M=Mosiac  
+;T=Transparent  D=Disable/Doublesize  R=Rotation  Y=Ypos
+			; SSCMTTDRYYYYYYYY
+	mov r1,#0b0000000001100000		;Ypos
+	
+;S=Obj Size  VH=V/HFlip  R=Rotation parameter  X=Xpos
+			; SSVHRRRXXXXXXXXX
+	mov r2,#0b0100000011000000		;Xpos
+	
+;C=Color palette   P=Priority   T=Tile Number
+			; CCCCPPTTTTTTTTTT
+	mov r3,#0b0000000000000110   	;Tile
+	bl DrawSprite
+
+;16 color sprite (Wide 2x1 using tile patterns)
+	;mov r0,#0x02	   		;Sprite Num
+	;mov r1,#0x4020   		;Ypos
+	;mov r2,#0x0040   		;Xpos
+	;mov r3,#0x0001   		;Tile
+	;bl DrawSprite
+	
+;256 color sprite
+	mov r0,#0x00	   		;Sprite Num
+	mov r1,#0x2000   		;Ypos
+	mov r2,#0x4000   		;Xpos	4=256 color
+	mov r3,#0x000A   		;Tile 
+	bl DrawSprite
 	
 	PauseLoop:
 	B PauseLoop
@@ -137,7 +166,7 @@ Main:
 	
 GameLoop:
 		;MOV r1, #Key_Up					;Pass up key mask to input function
-		;BL ReadInput					;Call function, value returned in r0
+		;BL GetButton					;Call function, value returned in r0
 	
 		;CMPS r0, #0						;Set flag register to check input
 		;MOVE r1, #0b1111110000000000	;Turn blue if up key pressed
@@ -161,12 +190,12 @@ GameLoop:
 	
 		;;Vertical Movement
 		MOV r1, #Key_Up
-		BL ReadInput
+		BL GetButton
 		CMPS r0, #0
 		ADDNE r9, r9, #1
 	
 		MOV r1, #Key_Down
-		BL ReadInput
+		BL GetButton
 		CMPS r0, #0
 		SUBNE r9, r9, #1
 		
@@ -184,12 +213,12 @@ GameLoop:
 	
 		;Horizontal Movement
 		MOV r1, #Key_Right
-		BL ReadInput
+		BL GetButton
 		CMPS r0, #0
 		SUBNE r8, r8, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switched the sub and add for left and right, The problem isn't with input because I checked multiple sourdces and they all say the fifth bit is right and the sixth is left
 	
 		MOV r1, #Key_Left
-		BL ReadInput
+		BL GetButton
 		CMPS r0, #0
 		ADDNE r8, r8, #1;;;;;;;;;;;;;;;;;;;;***********
 		
@@ -291,30 +320,49 @@ ScreenInit:
 	LDMFD sp!, {r0-r3, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-BackgroundInit:
+BackgroundAndSpriteInit:
 	STMFD sp!, {r0-r3, lr}
-		;Load Palette Colors
+		;Load Background Palette Colors
 		ADRL r1, ColorPalette		;Palette Address
-		MOV r2, #PaletteMemory
+		MOV r2, #BackgroundPaletteMemory
 		MOV r3, #16*2		;Number of colors * bytes per color
 		BL LoadHalfwords
 		
-		ADRL r1, TilemapFile	;File with tilemap patterns
-		MOV r2, #VramTilemapPattern
-		MOV r3, #TilemapFile_END-TilemapFile
+		;Load tilemap images
+		ADRL r1, TilemapFiles	;File with tilemap patterns
+		MOV r2, #VramTilemapPixels
+		MOV r3, #TilemapFiles_END-TilemapFiles
 		BL LoadHalfwords
 		
-		;Load tilemap into VRAM
+		;Load tilemap patterns directly into VRAM
 		ADRL r1, Tilemap
 		MOV r2, #VramBase
 		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
 		BL LoadHalfwords
 		
-		;Load tilemap into Background Layer VRAM
+		;Load tilemap into Background Layer VRAM so our 32x32 tilemap becomes 64x32 and repeats
 		ADRL r1, Tilemap
 		MOV r2, #VramBackground
 		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
 		BL LoadHalfwords
+		
+		;Load Sprite Palette Colors
+		ADRL r1, ColorPalette		;Palette Address
+		MOV r2, #SpritePaletteMemory
+		MOV r3, #16*2		;Number of colors * bytes per color
+		BL LoadHalfwords
+		
+		;Load sprite images
+		ADRL r1, TilemapFiles	;File with tilemap patterns
+		MOV r2, #VramSpritePixels
+		MOV r3, #TilemapFiles_END-TilemapFiles
+		BL LoadHalfwords
+		
+		;Turn Screen On
+		MOV r0, #LCDControl
+		MOV r1, #0x1140	;1 = Sprite on, 1 = layer on, 4 = 1D tile layout, 0 = screen mode 0
+		str r1, [r0]
+		
 	LDMFD sp!, {r0-r3, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -351,7 +399,7 @@ GetScreenPos:
 ;r2 = GBA Palette Memory Location
 ;r3 = number of bytes (halfwords, we load 2 at a time)
 LoadHalfwords:
-	STMFD sp!, {r0-r5, lr}
+	STMFD sp!, {r1-r4, lr}
 	
 LoadHalfwordsRep:
 		LDRH r4, [r1], #2	;Load current position in color palette into r1 and increment halfword
@@ -360,7 +408,7 @@ LoadHalfwordsRep:
 		SUBS r3, r3, #2
 		BNE LoadHalfwordsRep	;Repeat process until number of bytes reached
 	
-	LDMFD sp!, {r0-r5, pc}
+	LDMFD sp!, {r1-r4, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;r1 = current VRAM position
@@ -371,48 +419,48 @@ GetNextLine:
 	MOV pc, lr				;Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;r1 = x position
-;r2 = y position
-;r3 = width
-;r4	= height
-;r5 = SpriteAddress
+;r1 = Sprite number to draw
+;r2 = First sprite attribute (See code below for format)
+;r3 = Second sprite attribute (See code below for format)
+;r4	= Third sprite attribute (See code below for format)
 ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
 ;Redesigned slightly, GetNextLine was extracted into it's own function
 DrawSprite:
-	STMFD sp!, {r1-r8, lr}
-		;x and y position already in r1 and r2
-		BL GetScreenPos
+	STMFD sp!, {r1-r5, lr}
+		MOV r5, #SpriteOAMSettings
+		ADD r5, r5, r1, asl #3	;8 bytes per sprite, bit shift left to get 8 so we can set the first sprite attribute
 		
-		MOV r7, r0
+		;S=Shape Square / HRect / VRect
+		;C=Colors 15/256
+		;M=Mosaic
+		;T=Transparent
+		;D=Disable/Doublesize
+		;R=Rotation
+		;Y=Ypos
+		;First Attribute - SSCMTTDRYYYYYYYY
+		STRH r2, [r5]
+		ADD r5, r5, #2	;Move to next halfword to set the second sprite attribute
 		
-		SpriteNextLine:
-			STMFD sp!, {r3, r7}		;Store width and current leftmost position in line of the bitmap, width (r3) acts as a counter and needs to be reset, VRAM location (r7) must be at farthest left position when we call GetNextLine since it only really moves the VRAM down one pixel, not back to the beginning of the line
-			SpriteNextPixel:
-				LDRH r8, [r5], #2	;Load value of pixel from RAW file then increment to next pixel in file
-				LDRH r6, [r7]		;Load value currently in VRAM
-				EOR r8, r8, r6		;XOR current value in VRAM with value in file (erases bitmap if it has already been drawn, faster than redrawing screen)
-				STRH r8, [r7], #2	;Store value previously taken from RAW file into VRAM and increment to next VRAM pixel
-			
-				SUBS r3, r3, #1		;Decrement width as loop counter
-			BNE SpriteNextPixel		;Exit loop once at end of width
-			LDMFD sp!, {r3, r7}
-			
-			;GetNextLine doesn't save any registers, we just need the one line to change the value in r1 so we manage memory outside of the function
-			STMFD sp!, {r1}		;Save r1 so it can be used as a parameter again
-				MOV r1, r7			;Move y position into r1 and pass into GetNextLine
-				BL GetNextLine
-				MOV r7, r0			;Move returned value back into r7
-			LDMFD sp!, {r1}		;Load r1 back so we don't lose the parameter passed to DrawSprite
-			
-			SUBS r4, r4, #1		;Decrement height
-		BNE SpriteNextLine		;Exit once at end of height
-	LDMFD sp!, {r1-r8, pc}
+		;S=Obj Size
+		;VH=V/HFlip
+		;R=Rotation Parameter
+		;X=Xpos
+		;Second Attribute - SSVHRRRXXXXXXXXX
+		STRH r3, [r5]
+		ADD r5, r5, #2 ;Move to next halfword to set the third sprite attribute
+		
+		;C=Color Palette
+		;P=Priority
+		;T=Tile Number
+		;Third Attribute - CCCCPPTTTTTTTTTT
+		STRH r4, [r5]
+	LDMFD sp!, {r1-r5, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Use E conditional to check if pressed
 ;r1 = key mask
 ;Returns keymask in r0
-ReadInput:
+GetButton:
 	STMFD sp!, {r1-r2, lr}
 		EOR r0, r0, r0
 		MOV r2, #InputLocation	;Input memory location
@@ -448,31 +496,32 @@ ColorPalette:
     .WORD 0b0111111111100000; ;14  %-BBBBBGGGGGRRRRR
 	.WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
 	
-TilemapFile:
-	.incbin "\Tilemaps\TestTilemap.RAW"
-TilemapFile_END:	;Points to memory at end of TilemapFile so we can get its size
+TilemapFiles:
+	.INCBIN "\Tilemaps\TestTilemap.RAW"
+	.INCBIN "\Tilemaps\TestSpriteTiles.RAW"
+TilemapFiles_END:;Points to memory at end of files so we can get their size
 	
 ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
 Tilemap:
-	.WORD 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
-	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.WORD 3,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,3,0,0
+	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
+	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
+	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
+	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
+	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
+	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
+	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
+	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
+	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
+	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
+	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
+	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
+	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
+	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
+	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
+	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
+	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
+	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
 	.WORD 3,2,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,2,0,0,0,0,0,0,0,2,0,0,2,3,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

@@ -2,11 +2,17 @@
 
 .EQU Stack, 0x03000000
 
-.EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
-.EQU VramTilemapPattern, 0x06004000	;Location of tile patterns in memory
-.EQU VramBackground, 0x06000800	;Memory location in VRAM of background layer
+;Used in a different screen mode
 
 .EQU LCDControl, 0x04000000			;Controls which layers are on, what sceenmode we're in
 .EQU ScanlineCounter, 0x04000006	;Stores how many lines have been written
 
-.EQU PaletteMemory, 0x05000000		;Location of GBA background palettes in memory
+.EQU BackgroundPaletteMemory, 0x05000000		;Location of GBA background palettes in memory
+.EQU SpritePaletteMemory, 0x05000200	;Location of GBA hardware sprite palettes in memory memory
+
+.EQU VramBase, 0x06000000	;Base of VRAM, where address of data that is written to the screen starts
+.EQU VramTilemapPixels, 0x06004000	;Location of tile pixels patterns (images) in memory
+.EQU VramBackground, 0x06000800	;Memory location in VRAM of background layer
+.EQU VramSpritePixels, 0x06010000	;Location of GBA sprite pixels patterns (images) in memory
+
+.EQU SpriteOAMSettings, 0x07000000
