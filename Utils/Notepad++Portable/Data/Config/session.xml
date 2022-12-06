@@ -1,12 +1,12 @@
 <NotepadPlus>
     <Session activeView="0">
         <mainView activeIndex="0">
-            <File firstVisibleLine="185" xOffset="0" scrollWidth="2630" startPos="6504" endPos="6504" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1670348662" />
-            <File firstVisibleLine="78" xOffset="0" scrollWidth="2630" startPos="22" endPos="22" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Text.asm" backupFilePath="" originalFileLastModifTimestamp="1669739632" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="2630" startPos="1044" endPos="1044" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Core.asm" backupFilePath="" originalFileLastModifTimestamp="1670344371" />
+            <File firstVisibleLine="423" xOffset="0" scrollWidth="2630" startPos="4069" endPos="4069" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="" originalFileLastModifTimestamp="1670350197" />
+            <File firstVisibleLine="78" xOffset="0" scrollWidth="2630" startPos="22" endPos="22" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Text.asm" backupFilePath="" originalFileLastModifTimestamp="1669745009" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="2630" startPos="1044" endPos="1044" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Core.asm" backupFilePath="" originalFileLastModifTimestamp="1670349886" />
         </mainView>
         <subView activeIndex="0">
-            <File firstVisibleLine="248" xOffset="0" scrollWidth="890" startPos="9021" endPos="9021" selMode="0" lang="Assembly" encoding="-1" filename="M:\Examples\sources\GBA_Sprites.asm" backupFilePath="" originalFileLastModifTimestamp="1605323190" />
+            <File firstVisibleLine="248" xOffset="0" scrollWidth="560" startPos="9021" endPos="9021" selMode="0" lang="Assembly" encoding="-1" filename="M:\Examples\sources\GBA_Sprites.asm" backupFilePath="" originalFileLastModifTimestamp="1670349886" />
         </subView>
     </Session>
 </NotepadPlus>

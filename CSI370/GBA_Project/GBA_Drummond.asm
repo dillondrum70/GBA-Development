@@ -94,11 +94,11 @@ Main:
 	
 	;Initialize player start position
 	MOV r0, #PlayerX
-	MOV r6, #50
+	MOV r6, #0
 	STRB r6, [r0]
 	
 	MOV r0, #PlayerY
-	MOV r7, #50
+	MOV r7, #0
 	STRB r7, [r0]
 	;MOV r11, #50
 	;MOV r12, #50
@@ -185,8 +185,8 @@ GameLoop:
 		
 		;Erase Sprite
 		;LDR r5, SpriteTestAddress
-		;MOV r4, #PlayerHeight
-		;MOV r3, #PlayerWidth
+		MOV r4, #PlayerHeight
+		MOV r3, #PlayerWidth
 		;MOV r2, r9
 		;MOV r1, r8
 		;BL DrawSprite
