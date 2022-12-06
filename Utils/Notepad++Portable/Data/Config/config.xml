@@ -110,6 +110,7 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="1140" />
         <Find name="1" />
         <Find name="ReadInput" />
         <Find name="Palettes" />
@@ -119,7 +120,6 @@
         <Find name="TilePatterns_End-TilePatterns" />
         <Find name="CMPS" />
         <Find name="r11" />
-        <Find name="GetNextLine" />
         <Replace name="2" />
         <Replace name=" " />
         <Replace name="000" />
@@ -144,7 +144,6 @@
         <File filename="M:\Examples\SrcAll\V1_Header.asm" />
         <File filename="M:\Examples\sources\GBA_Tilemap.asm" />
         <File filename="M:\Examples\SrcGBA\V1_Header.asm" />
-        <File filename="M:\Examples\sources\GBA_Sprites.asm" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />

@@ -108,45 +108,48 @@ Main:
 	;;;;Load background
 	BL BackgroundAndSpriteInit
 	
-	mov r0,#0x01	   		;Sprite Num
+	MOV r1,#PlayerSpriteNum	   		;Sprite Num
 ;S=Shape (Square /HRect / Vrect)  C=Colors(16/256)  M=Mosiac  
 ;T=Transparent  D=Disable/Doublesize  R=Rotation  Y=Ypos
 			; SSCMTTDRYYYYYYYY
-	mov r1,#0b0000000001100000		;Ypos
+	MOV r2,#0b0000000000000000		;Ypos
+	MOV r5, #PlayerY
+	LDRB r6, [r5]
+	ADD r2, r2, r6
 	
 ;S=Obj Size  VH=V/HFlip  R=Rotation parameter  X=Xpos
 			; SSVHRRRXXXXXXXXX
-	mov r2,#0b0100000011000000		;Xpos
+	MOV r3,#0b0100000000000000		;Xpos
+	MOV r5, #PlayerX
+	LDRB r6, [r5]
+	ADD r3, r3, r6
 	
 ;C=Color palette   P=Priority   T=Tile Number
 			; CCCCPPTTTTTTTTTT
-	mov r3,#0b0000000000000110   	;Tile
-	bl DrawSprite
+	MOV r4,#0b0000000000000110   	;Tile
+	BL DrawSprite
 
 ;16 color sprite (Wide 2x1 using tile patterns)
-	;mov r0,#0x02	   		;Sprite Num
+	;mov r0,#0x00	   		;Sprite Num
 	;mov r1,#0x4020   		;Ypos
 	;mov r2,#0x0040   		;Xpos
 	;mov r3,#0x0001   		;Tile
 	;bl DrawSprite
 	
 ;256 color sprite
-	mov r0,#0x00	   		;Sprite Num
-	mov r1,#0x2000   		;Ypos
-	mov r2,#0x4000   		;Xpos	4=256 color
-	mov r3,#0x000A   		;Tile 
-	bl DrawSprite
-	
-	PauseLoop:
-	B PauseLoop
+	;mov r0,#0x00	   		;Sprite Num
+	;mov r1,#0x2000   		;Ypos
+	;mov r2,#0x4000   		;Xpos	4=256 color
+	;mov r3,#0x000A   		;Tile 
+	;bl DrawSprite
 	
 	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
-	LDR r5, SpriteTestAddress
-	MOV r4, #PlayerHeight
-	MOV r3, #PlayerWidth
-	MOV r2, r7
-	MOV r1, r6
-	BL DrawSprite
+	;LDR r5, SpriteTestAddress
+	;MOV r4, #PlayerHeight
+	;MOV r3, #PlayerWidth
+	;MOV r2, r7
+	;MOV r1, r6
+	;BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -181,12 +184,12 @@ GameLoop:
 		LDRB r9, [r7]
 		
 		;Erase Sprite
-		LDR r5, SpriteTestAddress
-		MOV r4, #PlayerHeight
-		MOV r3, #PlayerWidth
-		MOV r2, r9
-		MOV r1, r8
-		BL DrawSprite
+		;LDR r5, SpriteTestAddress
+		;MOV r4, #PlayerHeight
+		;MOV r3, #PlayerWidth
+		;MOV r2, r9
+		;MOV r1, r8
+		;BL DrawSprite
 	
 		;;Vertical Movement
 		MOV r1, #Key_Up
@@ -238,16 +241,17 @@ GameLoop:
 		STRB r8, [r6]
 		STRB r9, [r7]
 	
-		LDR r5, SpriteTestAddress
-		MOV r4, #PlayerHeight
-		MOV r3, #PlayerWidth
-		MOV r2, r9
-		MOV r1, r8
+		MOV r1,#PlayerSpriteNum
+		MOV r2,#0b0000000000000000
+		ADD r2, r2, r9
+		MOV r3,#0b0100000000000000
+		ADD r3, r3, r8
+		MOV r4,#0b0000000000000110
 	
 		BL DrawSprite
 		
 		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
-		MOV r0, #0x1FFF
+		MOV r0, #0x1000
 		DelayFrame:
 			SUBS r0, r0, #1
 			BNE DelayFrame
@@ -500,6 +504,8 @@ TilemapFiles:
 	.INCBIN "\Tilemaps\TestTilemap.RAW"
 	.INCBIN "\Tilemaps\TestSpriteTiles.RAW"
 TilemapFiles_END:;Points to memory at end of files so we can get their size
+
+.EQU PlayerSpriteNum, 0x01	;Sprite number of player
 	
 ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
 Tilemap:

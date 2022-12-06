@@ -15,4 +15,4 @@
 .EQU VramBackground, 0x06000800	;Memory location in VRAM of background layer
 .EQU VramSpritePixels, 0x06010000	;Location of GBA sprite pixels patterns (images) in memory
 
-.EQU SpriteOAMSettings, 0x07000000
+.EQU SpriteOAMSettings, 0x07000000	;Memory address for attributes for sprites that determine how they're drawn
