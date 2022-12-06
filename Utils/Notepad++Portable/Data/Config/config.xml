@@ -13,7 +13,7 @@
         <GUIConfig name="UserDefineDlg" position="undocked">hide</GUIConfig>
         <GUIConfig name="TabSetting" size="4" replaceBySpace="no" />
         <!--App position-->
-        <GUIConfig name="AppPosition" x="234" y="116" width="1634" height="649" isMaximized="yes" />
+        <GUIConfig name="AppPosition" x="453" y="78" width="1634" height="649" isMaximized="no" />
         <!-- For the primary scintilla view,
              2 status for Attribut lineNumberMargin, bookMarkMargin, indentGuideLine and currentLineHilitingShow: "show" or "hide"
              4 status for Attribut folderMarkStyle : "simple", "arrow", "circle" and "box"  -->
@@ -110,6 +110,7 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="VramSpritePixels" />
         <Find name="1140" />
         <Find name="1" />
         <Find name="ReadInput" />
@@ -119,7 +120,6 @@
         <Find name="Palette" />
         <Find name="TilePatterns_End-TilePatterns" />
         <Find name="CMPS" />
-        <Find name="r11" />
         <Replace name="2" />
         <Replace name=" " />
         <Replace name="000" />
@@ -130,7 +130,6 @@
         <Replace name="$" />
     </FindHistory>
     <History nbMaxFile="15" inSubMenu="no" customLength="-1">
-        <File filename="M:\Examples\SrcGBA\V1_BitmapMemory.asm" />
         <File filename="M:\Examples\sources\Lesson2.asm" />
         <File filename="M:\Examples\SrcAll\V1_Footer.asm" />
         <File filename="C:\Users\dillon-win\Downloads\ArmSources\SrcAll\V1_Footer.asm" />
@@ -144,6 +143,8 @@
         <File filename="M:\Examples\SrcAll\V1_Header.asm" />
         <File filename="M:\Examples\sources\GBA_Tilemap.asm" />
         <File filename="M:\Examples\SrcGBA\V1_Header.asm" />
+        <File filename="M:\Examples\sources\GBA_Sprites.asm" />
+        <File filename="C:\Users\dillon.drummond\Documents\GBA-Development\Examples\sources\GBA_Sprites.asm" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />

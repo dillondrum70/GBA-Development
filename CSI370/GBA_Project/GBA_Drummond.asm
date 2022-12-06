@@ -92,6 +92,11 @@ B Main	;Branch to start of program
 Main:
 	MOV sp, #Stack		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
+	BL ScreenInit
+	
+	;;;;Load background
+	BL BackgroundAndSpriteInit
+	
 	;Initialize player start position
 	MOV r0, #PlayerX
 	MOV r6, #0
@@ -100,34 +105,27 @@ Main:
 	MOV r0, #PlayerY
 	MOV r7, #0
 	STRB r7, [r0]
-	;MOV r11, #50
-	;MOV r12, #50
 	
-	BL ScreenInit
-	
-	;;;;Load background
-	BL BackgroundAndSpriteInit
-	
-	MOV r1,#PlayerSpriteNum	   		;Sprite Num
+	;MOV r1,#PlayerSpriteNum	   		;Sprite Num
 ;S=Shape (Square /HRect / Vrect)  C=Colors(16/256)  M=Mosiac  
 ;T=Transparent  D=Disable/Doublesize  R=Rotation  Y=Ypos
 			; SSCMTTDRYYYYYYYY
-	MOV r2,#0b0000000000000000		;Ypos
-	MOV r5, #PlayerY
-	LDRB r6, [r5]
-	ADD r2, r2, r6
+	;MOV r2,#0b0000000000000000		;Ypos
+	;MOV r5, #PlayerY
+	;LDRB r6, [r5]
+	;ADD r2, r2, r6
 	
 ;S=Obj Size  VH=V/HFlip  R=Rotation parameter  X=Xpos
 			; SSVHRRRXXXXXXXXX
-	MOV r3,#0b0100000000000000		;Xpos
-	MOV r5, #PlayerX
-	LDRB r6, [r5]
-	ADD r3, r3, r6
+	;MOV r3,#0b0100000000000000		;Xpos
+	;MOV r5, #PlayerX
+	;LDRB r6, [r5]
+	;ADD r3, r3, r6
 	
 ;C=Color palette   P=Priority   T=Tile Number
 			; CCCCPPTTTTTTTTTT
-	MOV r4,#0b0000000000000110   	;Tile
-	BL DrawSprite
+	;MOV r4,#0b0000000000000110   	;Tile
+	;BL DrawSprite
 
 ;16 color sprite (Wide 2x1 using tile patterns)
 	;mov r0,#0x00	   		;Sprite Num
@@ -246,12 +244,14 @@ GameLoop:
 		ADD r2, r2, r9
 		MOV r3,#0b0100000000000000
 		ADD r3, r3, r8
-		MOV r4,#0b0000000000000110
+		MOV r4,#0b0000000000000000
+		MOV r5, #PlayerTileStart
+		ADD r4, r4, r5
 	
 		BL DrawSprite
 		
 		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
-		MOV r0, #0x1000
+		MOV r0, #0x2000
 		DelayFrame:
 			SUBS r0, r0, #1
 			BNE DelayFrame
@@ -326,6 +326,7 @@ ScreenInit:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 BackgroundAndSpriteInit:
 	STMFD sp!, {r0-r3, lr}
+	
 		;Load Background Palette Colors
 		ADRL r1, ColorPalette		;Palette Address
 		MOV r2, #BackgroundPaletteMemory
@@ -334,19 +335,19 @@ BackgroundAndSpriteInit:
 		
 		;Load tilemap images
 		ADRL r1, TilemapFiles	;File with tilemap patterns
-		MOV r2, #VramTilemapPixels
+		MOV r2, #VramTilemapPixelPatterns
 		MOV r3, #TilemapFiles_END-TilemapFiles
 		BL LoadHalfwords
 		
 		;Load tilemap patterns directly into VRAM
 		ADRL r1, Tilemap
-		MOV r2, #VramBase
+		MOV r2, #VramBase	;Load the pattern into screen block 0 of character block 0
 		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
 		BL LoadHalfwords
 		
 		;Load tilemap into Background Layer VRAM so our 32x32 tilemap becomes 64x32 and repeats
 		ADRL r1, Tilemap
-		MOV r2, #VramBackground
+		MOV r2, #VramBackground	;Load the pattern into the screen block 1 of character block 0
 		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
 		BL LoadHalfwords
 		
@@ -358,7 +359,7 @@ BackgroundAndSpriteInit:
 		
 		;Load sprite images
 		ADRL r1, TilemapFiles	;File with tilemap patterns
-		MOV r2, #VramSpritePixels
+		MOV r2, #VramSpritePixelPatterns
 		MOV r3, #TilemapFiles_END-TilemapFiles
 		BL LoadHalfwords
 		
@@ -506,6 +507,7 @@ TilemapFiles:
 TilemapFiles_END:;Points to memory at end of files so we can get their size
 
 .EQU PlayerSpriteNum, 0x01	;Sprite number of player
+.EQU PlayerTileStart, 6 ;Index of first sprite tile
 	
 ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
 Tilemap:
