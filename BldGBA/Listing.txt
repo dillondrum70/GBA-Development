@@ -515,7 +515,7 @@ F00:0246       		ADD r3, r3, r8
 F00:0247       		MOV r4,#0b0000000000000000
                S01:080001D0:  00 40 A0 E3
 F00:0248       		MOV r5, #PlayerTileStart
-               S01:080001D4:  06 50 A0 E3
+               S01:080001D4:  01 50 A0 E3
 F00:0249       		ADD r4, r4, r5
                S01:080001D8:  05 40 84 E0
 F00:0250       	
@@ -658,13 +658,13 @@ F00:0337       		ADRL r1, TilemapFiles	;File with tilemap patterns
 F00:0338       		MOV r2, #VramTilemapPixelPatterns
                S01:08000508:  01 29 A0 E3 06 24 82 E3
 F00:0339       		MOV r3, #TilemapFiles_END-TilemapFiles
-               S01:08000510:  05 3D A0 E3
+               S01:08000510:  02 3B A0 E3
 F00:0340       		BL LoadHalfwords
                S01:08000514:  2A 00 00 EB
 F00:0341       		
 F00:0342       		;Load tilemap patterns directly into VRAM
 F00:0343       		ADRL r1, Tilemap
-               S01:08000518:  06 1C 8F E2 54 10 81 E2
+               S01:08000518:  0D 1C 8F E2 B4 10 81 E2
 F00:0344       		MOV r2, #VramBase	;Load the pattern into screen block 0 of character block 0
                S01:08000520:  06 24 A0 E3
 F00:0345       		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
@@ -674,7 +674,7 @@ F00:0346       		BL LoadHalfwords
 F00:0347       		
 F00:0348       		;Load tilemap into Background Layer VRAM so our 32x32 tilemap becomes 64x32 and repeats
 F00:0349       		ADRL r1, Tilemap
-               S01:0800052C:  06 1C 8F E2 40 10 81 E2
+               S01:0800052C:  0D 1C 8F E2 A0 10 81 E2
 F00:0350       		MOV r2, #VramBackground	;Load the pattern into the screen block 1 of character block 0
                S01:08000534:  02 2B A0 E3 06 24 82 E3
 F00:0351       		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
@@ -693,12 +693,12 @@ F00:0358       		BL LoadHalfwords
                S01:08000558:  19 00 00 EB
 F00:0359       		
 F00:0360       		;Load sprite images
-F00:0361       		ADRL r1, TilemapFiles	;File with tilemap patterns
-               S01:0800055C:  01 1B 8F E2 D0 10 81 E2
+F00:0361       		ADRL r1, SpriteFiles	;File with tilemap patterns
+               S01:0800055C:  03 1B 8F E2 D0 10 81 E2
 F00:0362       		MOV r2, #VramSpritePixelPatterns
                S01:08000564:  01 28 A0 E3 06 24 82 E3
-F00:0363       		MOV r3, #TilemapFiles_END-TilemapFiles
-               S01:0800056C:  05 3D A0 E3
+F00:0363       		MOV r3, #SpriteFiles_END-SpriteFiles
+               S01:0800056C:  A0 30 A0 E3
 F00:0364       		BL LoadHalfwords
                S01:08000570:  13 00 00 EB
 F00:0365       		
@@ -707,161 +707,162 @@ F00:0367       		MOV r0, #LCDControl
                S01:08000574:  01 03 A0 E3
 F00:0368       		MOV r1, #0x1140	;1 = Sprite on, 1 = layer on, 4 = 1D tile layout, 0 = screen mode 0
                S01:08000578:  45 1D A0 E3
-F00:0369       		str r1, [r0]
+F00:0369       		
+F00:0370       		str r1, [r0]
                S01:0800057C:  00 10 80 E5
-F00:0370       		
-F00:0371       	LDMFD sp!, {r0-r3, pc}
+F00:0371       		
+F00:0372       	LDMFD sp!, {r0-r3, pc}
                S01:08000580:  0F 80 BD E8
-F00:0372       	
-F00:0373       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0374       ;r1 = color halfword
-F00:0375       ClearToColor:
-F00:0376       	STMFD sp!, {r1-r3, lr}
+F00:0373       	
+F00:0374       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0375       ;r1 = color halfword
+F00:0376       ClearToColor:
+F00:0377       	STMFD sp!, {r1-r3, lr}
                S01:08000584:  0E 40 2D E9
-F00:0377       		MOV r3, #VramBase	;Start with vram base
+F00:0378       		MOV r3, #VramBase	;Start with vram base
                S01:08000588:  06 34 A0 E3
-F00:0378       		MOV r2, #240*160	;Take number of pixels in screen
+F00:0379       		MOV r2, #240*160	;Take number of pixels in screen
                S01:0800058C:  96 2C A0 E3
-F00:0379       		
-F00:0380       FillScreen:
-F00:0381       		STRH r1, [r3], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
+F00:0380       		
+F00:0381       FillScreen:
+F00:0382       		STRH r1, [r3], #2	;Store halfword (color) into position in vram and increment it by 2 bytes (to next pixel)
                S01:08000590:  B2 10 C3 E0
-F00:0382       		SUBS r2, r2, #1		;Decrement and set signs of loop counter
+F00:0383       		SUBS r2, r2, #1		;Decrement and set signs of loop counter
                S01:08000594:  01 20 52 E2
-F00:0383       		BNE FillScreen		;Loop to fill screen
+F00:0384       		BNE FillScreen		;Loop to fill screen
                S01:08000598:  FC FF FF 1A
-F00:0384       		
-F00:0385       	LDMFD sp!, {r1-r3, pc}
+F00:0385       		
+F00:0386       	LDMFD sp!, {r1-r3, pc}
                S01:0800059C:  0E 80 BD E8
-F00:0386       	
-F00:0387       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0388       ;r1 = X, r2 = Y
-F00:0389       ;Return VRAM position of (x,Y)
-F00:0390       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
-F00:0391       GetScreenPos:
-F00:0392       	STMFD sp!, {r1-r4, lr}
+F00:0387       	
+F00:0388       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0389       ;r1 = X, r2 = Y
+F00:0390       ;Return VRAM position of (x,Y)
+F00:0391       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
+F00:0392       GetScreenPos:
+F00:0393       	STMFD sp!, {r1-r4, lr}
                S01:080005A0:  1E 40 2D E9
-F00:0393       		MOV r0, #VramBase	;Vram
+F00:0394       		MOV r0, #VramBase	;Vram
                S01:080005A4:  06 04 A0 E3
-F00:0394       		MOV r3, #240*2		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2
+F00:0395       		MOV r3, #240*2		;bytes in a line (should be 240 * 2, but y position keeps getting shifted down by an extra factor of 2
                S01:080005A8:  1E 3E A0 E3
-F00:0395       		MUL r2, r3, r2		;Multiply Y by line byte count
+F00:0396       		MUL r2, r3, r2		;Multiply Y by line byte count
                S01:080005AC:  93 02 02 E0
-F00:0396       		ADD r0, r0, r2		;Add number of bytes for y position
+F00:0397       		ADD r0, r0, r2		;Add number of bytes for y position
                S01:080005B0:  02 00 80 E0
-F00:0397       		MOV r4, #2			;Move 2 into r4
+F00:0398       		MOV r4, #2			;Move 2 into r4
                S01:080005B4:  02 40 A0 E3
-F00:0398       		MUL r1, r4, r1		;Multiply x by 2, 2 bytes per pixel
+F00:0399       		MUL r1, r4, r1		;Multiply x by 2, 2 bytes per pixel
                S01:080005B8:  94 01 01 E0
-F00:0399       		ADD r0, r0, r1		;Add number of bytes for x position
+F00:0400       		ADD r0, r0, r1		;Add number of bytes for x position
                S01:080005BC:  01 00 80 E0
-F00:0400       	LDMFD sp!, {r1-r4, pc}
+F00:0401       	LDMFD sp!, {r1-r4, pc}
                S01:080005C0:  1E 80 BD E8
-F00:0401       	
-F00:0402       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0403       ;r1 = Color Palette Location
-F00:0404       ;r2 = GBA Palette Memory Location
-F00:0405       ;r3 = number of bytes (halfwords, we load 2 at a time)
-F00:0406       LoadHalfwords:
-F00:0407       	STMFD sp!, {r1-r4, lr}
+F00:0402       	
+F00:0403       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0404       ;r1 = Color Palette Location
+F00:0405       ;r2 = GBA Palette Memory Location
+F00:0406       ;r3 = number of bytes (halfwords, we load 2 at a time)
+F00:0407       LoadHalfwords:
+F00:0408       	STMFD sp!, {r1-r4, lr}
                S01:080005C4:  1E 40 2D E9
-F00:0408       	
-F00:0409       LoadHalfwordsRep:
-F00:0410       		LDRH r4, [r1], #2	;Load current position in color palette into r1 and increment halfword
+F00:0409       	
+F00:0410       LoadHalfwordsRep:
+F00:0411       		LDRH r4, [r1], #2	;Load current position in color palette into r1 and increment halfword
                S01:080005C8:  B2 40 D1 E0
-F00:0411       		STRH r4, [r2], #2	;Store palette value in GBA Palette memory and increment halfword
+F00:0412       		STRH r4, [r2], #2	;Store palette value in GBA Palette memory and increment halfword
                S01:080005CC:  B2 40 C2 E0
-F00:0412       		
-F00:0413       		SUBS r3, r3, #2
+F00:0413       		
+F00:0414       		SUBS r3, r3, #2
                S01:080005D0:  02 30 53 E2
-F00:0414       		BNE LoadHalfwordsRep	;Repeat process until number of bytes reached
+F00:0415       		BNE LoadHalfwordsRep	;Repeat process until number of bytes reached
                S01:080005D4:  FB FF FF 1A
-F00:0415       	
-F00:0416       	LDMFD sp!, {r1-r4, pc}
+F00:0416       	
+F00:0417       	LDMFD sp!, {r1-r4, pc}
                S01:080005D8:  1E 80 BD E8
-F00:0417       	
-F00:0418       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0419       ;r1 = current VRAM position
-F00:0420       ;Return VRAM position shifted down one line
-F00:0421       ;https://www.chibialiens.com/arm/platform.php#LessonP2
-F00:0422       GetNextLine:
-F00:0423       	ADD r0, r1, #240*2		;Simple add
+F00:0418       	
+F00:0419       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0420       ;r1 = current VRAM position
+F00:0421       ;Return VRAM position shifted down one line
+F00:0422       ;https://www.chibialiens.com/arm/platform.php#LessonP2
+F00:0423       GetNextLine:
+F00:0424       	ADD r0, r1, #240*2		;Simple add
                S01:080005DC:  1E 0E 81 E2
-F00:0424       	MOV pc, lr				;Return
+F00:0425       	MOV pc, lr				;Return
                S01:080005E0:  0E F0 A0 E1
-F00:0425       
-F00:0426       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0427       ;r1 = Sprite number to draw
-F00:0428       ;r2 = First sprite attribute (See code below for format)
-F00:0429       ;r3 = Second sprite attribute (See code below for format)
-F00:0430       ;r4	= Third sprite attribute (See code below for format)
-F00:0431       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
-F00:0432       ;Redesigned slightly, GetNextLine was extracted into it's own function
-F00:0433       DrawSprite:
-F00:0434       	STMFD sp!, {r1-r5, lr}
+F00:0426       
+F00:0427       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0428       ;r1 = Sprite number to draw
+F00:0429       ;r2 = First sprite attribute (See code below for format)
+F00:0430       ;r3 = Second sprite attribute (See code below for format)
+F00:0431       ;r4	= Third sprite attribute (See code below for format)
+F00:0432       ;Based on https://www.chibialiens.com/arm/platform.php#LessonP2
+F00:0433       ;Redesigned slightly, GetNextLine was extracted into it's own function
+F00:0434       DrawSprite:
+F00:0435       	STMFD sp!, {r1-r5, lr}
                S01:080005E4:  3E 40 2D E9
-F00:0435       		MOV r5, #SpriteOAMSettings
+F00:0436       		MOV r5, #SpriteOAMSettings
                S01:080005E8:  07 54 A0 E3
-F00:0436       		ADD r5, r5, r1, asl #3	;8 bytes per sprite, bit shift left to get 8 so we can set the first sprite attribute
+F00:0437       		ADD r5, r5, r1, asl #3	;8 bytes per sprite, bit shift left to get 8 so we can set the first sprite attribute
                S01:080005EC:  81 51 85 E0
-F00:0437       		
-F00:0438       		;S=Shape Square / HRect / VRect
-F00:0439       		;C=Colors 15/256
-F00:0440       		;M=Mosaic
-F00:0441       		;T=Transparent
-F00:0442       		;D=Disable/Doublesize
-F00:0443       		;R=Rotation
-F00:0444       		;Y=Ypos
-F00:0445       		;First Attribute - SSCMTTDRYYYYYYYY
-F00:0446       		STRH r2, [r5]
+F00:0438       		
+F00:0439       		;S=Shape Square / HRect / VRect
+F00:0440       		;C=Colors 15/256
+F00:0441       		;M=Mosaic
+F00:0442       		;T=Transparent
+F00:0443       		;D=Disable/Doublesize
+F00:0444       		;R=Rotation
+F00:0445       		;Y=Ypos
+F00:0446       		;First Attribute - SSCMTTDRYYYYYYYY
+F00:0447       		STRH r2, [r5]
                S01:080005F0:  B0 20 45 E1
-F00:0447       		ADD r5, r5, #2	;Move to next halfword to set the second sprite attribute
+F00:0448       		ADD r5, r5, #2	;Move to next halfword to set the second sprite attribute
                S01:080005F4:  02 50 85 E2
-F00:0448       		
-F00:0449       		;S=Obj Size
-F00:0450       		;VH=V/HFlip
-F00:0451       		;R=Rotation Parameter
-F00:0452       		;X=Xpos
-F00:0453       		;Second Attribute - SSVHRRRXXXXXXXXX
-F00:0454       		STRH r3, [r5]
+F00:0449       		
+F00:0450       		;S=Obj Size
+F00:0451       		;VH=V/HFlip
+F00:0452       		;R=Rotation Parameter
+F00:0453       		;X=Xpos
+F00:0454       		;Second Attribute - SSVHRRRXXXXXXXXX
+F00:0455       		STRH r3, [r5]
                S01:080005F8:  B0 30 45 E1
-F00:0455       		ADD r5, r5, #2 ;Move to next halfword to set the third sprite attribute
+F00:0456       		ADD r5, r5, #2 ;Move to next halfword to set the third sprite attribute
                S01:080005FC:  02 50 85 E2
-F00:0456       		
-F00:0457       		;C=Color Palette
-F00:0458       		;P=Priority
-F00:0459       		;T=Tile Number
-F00:0460       		;Third Attribute - CCCCPPTTTTTTTTTT
-F00:0461       		STRH r4, [r5]
+F00:0457       		
+F00:0458       		;C=Color Palette
+F00:0459       		;P=Priority
+F00:0460       		;T=Tile Number
+F00:0461       		;Third Attribute - CCCCPPTTTTTTTTTT
+F00:0462       		STRH r4, [r5]
                S01:08000600:  B0 40 45 E1
-F00:0462       	LDMFD sp!, {r1-r5, pc}
+F00:0463       	LDMFD sp!, {r1-r5, pc}
                S01:08000604:  3E 80 BD E8
-F00:0463       	
-F00:0464       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0465       ;Use E conditional to check if pressed
-F00:0466       ;r1 = key mask
-F00:0467       ;Returns keymask in r0
-F00:0468       GetButton:
-F00:0469       	STMFD sp!, {r1-r2, lr}
+F00:0464       	
+F00:0465       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0466       ;Use E conditional to check if pressed
+F00:0467       ;r1 = key mask
+F00:0468       ;Returns keymask in r0
+F00:0469       GetButton:
+F00:0470       	STMFD sp!, {r1-r2, lr}
                S01:08000608:  06 40 2D E9
-F00:0470       		EOR r0, r0, r0
+F00:0471       		EOR r0, r0, r0
                S01:0800060C:  00 00 20 E0
-F00:0471       		MOV r2, #InputLocation	;Input memory location
+F00:0472       		MOV r2, #InputLocation	;Input memory location
                S01:08000610:  13 2E A0 E3 01 23 82 E3
-F00:0472       		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
+F00:0473       		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
                S01:08000618:  B0 00 52 E1
-F00:0473       		MOV r2, #MaskKey		;Mask out superfluous bits
+F00:0474       		MOV r2, #MaskKey		;Mask out superfluous bits
                S01:0800061C:  3F 2B A0 E3
-F00:0474       		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
+F00:0475       		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
                S01:08000620:  02 00 C0 E1
-F00:0475       		AND r0, r0, r1			;AND return register with input bits with the passed key mask
+F00:0476       		AND r0, r0, r1			;AND return register with input bits with the passed key mask
                S01:08000624:  01 00 00 E0
-F00:0476       	LDMFD sp!, {r1-r2, pc}
+F00:0477       	LDMFD sp!, {r1-r2, pc}
                S01:08000628:  06 80 BD E8
-F00:0477       
-F00:0478       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0479       
-F00:0480       .include "GBA_Core.asm"
+F00:0478       
+F00:0479       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0480       
+F00:0481       .include "GBA_Core.asm"
 F01:0001       .EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000, builds upwards, can store whatever we want whereever we want,
 F01:0002       
 F01:0003       .EQU Stack, 0x03000000
@@ -880,7 +881,7 @@ F01:0015       .EQU VramBackground, 0x06000800	;Memory location in VRAM of backg
 F01:0016       .EQU VramSpritePixelPatterns, 0x06010000	;Location of GBA sprite pixels patterns (images) in memory, screen block 2
 F01:0017       
 F01:0018       .EQU SpriteOAMSettings, 0x07000000	;Memory address for attributes for sprites that determine how they're drawn
-F00:0481       .include "GBA_Text.asm"
+F00:0482       .include "GBA_Text.asm"
 F02:0001       .include "GBA_Core.asm"
 F03:0001       .EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000, builds upwards, can store whatever we want whereever we want,
 F03:0002       
@@ -1922,1117 +1923,1121 @@ F02:0208       	.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
                S01:08000A12:  00
                S01:08000A13:  00
 F02:0209       	;.BYTE 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
-F00:0482       
-F00:0483       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0484       
-F00:0485       ;-BBBBBGGGGGRRRRR
-F00:0486       ColorPalette:
-F00:0487       	.WORD 0b0000000000000000; ;0  %-BBBBBGGGGGRRRRR
+F00:0483       
+F00:0484       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0485       
+F00:0486       ;-BBBBBGGGGGRRRRR
+F00:0487       ColorPalette:
+F00:0488       	.WORD 0b0000000000000000; ;0  %-BBBBBGGGGGRRRRR
                S01:08000A14:  00 00
-F00:0488           .WORD 0b0010100101001010; ;1  %-BBBBBGGGGGRRRRR
-               S01:08000A16:  4A 29
-F00:0489           .WORD 0b0101011010110101; ;2  %-BBBBBGGGGGRRRRR
-               S01:08000A18:  B5 56
-F00:0490           .WORD 0b0111111111111111; ;3  %-BBBBBGGGGGRRRRR
-               S01:08000A1A:  FF 7F
-F00:0491           .WORD 0b0100000000000000; ;4  %-BBBBBGGGGGRRRRR
+F00:0489           .WORD 0b0000000000010000; ;1  %-BBBBBGGGGGRRRRR
+               S01:08000A16:  10 00
+F00:0490           .WORD 0b0000001000000000; ;2  %-BBBBBGGGGGRRRRR
+               S01:08000A18:  00 02
+F00:0491           .WORD 0b0000001000010000; ;3  %-BBBBBGGGGGRRRRR
+               S01:08000A1A:  10 02
+F00:0492           .WORD 0b0100000000000000; ;4  %-BBBBBGGGGGRRRRR
                S01:08000A1C:  00 40
-F00:0492           .WORD 0b0100000000010000; ;5  %-BBBBBGGGGGRRRRR
+F00:0493           .WORD 0b0100000000010000; ;5  %-BBBBBGGGGGRRRRR
                S01:08000A1E:  10 40
-F00:0493           .WORD 0b0100001000000000; ;6  %-BBBBBGGGGGRRRRR
+F00:0494           .WORD 0b0100001000000000; ;6  %-BBBBBGGGGGRRRRR
                S01:08000A20:  00 42
-F00:0494           .WORD 0b0100111110010011; ;7  %-BBBBBGGGGGRRRRR
-               S01:08000A22:  93 4F
-F00:0495           .WORD 0b0111110000010000; ;8  %-BBBBBGGGGGRRRRR
-               S01:08000A24:  10 7C
-F00:0496           .WORD 0b0000000000011111; ;9  %-BBBBBGGGGGRRRRR
+F00:0495           .WORD 0b0110001100011000; ;7  %-BBBBBGGGGGRRRRR
+               S01:08000A22:  18 63
+F00:0496           .WORD 0b0100001000010000; ;8  %-BBBBBGGGGGRRRRR
+               S01:08000A24:  10 42
+F00:0497           .WORD 0b0000000000011111; ;9  %-BBBBBGGGGGRRRRR
                S01:08000A26:  1F 00
-F00:0497           .WORD 0b0000001111100000; ;10  %-BBBBBGGGGGRRRRR
+F00:0498           .WORD 0b0000001111100000; ;10  %-BBBBBGGGGGRRRRR
                S01:08000A28:  E0 03
-F00:0498           .WORD 0b0000001111111111; ;11  %-BBBBBGGGGGRRRRR
+F00:0499           .WORD 0b0000001111111111; ;11  %-BBBBBGGGGGRRRRR
                S01:08000A2A:  FF 03
-F00:0499           .WORD 0b0111110000000000; ;12  %-BBBBBGGGGGRRRRR
+F00:0500           .WORD 0b0111110000000000; ;12  %-BBBBBGGGGGRRRRR
                S01:08000A2C:  00 7C
-F00:0500           .WORD 0b0111110000011111; ;13  %-BBBBBGGGGGRRRRR
+F00:0501           .WORD 0b0111110000011111; ;13  %-BBBBBGGGGGRRRRR
                S01:08000A2E:  1F 7C
-F00:0501           .WORD 0b0111111111100000; ;14  %-BBBBBGGGGGRRRRR
+F00:0502           .WORD 0b0111111111100000; ;14  %-BBBBBGGGGGRRRRR
                S01:08000A30:  E0 7F
-F00:0502       	.WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
+F00:0503           .WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
                S01:08000A32:  FF 7F
-F00:0503       	
-F00:0504       TilemapFiles:
-F00:0505       	.INCBIN "\Tilemaps\TestTilemap.RAW"
-               S01:08000A34:  CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC
-               S01:08000A44:  CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC
-F00:0506       	.INCBIN "\Tilemaps\TestSpriteTiles.RAW"
-               S01:08000AF4:  CC CC CC CC FC FF FF 9F FC FF FF F9 FC FF FF F9
-               S01:08000B04:  FC FF FF 9F FC FF FF FF FC FF FF FF FC FF FF 99
-F00:0507       TilemapFiles_END:;Points to memory at end of files so we can get their size
-F00:0508       
-F00:0509       .EQU PlayerSpriteNum, 0x01	;Sprite number of player
-F00:0510       .EQU PlayerTileStart, 6 ;Index of first sprite tile
-F00:0511       	
-F00:0512       ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
-F00:0513       Tilemap:
-F00:0514       	.WORD 3,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,3,0,0
-               S01:08000B74:  03 00
-               S01:08000B76:  00 00
-               S01:08000B78:  01 00
-               S01:08000B7A:  00 00
-               S01:08000B7C:  01 00
-               S01:08000B7E:  00 00
-               S01:08000B80:  01 00
-               S01:08000B82:  00 00
-               S01:08000B84:  01 00
-               S01:08000B86:  00 00
-               S01:08000B88:  01 00
-               S01:08000B8A:  00 00
-               S01:08000B8C:  01 00
-               S01:08000B8E:  00 00
-               S01:08000B90:  01 00
-               S01:08000B92:  00 00
-               S01:08000B94:  01 00
-               S01:08000B96:  00 00
-               S01:08000B98:  01 00
-               S01:08000B9A:  00 00
-               S01:08000B9C:  01 00
-               S01:08000B9E:  00 00
-               S01:08000BA0:  01 00
-               S01:08000BA2:  00 00
-               S01:08000BA4:  01 00
-               S01:08000BA6:  00 00
-               S01:08000BA8:  01 00
-               S01:08000BAA:  00 00
-               S01:08000BAC:  01 00
-               S01:08000BAE:  03 00
-               S01:08000BB0:  00 00
-               S01:08000BB2:  00 00
-F00:0515       	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
-               S01:08000BB4:  00 00
-               S01:08000BB6:  01 00
-               S01:08000BB8:  00 00
-               S01:08000BBA:  01 00
-               S01:08000BBC:  00 00
-               S01:08000BBE:  01 00
-               S01:08000BC0:  00 00
-               S01:08000BC2:  01 00
-               S01:08000BC4:  00 00
-               S01:08000BC6:  01 00
-               S01:08000BC8:  00 00
-               S01:08000BCA:  01 00
-               S01:08000BCC:  00 00
-               S01:08000BCE:  01 00
-               S01:08000BD0:  00 00
-               S01:08000BD2:  01 00
-               S01:08000BD4:  00 00
-               S01:08000BD6:  01 00
-               S01:08000BD8:  00 00
-               S01:08000BDA:  01 00
-               S01:08000BDC:  00 00
-               S01:08000BDE:  01 00
-               S01:08000BE0:  00 00
-               S01:08000BE2:  01 00
-               S01:08000BE4:  00 00
-               S01:08000BE6:  01 00
-               S01:08000BE8:  00 00
-               S01:08000BEA:  01 00
-               S01:08000BEC:  00 00
-               S01:08000BEE:  01 00
-               S01:08000BF0:  00 00
-               S01:08000BF2:  01 00
-F00:0516       	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
-               S01:08000BF4:  02 00
-               S01:08000BF6:  00 00
-               S01:08000BF8:  02 00
-               S01:08000BFA:  00 00
-               S01:08000BFC:  02 00
-               S01:08000BFE:  00 00
-               S01:08000C00:  02 00
-               S01:08000C02:  00 00
-               S01:08000C04:  02 00
-               S01:08000C06:  00 00
-               S01:08000C08:  02 00
-               S01:08000C0A:  00 00
-               S01:08000C0C:  02 00
-               S01:08000C0E:  00 00
-               S01:08000C10:  02 00
-               S01:08000C12:  00 00
-               S01:08000C14:  02 00
-               S01:08000C16:  00 00
-               S01:08000C18:  02 00
-               S01:08000C1A:  00 00
-               S01:08000C1C:  02 00
-               S01:08000C1E:  00 00
-               S01:08000C20:  02 00
-               S01:08000C22:  00 00
-               S01:08000C24:  02 00
-               S01:08000C26:  00 00
-               S01:08000C28:  02 00
-               S01:08000C2A:  00 00
-               S01:08000C2C:  02 00
-               S01:08000C2E:  00 00
-               S01:08000C30:  02 00
-               S01:08000C32:  00 00
-F00:0517       	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
-               S01:08000C34:  00 00
-               S01:08000C36:  02 00
-               S01:08000C38:  00 00
-               S01:08000C3A:  02 00
-               S01:08000C3C:  00 00
-               S01:08000C3E:  02 00
-               S01:08000C40:  00 00
-               S01:08000C42:  02 00
-               S01:08000C44:  00 00
-               S01:08000C46:  02 00
-               S01:08000C48:  00 00
-               S01:08000C4A:  02 00
-               S01:08000C4C:  00 00
-               S01:08000C4E:  02 00
-               S01:08000C50:  00 00
-               S01:08000C52:  02 00
-               S01:08000C54:  00 00
-               S01:08000C56:  02 00
-               S01:08000C58:  00 00
-               S01:08000C5A:  02 00
-               S01:08000C5C:  00 00
-               S01:08000C5E:  02 00
-               S01:08000C60:  00 00
-               S01:08000C62:  02 00
-               S01:08000C64:  00 00
-               S01:08000C66:  02 00
-               S01:08000C68:  00 00
-               S01:08000C6A:  02 00
-               S01:08000C6C:  00 00
-               S01:08000C6E:  02 00
-               S01:08000C70:  00 00
-               S01:08000C72:  02 00
-F00:0518       	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
-               S01:08000C74:  01 00
-               S01:08000C76:  00 00
-               S01:08000C78:  01 00
-               S01:08000C7A:  00 00
-               S01:08000C7C:  01 00
-               S01:08000C7E:  00 00
-               S01:08000C80:  01 00
-               S01:08000C82:  00 00
-               S01:08000C84:  01 00
-               S01:08000C86:  00 00
-               S01:08000C88:  01 00
-               S01:08000C8A:  00 00
-               S01:08000C8C:  01 00
-               S01:08000C8E:  00 00
-               S01:08000C90:  01 00
-               S01:08000C92:  00 00
-               S01:08000C94:  01 00
-               S01:08000C96:  00 00
-               S01:08000C98:  01 00
-               S01:08000C9A:  00 00
-               S01:08000C9C:  01 00
-               S01:08000C9E:  00 00
-               S01:08000CA0:  01 00
-               S01:08000CA2:  00 00
-               S01:08000CA4:  01 00
-               S01:08000CA6:  00 00
-               S01:08000CA8:  01 00
-               S01:08000CAA:  00 00
-               S01:08000CAC:  01 00
-               S01:08000CAE:  00 00
-               S01:08000CB0:  01 00
-               S01:08000CB2:  00 00
-F00:0519       	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
-               S01:08000CB4:  00 00
-               S01:08000CB6:  01 00
-               S01:08000CB8:  00 00
-               S01:08000CBA:  01 00
-               S01:08000CBC:  00 00
-               S01:08000CBE:  01 00
-               S01:08000CC0:  00 00
-               S01:08000CC2:  01 00
-               S01:08000CC4:  00 00
-               S01:08000CC6:  01 00
-               S01:08000CC8:  00 00
-               S01:08000CCA:  01 00
-               S01:08000CCC:  00 00
-               S01:08000CCE:  01 00
-               S01:08000CD0:  00 00
-               S01:08000CD2:  01 00
-               S01:08000CD4:  00 00
-               S01:08000CD6:  01 00
-               S01:08000CD8:  00 00
-               S01:08000CDA:  01 00
-               S01:08000CDC:  00 00
-               S01:08000CDE:  01 00
-               S01:08000CE0:  00 00
-               S01:08000CE2:  01 00
-               S01:08000CE4:  00 00
-               S01:08000CE6:  01 00
-               S01:08000CE8:  00 00
-               S01:08000CEA:  01 00
-               S01:08000CEC:  00 00
-               S01:08000CEE:  01 00
-               S01:08000CF0:  00 00
-               S01:08000CF2:  01 00
-F00:0520       	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
-               S01:08000CF4:  02 00
-               S01:08000CF6:  00 00
-               S01:08000CF8:  02 00
-               S01:08000CFA:  00 00
-               S01:08000CFC:  02 00
-               S01:08000CFE:  00 00
-               S01:08000D00:  02 00
-               S01:08000D02:  00 00
-               S01:08000D04:  02 00
-               S01:08000D06:  00 00
-               S01:08000D08:  02 00
-               S01:08000D0A:  00 00
-               S01:08000D0C:  02 00
-               S01:08000D0E:  00 00
-               S01:08000D10:  02 00
-               S01:08000D12:  00 00
-               S01:08000D14:  02 00
-               S01:08000D16:  00 00
-               S01:08000D18:  02 00
-               S01:08000D1A:  00 00
-               S01:08000D1C:  02 00
-               S01:08000D1E:  00 00
-               S01:08000D20:  02 00
-               S01:08000D22:  00 00
-               S01:08000D24:  02 00
-               S01:08000D26:  00 00
-               S01:08000D28:  02 00
-               S01:08000D2A:  00 00
-               S01:08000D2C:  02 00
-               S01:08000D2E:  00 00
-               S01:08000D30:  02 00
-               S01:08000D32:  00 00
-F00:0521       	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
-               S01:08000D34:  00 00
-               S01:08000D36:  02 00
-               S01:08000D38:  00 00
-               S01:08000D3A:  02 00
-               S01:08000D3C:  00 00
-               S01:08000D3E:  02 00
-               S01:08000D40:  00 00
-               S01:08000D42:  02 00
-               S01:08000D44:  00 00
-               S01:08000D46:  02 00
-               S01:08000D48:  00 00
-               S01:08000D4A:  02 00
-               S01:08000D4C:  00 00
-               S01:08000D4E:  02 00
-               S01:08000D50:  00 00
-               S01:08000D52:  02 00
-               S01:08000D54:  00 00
-               S01:08000D56:  02 00
-               S01:08000D58:  00 00
-               S01:08000D5A:  02 00
-               S01:08000D5C:  00 00
-               S01:08000D5E:  02 00
-               S01:08000D60:  00 00
-               S01:08000D62:  02 00
-               S01:08000D64:  00 00
-               S01:08000D66:  02 00
-               S01:08000D68:  00 00
-               S01:08000D6A:  02 00
-               S01:08000D6C:  00 00
-               S01:08000D6E:  02 00
-               S01:08000D70:  00 00
-               S01:08000D72:  02 00
-F00:0522       	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
-               S01:08000D74:  01 00
-               S01:08000D76:  00 00
-               S01:08000D78:  01 00
-               S01:08000D7A:  00 00
-               S01:08000D7C:  01 00
-               S01:08000D7E:  00 00
-               S01:08000D80:  01 00
-               S01:08000D82:  00 00
-               S01:08000D84:  01 00
-               S01:08000D86:  00 00
-               S01:08000D88:  01 00
-               S01:08000D8A:  00 00
-               S01:08000D8C:  01 00
-               S01:08000D8E:  00 00
-               S01:08000D90:  01 00
-               S01:08000D92:  00 00
-               S01:08000D94:  01 00
-               S01:08000D96:  00 00
-               S01:08000D98:  01 00
-               S01:08000D9A:  00 00
-               S01:08000D9C:  01 00
-               S01:08000D9E:  00 00
-               S01:08000DA0:  01 00
-               S01:08000DA2:  00 00
-               S01:08000DA4:  01 00
-               S01:08000DA6:  00 00
-               S01:08000DA8:  01 00
-               S01:08000DAA:  00 00
-               S01:08000DAC:  01 00
-               S01:08000DAE:  00 00
-               S01:08000DB0:  01 00
-               S01:08000DB2:  00 00
-F00:0523       	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
-               S01:08000DB4:  00 00
-               S01:08000DB6:  01 00
-               S01:08000DB8:  00 00
-               S01:08000DBA:  01 00
-               S01:08000DBC:  00 00
-               S01:08000DBE:  01 00
-               S01:08000DC0:  00 00
-               S01:08000DC2:  01 00
-               S01:08000DC4:  00 00
-               S01:08000DC6:  01 00
-               S01:08000DC8:  00 00
-               S01:08000DCA:  01 00
-               S01:08000DCC:  00 00
-               S01:08000DCE:  01 00
-               S01:08000DD0:  00 00
-               S01:08000DD2:  01 00
-               S01:08000DD4:  00 00
-               S01:08000DD6:  01 00
-               S01:08000DD8:  00 00
-               S01:08000DDA:  01 00
-               S01:08000DDC:  00 00
-               S01:08000DDE:  01 00
-               S01:08000DE0:  00 00
-               S01:08000DE2:  01 00
-               S01:08000DE4:  00 00
-               S01:08000DE6:  01 00
-               S01:08000DE8:  00 00
-               S01:08000DEA:  01 00
-               S01:08000DEC:  00 00
-               S01:08000DEE:  01 00
-               S01:08000DF0:  00 00
-               S01:08000DF2:  01 00
-F00:0524       	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
-               S01:08000DF4:  02 00
-               S01:08000DF6:  00 00
-               S01:08000DF8:  02 00
-               S01:08000DFA:  00 00
-               S01:08000DFC:  02 00
-               S01:08000DFE:  00 00
-               S01:08000E00:  02 00
-               S01:08000E02:  00 00
-               S01:08000E04:  02 00
-               S01:08000E06:  00 00
-               S01:08000E08:  02 00
-               S01:08000E0A:  00 00
-               S01:08000E0C:  02 00
-               S01:08000E0E:  00 00
-               S01:08000E10:  02 00
-               S01:08000E12:  00 00
-               S01:08000E14:  02 00
-               S01:08000E16:  00 00
-               S01:08000E18:  02 00
-               S01:08000E1A:  00 00
-               S01:08000E1C:  02 00
-               S01:08000E1E:  00 00
-               S01:08000E20:  02 00
-               S01:08000E22:  00 00
-               S01:08000E24:  02 00
-               S01:08000E26:  00 00
-               S01:08000E28:  02 00
-               S01:08000E2A:  00 00
-               S01:08000E2C:  02 00
-               S01:08000E2E:  00 00
-               S01:08000E30:  02 00
-               S01:08000E32:  00 00
-F00:0525       	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
-               S01:08000E34:  00 00
-               S01:08000E36:  02 00
-               S01:08000E38:  00 00
-               S01:08000E3A:  02 00
-               S01:08000E3C:  00 00
-               S01:08000E3E:  02 00
-               S01:08000E40:  00 00
-               S01:08000E42:  02 00
-               S01:08000E44:  00 00
-               S01:08000E46:  02 00
-               S01:08000E48:  00 00
-               S01:08000E4A:  02 00
-               S01:08000E4C:  00 00
-               S01:08000E4E:  02 00
-               S01:08000E50:  00 00
-               S01:08000E52:  02 00
-               S01:08000E54:  00 00
-               S01:08000E56:  02 00
-               S01:08000E58:  00 00
-               S01:08000E5A:  02 00
-               S01:08000E5C:  00 00
-               S01:08000E5E:  02 00
-               S01:08000E60:  00 00
-               S01:08000E62:  02 00
-               S01:08000E64:  00 00
-               S01:08000E66:  02 00
-               S01:08000E68:  00 00
-               S01:08000E6A:  02 00
-               S01:08000E6C:  00 00
-               S01:08000E6E:  02 00
-               S01:08000E70:  00 00
-               S01:08000E72:  02 00
-F00:0526       	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
-               S01:08000E74:  01 00
-               S01:08000E76:  00 00
-               S01:08000E78:  01 00
-               S01:08000E7A:  00 00
-               S01:08000E7C:  01 00
-               S01:08000E7E:  00 00
-               S01:08000E80:  01 00
-               S01:08000E82:  00 00
-               S01:08000E84:  01 00
-               S01:08000E86:  00 00
-               S01:08000E88:  01 00
-               S01:08000E8A:  00 00
-               S01:08000E8C:  01 00
-               S01:08000E8E:  00 00
-               S01:08000E90:  01 00
-               S01:08000E92:  00 00
-               S01:08000E94:  01 00
-               S01:08000E96:  00 00
-               S01:08000E98:  01 00
-               S01:08000E9A:  00 00
-               S01:08000E9C:  01 00
-               S01:08000E9E:  00 00
-               S01:08000EA0:  01 00
-               S01:08000EA2:  00 00
-               S01:08000EA4:  01 00
-               S01:08000EA6:  00 00
-               S01:08000EA8:  01 00
-               S01:08000EAA:  00 00
-               S01:08000EAC:  01 00
-               S01:08000EAE:  00 00
-               S01:08000EB0:  01 00
-               S01:08000EB2:  00 00
-F00:0527       	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
-               S01:08000EB4:  00 00
-               S01:08000EB6:  01 00
-               S01:08000EB8:  00 00
-               S01:08000EBA:  01 00
-               S01:08000EBC:  00 00
-               S01:08000EBE:  01 00
-               S01:08000EC0:  00 00
-               S01:08000EC2:  01 00
-               S01:08000EC4:  00 00
-               S01:08000EC6:  01 00
-               S01:08000EC8:  00 00
-               S01:08000ECA:  01 00
-               S01:08000ECC:  00 00
-               S01:08000ECE:  01 00
-               S01:08000ED0:  00 00
-               S01:08000ED2:  01 00
-               S01:08000ED4:  00 00
-               S01:08000ED6:  01 00
-               S01:08000ED8:  00 00
-               S01:08000EDA:  01 00
-               S01:08000EDC:  00 00
-               S01:08000EDE:  01 00
-               S01:08000EE0:  00 00
-               S01:08000EE2:  01 00
-               S01:08000EE4:  00 00
-               S01:08000EE6:  01 00
-               S01:08000EE8:  00 00
-               S01:08000EEA:  01 00
-               S01:08000EEC:  00 00
-               S01:08000EEE:  01 00
-               S01:08000EF0:  00 00
-               S01:08000EF2:  01 00
-F00:0528       	.WORD 2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0
-               S01:08000EF4:  02 00
-               S01:08000EF6:  00 00
-               S01:08000EF8:  02 00
-               S01:08000EFA:  00 00
-               S01:08000EFC:  02 00
-               S01:08000EFE:  00 00
-               S01:08000F00:  02 00
-               S01:08000F02:  00 00
-               S01:08000F04:  02 00
-               S01:08000F06:  00 00
-               S01:08000F08:  02 00
-               S01:08000F0A:  00 00
-               S01:08000F0C:  02 00
-               S01:08000F0E:  00 00
-               S01:08000F10:  02 00
-               S01:08000F12:  00 00
-               S01:08000F14:  02 00
-               S01:08000F16:  00 00
-               S01:08000F18:  02 00
-               S01:08000F1A:  00 00
-               S01:08000F1C:  02 00
-               S01:08000F1E:  00 00
-               S01:08000F20:  02 00
-               S01:08000F22:  00 00
-               S01:08000F24:  02 00
-               S01:08000F26:  00 00
-               S01:08000F28:  02 00
-               S01:08000F2A:  00 00
-               S01:08000F2C:  02 00
-               S01:08000F2E:  00 00
-               S01:08000F30:  02 00
-               S01:08000F32:  00 00
-F00:0529       	.WORD 0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2
-               S01:08000F34:  00 00
-               S01:08000F36:  02 00
-               S01:08000F38:  00 00
-               S01:08000F3A:  02 00
-               S01:08000F3C:  00 00
-               S01:08000F3E:  02 00
-               S01:08000F40:  00 00
-               S01:08000F42:  02 00
-               S01:08000F44:  00 00
-               S01:08000F46:  02 00
-               S01:08000F48:  00 00
-               S01:08000F4A:  02 00
-               S01:08000F4C:  00 00
-               S01:08000F4E:  02 00
-               S01:08000F50:  00 00
-               S01:08000F52:  02 00
-               S01:08000F54:  00 00
-               S01:08000F56:  02 00
-               S01:08000F58:  00 00
-               S01:08000F5A:  02 00
-               S01:08000F5C:  00 00
-               S01:08000F5E:  02 00
-               S01:08000F60:  00 00
-               S01:08000F62:  02 00
-               S01:08000F64:  00 00
-               S01:08000F66:  02 00
-               S01:08000F68:  00 00
-               S01:08000F6A:  02 00
-               S01:08000F6C:  00 00
-               S01:08000F6E:  02 00
-               S01:08000F70:  00 00
-               S01:08000F72:  02 00
-F00:0530       	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
-               S01:08000F74:  01 00
-               S01:08000F76:  00 00
-               S01:08000F78:  01 00
-               S01:08000F7A:  00 00
-               S01:08000F7C:  01 00
-               S01:08000F7E:  00 00
-               S01:08000F80:  01 00
-               S01:08000F82:  00 00
-               S01:08000F84:  01 00
-               S01:08000F86:  00 00
-               S01:08000F88:  01 00
-               S01:08000F8A:  00 00
-               S01:08000F8C:  01 00
-               S01:08000F8E:  00 00
-               S01:08000F90:  01 00
-               S01:08000F92:  00 00
-               S01:08000F94:  01 00
-               S01:08000F96:  00 00
-               S01:08000F98:  01 00
-               S01:08000F9A:  00 00
-               S01:08000F9C:  01 00
-               S01:08000F9E:  00 00
-               S01:08000FA0:  01 00
-               S01:08000FA2:  00 00
-               S01:08000FA4:  01 00
-               S01:08000FA6:  00 00
-               S01:08000FA8:  01 00
-               S01:08000FAA:  00 00
-               S01:08000FAC:  01 00
-               S01:08000FAE:  00 00
-               S01:08000FB0:  01 00
-               S01:08000FB2:  00 00
-F00:0531       	.WORD 0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1
-               S01:08000FB4:  00 00
-               S01:08000FB6:  01 00
-               S01:08000FB8:  00 00
-               S01:08000FBA:  01 00
-               S01:08000FBC:  00 00
-               S01:08000FBE:  01 00
-               S01:08000FC0:  00 00
-               S01:08000FC2:  01 00
-               S01:08000FC4:  00 00
-               S01:08000FC6:  01 00
-               S01:08000FC8:  00 00
-               S01:08000FCA:  01 00
-               S01:08000FCC:  00 00
-               S01:08000FCE:  01 00
-               S01:08000FD0:  00 00
-               S01:08000FD2:  01 00
-               S01:08000FD4:  00 00
-               S01:08000FD6:  01 00
-               S01:08000FD8:  00 00
-               S01:08000FDA:  01 00
-               S01:08000FDC:  00 00
-               S01:08000FDE:  01 00
-               S01:08000FE0:  00 00
-               S01:08000FE2:  01 00
-               S01:08000FE4:  00 00
-               S01:08000FE6:  01 00
-               S01:08000FE8:  00 00
-               S01:08000FEA:  01 00
-               S01:08000FEC:  00 00
-               S01:08000FEE:  01 00
-               S01:08000FF0:  00 00
-               S01:08000FF2:  01 00
-F00:0532       	.WORD 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
-               S01:08000FF4:  01 00
-               S01:08000FF6:  00 00
-               S01:08000FF8:  01 00
-               S01:08000FFA:  00 00
-               S01:08000FFC:  01 00
-               S01:08000FFE:  00 00
-               S01:08001000:  01 00
-               S01:08001002:  00 00
-               S01:08001004:  01 00
-               S01:08001006:  00 00
-               S01:08001008:  01 00
-               S01:0800100A:  00 00
-               S01:0800100C:  01 00
-               S01:0800100E:  00 00
-               S01:08001010:  01 00
-               S01:08001012:  00 00
-               S01:08001014:  01 00
-               S01:08001016:  00 00
-               S01:08001018:  01 00
-               S01:0800101A:  00 00
-               S01:0800101C:  01 00
-               S01:0800101E:  00 00
-               S01:08001020:  01 00
-               S01:08001022:  00 00
-               S01:08001024:  01 00
-               S01:08001026:  00 00
-               S01:08001028:  01 00
-               S01:0800102A:  00 00
-               S01:0800102C:  01 00
-               S01:0800102E:  00 00
-               S01:08001030:  01 00
-               S01:08001032:  00 00
-F00:0533       	.WORD 3,2,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,2,0,0,0,0,0,0,0,2,0,0,2,3,0,0
-               S01:08001034:  03 00
-               S01:08001036:  02 00
-               S01:08001038:  00 00
-               S01:0800103A:  00 00
-               S01:0800103C:  00 00
-               S01:0800103E:  00 00
-               S01:08001040:  00 00
-               S01:08001042:  00 00
-               S01:08001044:  00 00
-               S01:08001046:  00 00
-               S01:08001048:  00 00
-               S01:0800104A:  02 00
-               S01:0800104C:  00 00
-               S01:0800104E:  00 00
-               S01:08001050:  02 00
-               S01:08001052:  00 00
-               S01:08001054:  00 00
-               S01:08001056:  02 00
-               S01:08001058:  00 00
-               S01:0800105A:  00 00
-               S01:0800105C:  00 00
-               S01:0800105E:  00 00
-               S01:08001060:  00 00
-               S01:08001062:  00 00
-               S01:08001064:  00 00
-               S01:08001066:  02 00
-               S01:08001068:  00 00
-               S01:0800106A:  00 00
-               S01:0800106C:  02 00
-               S01:0800106E:  03 00
-               S01:08001070:  00 00
-               S01:08001072:  00 00
-F00:0534       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:08001074:  00 00
-               S01:08001076:  00 00
-               S01:08001078:  00 00
-               S01:0800107A:  00 00
-               S01:0800107C:  00 00
-               S01:0800107E:  00 00
-               S01:08001080:  00 00
-               S01:08001082:  00 00
-               S01:08001084:  00 00
-               S01:08001086:  00 00
-               S01:08001088:  00 00
-               S01:0800108A:  00 00
-               S01:0800108C:  00 00
-               S01:0800108E:  00 00
-               S01:08001090:  00 00
-               S01:08001092:  00 00
-               S01:08001094:  00 00
-               S01:08001096:  00 00
-               S01:08001098:  00 00
-               S01:0800109A:  00 00
-               S01:0800109C:  00 00
-               S01:0800109E:  00 00
-               S01:080010A0:  00 00
-               S01:080010A2:  00 00
-               S01:080010A4:  00 00
-               S01:080010A6:  00 00
-               S01:080010A8:  00 00
-               S01:080010AA:  00 00
-               S01:080010AC:  00 00
-               S01:080010AE:  00 00
-               S01:080010B0:  00 00
-               S01:080010B2:  00 00
-F00:0535       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:080010B4:  00 00
-               S01:080010B6:  00 00
-               S01:080010B8:  00 00
-               S01:080010BA:  00 00
-               S01:080010BC:  00 00
-               S01:080010BE:  00 00
-               S01:080010C0:  00 00
-               S01:080010C2:  00 00
-               S01:080010C4:  00 00
-               S01:080010C6:  00 00
-               S01:080010C8:  00 00
-               S01:080010CA:  00 00
-               S01:080010CC:  00 00
-               S01:080010CE:  00 00
-               S01:080010D0:  00 00
-               S01:080010D2:  00 00
-               S01:080010D4:  00 00
-               S01:080010D6:  00 00
-               S01:080010D8:  00 00
-               S01:080010DA:  00 00
-               S01:080010DC:  00 00
-               S01:080010DE:  00 00
-               S01:080010E0:  00 00
-               S01:080010E2:  00 00
-               S01:080010E4:  00 00
-               S01:080010E6:  00 00
-               S01:080010E8:  00 00
-               S01:080010EA:  00 00
-               S01:080010EC:  00 00
-               S01:080010EE:  00 00
-               S01:080010F0:  00 00
-               S01:080010F2:  00 00
-F00:0536       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:080010F4:  00 00
-               S01:080010F6:  00 00
-               S01:080010F8:  00 00
-               S01:080010FA:  00 00
-               S01:080010FC:  00 00
-               S01:080010FE:  00 00
-               S01:08001100:  00 00
-               S01:08001102:  00 00
-               S01:08001104:  00 00
-               S01:08001106:  00 00
-               S01:08001108:  00 00
-               S01:0800110A:  00 00
-               S01:0800110C:  00 00
-               S01:0800110E:  00 00
-               S01:08001110:  00 00
-               S01:08001112:  00 00
-               S01:08001114:  00 00
-               S01:08001116:  00 00
-               S01:08001118:  00 00
-               S01:0800111A:  00 00
-               S01:0800111C:  00 00
-               S01:0800111E:  00 00
-               S01:08001120:  00 00
-               S01:08001122:  00 00
-               S01:08001124:  00 00
-               S01:08001126:  00 00
-               S01:08001128:  00 00
-               S01:0800112A:  00 00
-               S01:0800112C:  00 00
-               S01:0800112E:  00 00
-               S01:08001130:  00 00
-               S01:08001132:  00 00
-F00:0537       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:08001134:  00 00
-               S01:08001136:  00 00
-               S01:08001138:  00 00
-               S01:0800113A:  00 00
-               S01:0800113C:  00 00
-               S01:0800113E:  00 00
-               S01:08001140:  00 00
-               S01:08001142:  00 00
-               S01:08001144:  00 00
-               S01:08001146:  00 00
-               S01:08001148:  00 00
-               S01:0800114A:  00 00
-               S01:0800114C:  00 00
-               S01:0800114E:  00 00
-               S01:08001150:  00 00
-               S01:08001152:  00 00
-               S01:08001154:  00 00
-               S01:08001156:  00 00
-               S01:08001158:  00 00
-               S01:0800115A:  00 00
-               S01:0800115C:  00 00
-               S01:0800115E:  00 00
-               S01:08001160:  00 00
-               S01:08001162:  00 00
-               S01:08001164:  00 00
-               S01:08001166:  00 00
-               S01:08001168:  00 00
-               S01:0800116A:  00 00
-               S01:0800116C:  00 00
-               S01:0800116E:  00 00
-               S01:08001170:  00 00
-               S01:08001172:  00 00
-F00:0538       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:08001174:  00 00
-               S01:08001176:  00 00
-               S01:08001178:  00 00
-               S01:0800117A:  00 00
-               S01:0800117C:  00 00
-               S01:0800117E:  00 00
-               S01:08001180:  00 00
-               S01:08001182:  00 00
-               S01:08001184:  00 00
-               S01:08001186:  00 00
-               S01:08001188:  00 00
-               S01:0800118A:  00 00
-               S01:0800118C:  00 00
-               S01:0800118E:  00 00
-               S01:08001190:  00 00
-               S01:08001192:  00 00
-               S01:08001194:  00 00
-               S01:08001196:  00 00
-               S01:08001198:  00 00
-               S01:0800119A:  00 00
-               S01:0800119C:  00 00
-               S01:0800119E:  00 00
-               S01:080011A0:  00 00
-               S01:080011A2:  00 00
-               S01:080011A4:  00 00
-               S01:080011A6:  00 00
-               S01:080011A8:  00 00
-               S01:080011AA:  00 00
-               S01:080011AC:  00 00
-               S01:080011AE:  00 00
-               S01:080011B0:  00 00
-               S01:080011B2:  00 00
-F00:0539       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:080011B4:  00 00
-               S01:080011B6:  00 00
-               S01:080011B8:  00 00
-               S01:080011BA:  00 00
-               S01:080011BC:  00 00
-               S01:080011BE:  00 00
-               S01:080011C0:  00 00
-               S01:080011C2:  00 00
-               S01:080011C4:  00 00
-               S01:080011C6:  00 00
-               S01:080011C8:  00 00
-               S01:080011CA:  00 00
-               S01:080011CC:  00 00
-               S01:080011CE:  00 00
-               S01:080011D0:  00 00
-               S01:080011D2:  00 00
-               S01:080011D4:  00 00
-               S01:080011D6:  00 00
-               S01:080011D8:  00 00
-               S01:080011DA:  00 00
-               S01:080011DC:  00 00
-               S01:080011DE:  00 00
-               S01:080011E0:  00 00
-               S01:080011E2:  00 00
-               S01:080011E4:  00 00
-               S01:080011E6:  00 00
-               S01:080011E8:  00 00
-               S01:080011EA:  00 00
-               S01:080011EC:  00 00
-               S01:080011EE:  00 00
-               S01:080011F0:  00 00
-               S01:080011F2:  00 00
-F00:0540       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:080011F4:  00 00
-               S01:080011F6:  00 00
-               S01:080011F8:  00 00
-               S01:080011FA:  00 00
-               S01:080011FC:  00 00
-               S01:080011FE:  00 00
-               S01:08001200:  00 00
-               S01:08001202:  00 00
-               S01:08001204:  00 00
-               S01:08001206:  00 00
-               S01:08001208:  00 00
-               S01:0800120A:  00 00
-               S01:0800120C:  00 00
-               S01:0800120E:  00 00
-               S01:08001210:  00 00
-               S01:08001212:  00 00
-               S01:08001214:  00 00
-               S01:08001216:  00 00
-               S01:08001218:  00 00
-               S01:0800121A:  00 00
-               S01:0800121C:  00 00
-               S01:0800121E:  00 00
-               S01:08001220:  00 00
-               S01:08001222:  00 00
-               S01:08001224:  00 00
-               S01:08001226:  00 00
-               S01:08001228:  00 00
-               S01:0800122A:  00 00
-               S01:0800122C:  00 00
-               S01:0800122E:  00 00
-               S01:08001230:  00 00
-               S01:08001232:  00 00
-F00:0541       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:08001234:  00 00
-               S01:08001236:  00 00
-               S01:08001238:  00 00
-               S01:0800123A:  00 00
-               S01:0800123C:  00 00
-               S01:0800123E:  00 00
-               S01:08001240:  00 00
-               S01:08001242:  00 00
-               S01:08001244:  00 00
-               S01:08001246:  00 00
-               S01:08001248:  00 00
-               S01:0800124A:  00 00
-               S01:0800124C:  00 00
-               S01:0800124E:  00 00
-               S01:08001250:  00 00
-               S01:08001252:  00 00
-               S01:08001254:  00 00
-               S01:08001256:  00 00
-               S01:08001258:  00 00
-               S01:0800125A:  00 00
-               S01:0800125C:  00 00
-               S01:0800125E:  00 00
-               S01:08001260:  00 00
-               S01:08001262:  00 00
-               S01:08001264:  00 00
-               S01:08001266:  00 00
-               S01:08001268:  00 00
-               S01:0800126A:  00 00
-               S01:0800126C:  00 00
-               S01:0800126E:  00 00
-               S01:08001270:  00 00
-               S01:08001272:  00 00
-F00:0542       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:08001274:  00 00
-               S01:08001276:  00 00
-               S01:08001278:  00 00
-               S01:0800127A:  00 00
-               S01:0800127C:  00 00
-               S01:0800127E:  00 00
-               S01:08001280:  00 00
-               S01:08001282:  00 00
-               S01:08001284:  00 00
-               S01:08001286:  00 00
-               S01:08001288:  00 00
-               S01:0800128A:  00 00
-               S01:0800128C:  00 00
-               S01:0800128E:  00 00
-               S01:08001290:  00 00
-               S01:08001292:  00 00
-               S01:08001294:  00 00
-               S01:08001296:  00 00
-               S01:08001298:  00 00
-               S01:0800129A:  00 00
-               S01:0800129C:  00 00
-               S01:0800129E:  00 00
-               S01:080012A0:  00 00
-               S01:080012A2:  00 00
-               S01:080012A4:  00 00
-               S01:080012A6:  00 00
-               S01:080012A8:  00 00
-               S01:080012AA:  00 00
-               S01:080012AC:  00 00
-               S01:080012AE:  00 00
-               S01:080012B0:  00 00
-               S01:080012B2:  00 00
-F00:0543       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:080012B4:  00 00
-               S01:080012B6:  00 00
-               S01:080012B8:  00 00
-               S01:080012BA:  00 00
-               S01:080012BC:  00 00
-               S01:080012BE:  00 00
-               S01:080012C0:  00 00
-               S01:080012C2:  00 00
-               S01:080012C4:  00 00
-               S01:080012C6:  00 00
-               S01:080012C8:  00 00
-               S01:080012CA:  00 00
-               S01:080012CC:  00 00
-               S01:080012CE:  00 00
-               S01:080012D0:  00 00
-               S01:080012D2:  00 00
+F00:0504       
+F00:0505       	
+F00:0506       TilemapFiles:
+F00:0507       	.INCBIN "\Tilemaps\GameTilemap.RAW"
+               S01:08000A34:  AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA
+               S01:08000A44:  AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA
+F00:0508       TilemapFiles_END:;Points to memory at end of files so we can get their size
+F00:0509       
+F00:0510       SpriteFiles:
+F00:0511       	.INCBIN "\Tilemaps\TestSpriteTiles.RAW"
+               S01:08001234:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+               S01:08001244:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+F00:0512       SpriteFiles_END:
+F00:0513       
+F00:0514       .EQU PlayerSpriteNum, 0x01	;Sprite number of player
+F00:0515       .EQU PlayerTileStart, 1 ;Index of first sprite tile
+F00:0516       	
+F00:0517       ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
+F00:0518       Tilemap:
+F00:0519       	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,23,22,2 ,0 ,0 ,1 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0
                S01:080012D4:  00 00
                S01:080012D6:  00 00
                S01:080012D8:  00 00
                S01:080012DA:  00 00
                S01:080012DC:  00 00
                S01:080012DE:  00 00
-               S01:080012E0:  00 00
-               S01:080012E2:  00 00
-               S01:080012E4:  00 00
+               S01:080012E0:  17 00
+               S01:080012E2:  16 00
+               S01:080012E4:  02 00
                S01:080012E6:  00 00
                S01:080012E8:  00 00
-               S01:080012EA:  00 00
+               S01:080012EA:  01 00
                S01:080012EC:  00 00
-               S01:080012EE:  00 00
-               S01:080012F0:  00 00
-               S01:080012F2:  00 00
-F00:0544       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:080012F4:  00 00
+               S01:080012EE:  0C 00
+               S01:080012F0:  03 00
+               S01:080012F2:  03 00
+               S01:080012F4:  0F 00
                S01:080012F6:  00 00
-               S01:080012F8:  00 00
+               S01:080012F8:  02 00
                S01:080012FA:  00 00
                S01:080012FC:  00 00
                S01:080012FE:  00 00
-               S01:08001300:  00 00
+               S01:08001300:  02 00
                S01:08001302:  00 00
                S01:08001304:  00 00
                S01:08001306:  00 00
-               S01:08001308:  00 00
+               S01:08001308:  01 00
                S01:0800130A:  00 00
-               S01:0800130C:  00 00
+               S01:0800130C:  01 00
                S01:0800130E:  00 00
                S01:08001310:  00 00
                S01:08001312:  00 00
+F00:0520       	.WORD 0 ,2 ,0 ,1 ,2 ,0 ,23,22,1 ,2 ,0 ,0 ,0 ,12,3 ,3 ,15,1 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0
                S01:08001314:  00 00
-               S01:08001316:  00 00
+               S01:08001316:  02 00
                S01:08001318:  00 00
-               S01:0800131A:  00 00
-               S01:0800131C:  00 00
+               S01:0800131A:  01 00
+               S01:0800131C:  02 00
                S01:0800131E:  00 00
-               S01:08001320:  00 00
-               S01:08001322:  00 00
-               S01:08001324:  00 00
-               S01:08001326:  00 00
+               S01:08001320:  17 00
+               S01:08001322:  16 00
+               S01:08001324:  01 00
+               S01:08001326:  02 00
                S01:08001328:  00 00
                S01:0800132A:  00 00
                S01:0800132C:  00 00
-               S01:0800132E:  00 00
-               S01:08001330:  00 00
-               S01:08001332:  00 00
-F00:0545       	.WORD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-               S01:08001334:  00 00
-               S01:08001336:  00 00
+               S01:0800132E:  0C 00
+               S01:08001330:  03 00
+               S01:08001332:  03 00
+               S01:08001334:  0F 00
+               S01:08001336:  01 00
                S01:08001338:  00 00
                S01:0800133A:  00 00
                S01:0800133C:  00 00
-               S01:0800133E:  00 00
+               S01:0800133E:  02 00
                S01:08001340:  00 00
-               S01:08001342:  00 00
+               S01:08001342:  01 00
                S01:08001344:  00 00
                S01:08001346:  00 00
-               S01:08001348:  00 00
+               S01:08001348:  02 00
                S01:0800134A:  00 00
                S01:0800134C:  00 00
                S01:0800134E:  00 00
-               S01:08001350:  00 00
+               S01:08001350:  01 00
                S01:08001352:  00 00
+F00:0521       	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,23,22,2 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
                S01:08001354:  00 00
                S01:08001356:  00 00
                S01:08001358:  00 00
                S01:0800135A:  00 00
                S01:0800135C:  00 00
                S01:0800135E:  00 00
-               S01:08001360:  00 00
-               S01:08001362:  00 00
-               S01:08001364:  00 00
+               S01:08001360:  17 00
+               S01:08001362:  16 00
+               S01:08001364:  02 00
                S01:08001366:  00 00
                S01:08001368:  00 00
                S01:0800136A:  00 00
                S01:0800136C:  00 00
-               S01:0800136E:  00 00
-               S01:08001370:  00 00
-               S01:08001372:  00 00
-F00:0546       Tilemap_END:
-F00:0547       	
-F00:0548       
+               S01:0800136E:  0C 00
+               S01:08001370:  03 00
+               S01:08001372:  03 00
+               S01:08001374:  0F 00
+               S01:08001376:  00 00
+               S01:08001378:  02 00
+               S01:0800137A:  00 00
+               S01:0800137C:  00 00
+               S01:0800137E:  00 00
+               S01:08001380:  00 00
+               S01:08001382:  00 00
+               S01:08001384:  00 00
+               S01:08001386:  00 00
+               S01:08001388:  00 00
+               S01:0800138A:  00 00
+               S01:0800138C:  00 00
+               S01:0800138E:  00 00
+               S01:08001390:  00 00
+               S01:08001392:  02 00
+F00:0522       	.WORD 0 ,0 ,0 ,2 ,0 ,0 ,23,22,0 ,0 ,1 ,14,14,8 ,3 ,3 ,11,14,14,14,14,0 ,0 ,2 ,0 ,0 ,2 ,1 ,0 ,1 ,0 ,0
+               S01:08001394:  00 00
+               S01:08001396:  00 00
+               S01:08001398:  00 00
+               S01:0800139A:  02 00
+               S01:0800139C:  00 00
+               S01:0800139E:  00 00
+               S01:080013A0:  17 00
+               S01:080013A2:  16 00
+               S01:080013A4:  00 00
+               S01:080013A6:  00 00
+               S01:080013A8:  01 00
+               S01:080013AA:  0E 00
+               S01:080013AC:  0E 00
+               S01:080013AE:  08 00
+               S01:080013B0:  03 00
+               S01:080013B2:  03 00
+               S01:080013B4:  0B 00
+               S01:080013B6:  0E 00
+               S01:080013B8:  0E 00
+               S01:080013BA:  0E 00
+               S01:080013BC:  0E 00
+               S01:080013BE:  00 00
+               S01:080013C0:  00 00
+               S01:080013C2:  02 00
+               S01:080013C4:  00 00
+               S01:080013C6:  00 00
+               S01:080013C8:  02 00
+               S01:080013CA:  01 00
+               S01:080013CC:  00 00
+               S01:080013CE:  01 00
+               S01:080013D0:  00 00
+               S01:080013D2:  00 00
+F00:0523       	.WORD 0 ,1 ,0 ,0 ,2 ,0 ,23,22,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+               S01:080013D4:  00 00
+               S01:080013D6:  01 00
+               S01:080013D8:  00 00
+               S01:080013DA:  00 00
+               S01:080013DC:  02 00
+               S01:080013DE:  00 00
+               S01:080013E0:  17 00
+               S01:080013E2:  16 00
+               S01:080013E4:  00 00
+               S01:080013E6:  00 00
+               S01:080013E8:  0C 00
+               S01:080013EA:  03 00
+               S01:080013EC:  03 00
+               S01:080013EE:  03 00
+               S01:080013F0:  03 00
+               S01:080013F2:  03 00
+               S01:080013F4:  03 00
+               S01:080013F6:  03 00
+               S01:080013F8:  03 00
+               S01:080013FA:  03 00
+               S01:080013FC:  03 00
+               S01:080013FE:  0F 00
+               S01:08001400:  02 00
+               S01:08001402:  00 00
+               S01:08001404:  00 00
+               S01:08001406:  00 00
+               S01:08001408:  00 00
+               S01:0800140A:  01 00
+               S01:0800140C:  00 00
+               S01:0800140E:  00 00
+               S01:08001410:  00 00
+               S01:08001412:  00 00
+F00:0524       	.WORD 0 ,1 ,0 ,0 ,2 ,0 ,23,22,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+               S01:08001414:  00 00
+               S01:08001416:  01 00
+               S01:08001418:  00 00
+               S01:0800141A:  00 00
+               S01:0800141C:  02 00
+               S01:0800141E:  00 00
+               S01:08001420:  17 00
+               S01:08001422:  16 00
+               S01:08001424:  00 00
+               S01:08001426:  00 00
+               S01:08001428:  0C 00
+               S01:0800142A:  03 00
+               S01:0800142C:  03 00
+               S01:0800142E:  03 00
+               S01:08001430:  03 00
+               S01:08001432:  03 00
+               S01:08001434:  03 00
+               S01:08001436:  03 00
+               S01:08001438:  03 00
+               S01:0800143A:  03 00
+               S01:0800143C:  03 00
+               S01:0800143E:  0F 00
+               S01:08001440:  02 00
+               S01:08001442:  00 00
+               S01:08001444:  00 00
+               S01:08001446:  00 00
+               S01:08001448:  00 00
+               S01:0800144A:  01 00
+               S01:0800144C:  00 00
+               S01:0800144E:  00 00
+               S01:08001450:  00 00
+               S01:08001452:  00 00
+F00:0525       	.WORD 19,19,32,32,32,19,28,22,2 ,0 ,12,3 ,3 ,10,13,13,13,13,9 ,3 ,3 ,15,0 ,2 ,0 ,1 ,2 ,0 ,0 ,0 ,2 ,0
+               S01:08001454:  13 00
+               S01:08001456:  13 00
+               S01:08001458:  20 00
+               S01:0800145A:  20 00
+               S01:0800145C:  20 00
+               S01:0800145E:  13 00
+               S01:08001460:  1C 00
+               S01:08001462:  16 00
+               S01:08001464:  02 00
+               S01:08001466:  00 00
+               S01:08001468:  0C 00
+               S01:0800146A:  03 00
+               S01:0800146C:  03 00
+               S01:0800146E:  0A 00
+               S01:08001470:  0D 00
+               S01:08001472:  0D 00
+               S01:08001474:  0D 00
+               S01:08001476:  0D 00
+               S01:08001478:  09 00
+               S01:0800147A:  03 00
+               S01:0800147C:  03 00
+               S01:0800147E:  0F 00
+               S01:08001480:  00 00
+               S01:08001482:  02 00
+               S01:08001484:  00 00
+               S01:08001486:  01 00
+               S01:08001488:  02 00
+               S01:0800148A:  00 00
+               S01:0800148C:  00 00
+               S01:0800148E:  00 00
+               S01:08001490:  02 00
+               S01:08001492:  00 00
+F00:0526       	.WORD 30,30,32,32,32,30,30,22,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,1 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,0
+               S01:08001494:  1E 00
+               S01:08001496:  1E 00
+               S01:08001498:  20 00
+               S01:0800149A:  20 00
+               S01:0800149C:  20 00
+               S01:0800149E:  1E 00
+               S01:080014A0:  1E 00
+               S01:080014A2:  16 00
+               S01:080014A4:  00 00
+               S01:080014A6:  00 00
+               S01:080014A8:  0C 00
+               S01:080014AA:  03 00
+               S01:080014AC:  03 00
+               S01:080014AE:  0F 00
+               S01:080014B0:  00 00
+               S01:080014B2:  02 00
+               S01:080014B4:  00 00
+               S01:080014B6:  01 00
+               S01:080014B8:  0C 00
+               S01:080014BA:  03 00
+               S01:080014BC:  03 00
+               S01:080014BE:  0F 00
+               S01:080014C0:  00 00
+               S01:080014C2:  00 00
+               S01:080014C4:  00 00
+               S01:080014C6:  00 00
+               S01:080014C8:  00 00
+               S01:080014CA:  02 00
+               S01:080014CC:  00 00
+               S01:080014CE:  00 00
+               S01:080014D0:  01 00
+               S01:080014D2:  00 00
+F00:0527       	.WORD 18,25,32,32,32,24,18,25,1 ,2 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:080014D4:  12 00
+               S01:080014D6:  19 00
+               S01:080014D8:  20 00
+               S01:080014DA:  20 00
+               S01:080014DC:  20 00
+               S01:080014DE:  18 00
+               S01:080014E0:  12 00
+               S01:080014E2:  19 00
+               S01:080014E4:  01 00
+               S01:080014E6:  02 00
+               S01:080014E8:  0C 00
+               S01:080014EA:  03 00
+               S01:080014EC:  03 00
+               S01:080014EE:  0F 00
+               S01:080014F0:  00 00
+               S01:080014F2:  00 00
+               S01:080014F4:  00 00
+               S01:080014F6:  00 00
+               S01:080014F8:  0C 00
+               S01:080014FA:  03 00
+               S01:080014FC:  03 00
+               S01:080014FE:  0F 00
+               S01:08001500:  00 00
+               S01:08001502:  01 00
+               S01:08001504:  02 00
+               S01:08001506:  00 00
+               S01:08001508:  00 00
+               S01:0800150A:  00 00
+               S01:0800150C:  00 00
+               S01:0800150E:  00 00
+               S01:08001510:  00 00
+               S01:08001512:  02 00
+F00:0528       	.WORD 0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0
+               S01:08001514:  00 00
+               S01:08001516:  00 00
+               S01:08001518:  00 00
+               S01:0800151A:  02 00
+               S01:0800151C:  00 00
+               S01:0800151E:  00 00
+               S01:08001520:  00 00
+               S01:08001522:  00 00
+               S01:08001524:  00 00
+               S01:08001526:  00 00
+               S01:08001528:  0C 00
+               S01:0800152A:  03 00
+               S01:0800152C:  03 00
+               S01:0800152E:  0F 00
+               S01:08001530:  00 00
+               S01:08001532:  00 00
+               S01:08001534:  00 00
+               S01:08001536:  00 00
+               S01:08001538:  0C 00
+               S01:0800153A:  03 00
+               S01:0800153C:  03 00
+               S01:0800153E:  0F 00
+               S01:08001540:  00 00
+               S01:08001542:  00 00
+               S01:08001544:  00 00
+               S01:08001546:  00 00
+               S01:08001548:  00 00
+               S01:0800154A:  01 00
+               S01:0800154C:  00 00
+               S01:0800154E:  02 00
+               S01:08001550:  00 00
+               S01:08001552:  00 00
+F00:0529       	.WORD 0 ,1 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,0 ,0 ,12,3 ,3 ,15,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
+               S01:08001554:  00 00
+               S01:08001556:  01 00
+               S01:08001558:  00 00
+               S01:0800155A:  00 00
+               S01:0800155C:  00 00
+               S01:0800155E:  01 00
+               S01:08001560:  00 00
+               S01:08001562:  02 00
+               S01:08001564:  00 00
+               S01:08001566:  00 00
+               S01:08001568:  0C 00
+               S01:0800156A:  03 00
+               S01:0800156C:  03 00
+               S01:0800156E:  0F 00
+               S01:08001570:  00 00
+               S01:08001572:  01 00
+               S01:08001574:  00 00
+               S01:08001576:  00 00
+               S01:08001578:  0C 00
+               S01:0800157A:  03 00
+               S01:0800157C:  03 00
+               S01:0800157E:  0F 00
+               S01:08001580:  02 00
+               S01:08001582:  00 00
+               S01:08001584:  00 00
+               S01:08001586:  00 00
+               S01:08001588:  02 00
+               S01:0800158A:  00 00
+               S01:0800158C:  00 00
+               S01:0800158E:  00 00
+               S01:08001590:  00 00
+               S01:08001592:  00 00
+F00:0530       	.WORD 0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,12,3 ,3 ,11,14,14,14,14,8 ,3 ,3 ,15,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:08001594:  00 00
+               S01:08001596:  00 00
+               S01:08001598:  00 00
+               S01:0800159A:  01 00
+               S01:0800159C:  00 00
+               S01:0800159E:  00 00
+               S01:080015A0:  00 00
+               S01:080015A2:  00 00
+               S01:080015A4:  01 00
+               S01:080015A6:  00 00
+               S01:080015A8:  0C 00
+               S01:080015AA:  03 00
+               S01:080015AC:  03 00
+               S01:080015AE:  0B 00
+               S01:080015B0:  0E 00
+               S01:080015B2:  0E 00
+               S01:080015B4:  0E 00
+               S01:080015B6:  0E 00
+               S01:080015B8:  08 00
+               S01:080015BA:  03 00
+               S01:080015BC:  03 00
+               S01:080015BE:  0F 00
+               S01:080015C0:  00 00
+               S01:080015C2:  00 00
+               S01:080015C4:  00 00
+               S01:080015C6:  02 00
+               S01:080015C8:  00 00
+               S01:080015CA:  00 00
+               S01:080015CC:  00 00
+               S01:080015CE:  00 00
+               S01:080015D0:  00 00
+               S01:080015D2:  02 00
+F00:0531       	.WORD 0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+               S01:080015D4:  00 00
+               S01:080015D6:  02 00
+               S01:080015D8:  00 00
+               S01:080015DA:  00 00
+               S01:080015DC:  02 00
+               S01:080015DE:  00 00
+               S01:080015E0:  00 00
+               S01:080015E2:  00 00
+               S01:080015E4:  02 00
+               S01:080015E6:  00 00
+               S01:080015E8:  0C 00
+               S01:080015EA:  03 00
+               S01:080015EC:  03 00
+               S01:080015EE:  03 00
+               S01:080015F0:  03 00
+               S01:080015F2:  03 00
+               S01:080015F4:  03 00
+               S01:080015F6:  03 00
+               S01:080015F8:  03 00
+               S01:080015FA:  03 00
+               S01:080015FC:  03 00
+               S01:080015FE:  0F 00
+               S01:08001600:  00 00
+               S01:08001602:  02 00
+               S01:08001604:  00 00
+               S01:08001606:  00 00
+               S01:08001608:  00 00
+               S01:0800160A:  00 00
+               S01:0800160C:  02 00
+               S01:0800160E:  00 00
+               S01:08001610:  00 00
+               S01:08001612:  00 00
+F00:0532       	.WORD 0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+               S01:08001614:  00 00
+               S01:08001616:  01 00
+               S01:08001618:  00 00
+               S01:0800161A:  00 00
+               S01:0800161C:  02 00
+               S01:0800161E:  00 00
+               S01:08001620:  00 00
+               S01:08001622:  01 00
+               S01:08001624:  00 00
+               S01:08001626:  00 00
+               S01:08001628:  0C 00
+               S01:0800162A:  03 00
+               S01:0800162C:  03 00
+               S01:0800162E:  03 00
+               S01:08001630:  03 00
+               S01:08001632:  03 00
+               S01:08001634:  03 00
+               S01:08001636:  03 00
+               S01:08001638:  03 00
+               S01:0800163A:  03 00
+               S01:0800163C:  03 00
+               S01:0800163E:  0F 00
+               S01:08001640:  02 00
+               S01:08001642:  00 00
+               S01:08001644:  00 00
+               S01:08001646:  00 00
+               S01:08001648:  00 00
+               S01:0800164A:  01 00
+               S01:0800164C:  00 00
+               S01:0800164E:  00 00
+               S01:08001650:  00 00
+               S01:08001652:  00 00
+F00:0533       	.WORD 0 ,0 ,1 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,13,13,13,13,13,13,13,13,13,13,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0
+               S01:08001654:  00 00
+               S01:08001656:  00 00
+               S01:08001658:  01 00
+               S01:0800165A:  02 00
+               S01:0800165C:  00 00
+               S01:0800165E:  00 00
+               S01:08001660:  01 00
+               S01:08001662:  02 00
+               S01:08001664:  00 00
+               S01:08001666:  00 00
+               S01:08001668:  00 00
+               S01:0800166A:  0D 00
+               S01:0800166C:  0D 00
+               S01:0800166E:  0D 00
+               S01:08001670:  0D 00
+               S01:08001672:  0D 00
+               S01:08001674:  0D 00
+               S01:08001676:  0D 00
+               S01:08001678:  0D 00
+               S01:0800167A:  0D 00
+               S01:0800167C:  0D 00
+               S01:0800167E:  00 00
+               S01:08001680:  01 00
+               S01:08001682:  00 00
+               S01:08001684:  00 00
+               S01:08001686:  00 00
+               S01:08001688:  01 00
+               S01:0800168A:  00 00
+               S01:0800168C:  00 00
+               S01:0800168E:  00 00
+               S01:08001690:  00 00
+               S01:08001692:  00 00
+F00:0534       	.WORD 0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,2 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,2
+               S01:08001694:  00 00
+               S01:08001696:  00 00
+               S01:08001698:  00 00
+               S01:0800169A:  00 00
+               S01:0800169C:  00 00
+               S01:0800169E:  02 00
+               S01:080016A0:  00 00
+               S01:080016A2:  00 00
+               S01:080016A4:  00 00
+               S01:080016A6:  02 00
+               S01:080016A8:  00 00
+               S01:080016AA:  00 00
+               S01:080016AC:  00 00
+               S01:080016AE:  00 00
+               S01:080016B0:  00 00
+               S01:080016B2:  01 00
+               S01:080016B4:  02 00
+               S01:080016B6:  00 00
+               S01:080016B8:  01 00
+               S01:080016BA:  00 00
+               S01:080016BC:  02 00
+               S01:080016BE:  00 00
+               S01:080016C0:  00 00
+               S01:080016C2:  00 00
+               S01:080016C4:  00 00
+               S01:080016C6:  02 00
+               S01:080016C8:  00 00
+               S01:080016CA:  00 00
+               S01:080016CC:  00 00
+               S01:080016CE:  02 00
+               S01:080016D0:  00 00
+               S01:080016D2:  02 00
+F00:0535       	.WORD 1 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0
+               S01:080016D4:  01 00
+               S01:080016D6:  00 00
+               S01:080016D8:  01 00
+               S01:080016DA:  02 00
+               S01:080016DC:  00 00
+               S01:080016DE:  00 00
+               S01:080016E0:  00 00
+               S01:080016E2:  00 00
+               S01:080016E4:  00 00
+               S01:080016E6:  01 00
+               S01:080016E8:  00 00
+               S01:080016EA:  00 00
+               S01:080016EC:  00 00
+               S01:080016EE:  02 00
+               S01:080016F0:  00 00
+               S01:080016F2:  00 00
+               S01:080016F4:  00 00
+               S01:080016F6:  00 00
+               S01:080016F8:  02 00
+               S01:080016FA:  00 00
+               S01:080016FC:  00 00
+               S01:080016FE:  00 00
+               S01:08001700:  00 00
+               S01:08001702:  00 00
+               S01:08001704:  00 00
+               S01:08001706:  01 00
+               S01:08001708:  00 00
+               S01:0800170A:  02 00
+               S01:0800170C:  00 00
+               S01:0800170E:  00 00
+               S01:08001710:  00 00
+               S01:08001712:  00 00
+F00:0536       	.WORD 0 ,0 ,2 ,0 ,0 ,2 ,1 ,2 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0
+               S01:08001714:  00 00
+               S01:08001716:  00 00
+               S01:08001718:  02 00
+               S01:0800171A:  00 00
+               S01:0800171C:  00 00
+               S01:0800171E:  02 00
+               S01:08001720:  01 00
+               S01:08001722:  02 00
+               S01:08001724:  00 00
+               S01:08001726:  00 00
+               S01:08001728:  02 00
+               S01:0800172A:  00 00
+               S01:0800172C:  01 00
+               S01:0800172E:  00 00
+               S01:08001730:  00 00
+               S01:08001732:  02 00
+               S01:08001734:  00 00
+               S01:08001736:  00 00
+               S01:08001738:  01 00
+               S01:0800173A:  00 00
+               S01:0800173C:  02 00
+               S01:0800173E:  00 00
+               S01:08001740:  00 00
+               S01:08001742:  00 00
+               S01:08001744:  00 00
+               S01:08001746:  00 00
+               S01:08001748:  00 00
+               S01:0800174A:  00 00
+               S01:0800174C:  01 00
+               S01:0800174E:  00 00
+               S01:08001750:  00 00
+               S01:08001752:  00 00
+F00:0537       	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0
+               S01:08001754:  00 00
+               S01:08001756:  00 00
+               S01:08001758:  00 00
+               S01:0800175A:  00 00
+               S01:0800175C:  00 00
+               S01:0800175E:  00 00
+               S01:08001760:  00 00
+               S01:08001762:  00 00
+               S01:08001764:  00 00
+               S01:08001766:  00 00
+               S01:08001768:  00 00
+               S01:0800176A:  00 00
+               S01:0800176C:  00 00
+               S01:0800176E:  00 00
+               S01:08001770:  00 00
+               S01:08001772:  00 00
+               S01:08001774:  00 00
+               S01:08001776:  00 00
+               S01:08001778:  00 00
+               S01:0800177A:  00 00
+               S01:0800177C:  00 00
+               S01:0800177E:  00 00
+               S01:08001780:  01 00
+               S01:08001782:  00 00
+               S01:08001784:  02 00
+               S01:08001786:  00 00
+               S01:08001788:  00 00
+               S01:0800178A:  00 00
+               S01:0800178C:  00 00
+               S01:0800178E:  00 00
+               S01:08001790:  01 00
+               S01:08001792:  00 00
+F00:0538       	.WORD 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
+               S01:08001794:  00 00
+               S01:08001796:  00 00
+               S01:08001798:  02 00
+               S01:0800179A:  00 00
+               S01:0800179C:  00 00
+               S01:0800179E:  00 00
+               S01:080017A0:  02 00
+               S01:080017A2:  00 00
+               S01:080017A4:  00 00
+               S01:080017A6:  00 00
+               S01:080017A8:  00 00
+               S01:080017AA:  02 00
+               S01:080017AC:  00 00
+               S01:080017AE:  00 00
+               S01:080017B0:  00 00
+               S01:080017B2:  00 00
+               S01:080017B4:  00 00
+               S01:080017B6:  02 00
+               S01:080017B8:  00 00
+               S01:080017BA:  00 00
+               S01:080017BC:  00 00
+               S01:080017BE:  00 00
+               S01:080017C0:  02 00
+               S01:080017C2:  00 00
+               S01:080017C4:  00 00
+               S01:080017C6:  00 00
+               S01:080017C8:  02 00
+               S01:080017CA:  00 00
+               S01:080017CC:  00 00
+               S01:080017CE:  00 00
+               S01:080017D0:  00 00
+               S01:080017D2:  00 00
+F00:0539       	.WORD 0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+               S01:080017D4:  00 00
+               S01:080017D6:  00 00
+               S01:080017D8:  00 00
+               S01:080017DA:  00 00
+               S01:080017DC:  02 00
+               S01:080017DE:  00 00
+               S01:080017E0:  00 00
+               S01:080017E2:  00 00
+               S01:080017E4:  00 00
+               S01:080017E6:  01 00
+               S01:080017E8:  00 00
+               S01:080017EA:  00 00
+               S01:080017EC:  00 00
+               S01:080017EE:  00 00
+               S01:080017F0:  01 00
+               S01:080017F2:  00 00
+               S01:080017F4:  00 00
+               S01:080017F6:  00 00
+               S01:080017F8:  00 00
+               S01:080017FA:  02 00
+               S01:080017FC:  00 00
+               S01:080017FE:  00 00
+               S01:08001800:  00 00
+               S01:08001802:  00 00
+               S01:08001804:  01 00
+               S01:08001806:  00 00
+               S01:08001808:  00 00
+               S01:0800180A:  01 00
+               S01:0800180C:  00 00
+               S01:0800180E:  00 00
+               S01:08001810:  00 00
+               S01:08001812:  00 00
+F00:0540       	.WORD 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:08001814:  00 00
+               S01:08001816:  00 00
+               S01:08001818:  01 00
+               S01:0800181A:  00 00
+               S01:0800181C:  00 00
+               S01:0800181E:  00 00
+               S01:08001820:  00 00
+               S01:08001822:  00 00
+               S01:08001824:  00 00
+               S01:08001826:  00 00
+               S01:08001828:  00 00
+               S01:0800182A:  00 00
+               S01:0800182C:  00 00
+               S01:0800182E:  00 00
+               S01:08001830:  00 00
+               S01:08001832:  00 00
+               S01:08001834:  00 00
+               S01:08001836:  00 00
+               S01:08001838:  01 00
+               S01:0800183A:  00 00
+               S01:0800183C:  00 00
+               S01:0800183E:  00 00
+               S01:08001840:  00 00
+               S01:08001842:  00 00
+               S01:08001844:  00 00
+               S01:08001846:  02 00
+               S01:08001848:  00 00
+               S01:0800184A:  00 00
+               S01:0800184C:  00 00
+               S01:0800184E:  00 00
+               S01:08001850:  00 00
+               S01:08001852:  02 00
+F00:0541       	.WORD 0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+               S01:08001854:  00 00
+               S01:08001856:  00 00
+               S01:08001858:  02 00
+               S01:0800185A:  00 00
+               S01:0800185C:  00 00
+               S01:0800185E:  00 00
+               S01:08001860:  00 00
+               S01:08001862:  02 00
+               S01:08001864:  00 00
+               S01:08001866:  00 00
+               S01:08001868:  00 00
+               S01:0800186A:  01 00
+               S01:0800186C:  00 00
+               S01:0800186E:  00 00
+               S01:08001870:  00 00
+               S01:08001872:  00 00
+               S01:08001874:  02 00
+               S01:08001876:  00 00
+               S01:08001878:  00 00
+               S01:0800187A:  00 00
+               S01:0800187C:  00 00
+               S01:0800187E:  02 00
+               S01:08001880:  00 00
+               S01:08001882:  01 00
+               S01:08001884:  00 00
+               S01:08001886:  00 00
+               S01:08001888:  00 00
+               S01:0800188A:  00 00
+               S01:0800188C:  02 00
+               S01:0800188E:  00 00
+               S01:08001890:  00 00
+               S01:08001892:  00 00
+F00:0542       	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0
+               S01:08001894:  00 00
+               S01:08001896:  00 00
+               S01:08001898:  00 00
+               S01:0800189A:  00 00
+               S01:0800189C:  00 00
+               S01:0800189E:  00 00
+               S01:080018A0:  01 00
+               S01:080018A2:  00 00
+               S01:080018A4:  00 00
+               S01:080018A6:  02 00
+               S01:080018A8:  00 00
+               S01:080018AA:  00 00
+               S01:080018AC:  00 00
+               S01:080018AE:  02 00
+               S01:080018B0:  00 00
+               S01:080018B2:  00 00
+               S01:080018B4:  00 00
+               S01:080018B6:  00 00
+               S01:080018B8:  00 00
+               S01:080018BA:  00 00
+               S01:080018BC:  00 00
+               S01:080018BE:  00 00
+               S01:080018C0:  02 00
+               S01:080018C2:  00 00
+               S01:080018C4:  00 00
+               S01:080018C6:  00 00
+               S01:080018C8:  02 00
+               S01:080018CA:  00 00
+               S01:080018CC:  01 00
+               S01:080018CE:  00 00
+               S01:080018D0:  00 00
+               S01:080018D2:  00 00
+F00:0543       	.WORD 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0
+               S01:080018D4:  00 00
+               S01:080018D6:  00 00
+               S01:080018D8:  01 00
+               S01:080018DA:  00 00
+               S01:080018DC:  00 00
+               S01:080018DE:  00 00
+               S01:080018E0:  00 00
+               S01:080018E2:  00 00
+               S01:080018E4:  00 00
+               S01:080018E6:  00 00
+               S01:080018E8:  00 00
+               S01:080018EA:  01 00
+               S01:080018EC:  00 00
+               S01:080018EE:  00 00
+               S01:080018F0:  00 00
+               S01:080018F2:  00 00
+               S01:080018F4:  01 00
+               S01:080018F6:  00 00
+               S01:080018F8:  02 00
+               S01:080018FA:  00 00
+               S01:080018FC:  00 00
+               S01:080018FE:  01 00
+               S01:08001900:  00 00
+               S01:08001902:  00 00
+               S01:08001904:  02 00
+               S01:08001906:  00 00
+               S01:08001908:  00 00
+               S01:0800190A:  00 00
+               S01:0800190C:  00 00
+               S01:0800190E:  00 00
+               S01:08001910:  02 00
+               S01:08001912:  00 00
+F00:0544       	.WORD 0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,2 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0
+               S01:08001914:  00 00
+               S01:08001916:  00 00
+               S01:08001918:  00 00
+               S01:0800191A:  00 00
+               S01:0800191C:  00 00
+               S01:0800191E:  01 00
+               S01:08001920:  00 00
+               S01:08001922:  02 00
+               S01:08001924:  00 00
+               S01:08001926:  00 00
+               S01:08001928:  02 00
+               S01:0800192A:  00 00
+               S01:0800192C:  02 00
+               S01:0800192E:  00 00
+               S01:08001930:  00 00
+               S01:08001932:  00 00
+               S01:08001934:  00 00
+               S01:08001936:  00 00
+               S01:08001938:  00 00
+               S01:0800193A:  01 00
+               S01:0800193C:  00 00
+               S01:0800193E:  00 00
+               S01:08001940:  00 00
+               S01:08001942:  00 00
+               S01:08001944:  00 00
+               S01:08001946:  01 00
+               S01:08001948:  00 00
+               S01:0800194A:  00 00
+               S01:0800194C:  00 00
+               S01:0800194E:  01 00
+               S01:08001950:  00 00
+               S01:08001952:  00 00
+F00:0545       	.WORD 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:08001954:  00 00
+               S01:08001956:  01 00
+               S01:08001958:  00 00
+               S01:0800195A:  02 00
+               S01:0800195C:  00 00
+               S01:0800195E:  00 00
+               S01:08001960:  00 00
+               S01:08001962:  00 00
+               S01:08001964:  00 00
+               S01:08001966:  00 00
+               S01:08001968:  00 00
+               S01:0800196A:  00 00
+               S01:0800196C:  00 00
+               S01:0800196E:  00 00
+               S01:08001970:  01 00
+               S01:08001972:  00 00
+               S01:08001974:  02 00
+               S01:08001976:  00 00
+               S01:08001978:  00 00
+               S01:0800197A:  00 00
+               S01:0800197C:  01 00
+               S01:0800197E:  02 00
+               S01:08001980:  00 00
+               S01:08001982:  00 00
+               S01:08001984:  00 00
+               S01:08001986:  00 00
+               S01:08001988:  00 00
+               S01:0800198A:  00 00
+               S01:0800198C:  00 00
+               S01:0800198E:  00 00
+               S01:08001990:  00 00
+               S01:08001992:  02 00
+F00:0546       	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0
+               S01:08001994:  00 00
+               S01:08001996:  00 00
+               S01:08001998:  00 00
+               S01:0800199A:  00 00
+               S01:0800199C:  00 00
+               S01:0800199E:  00 00
+               S01:080019A0:  00 00
+               S01:080019A2:  01 00
+               S01:080019A4:  00 00
+               S01:080019A6:  00 00
+               S01:080019A8:  00 00
+               S01:080019AA:  00 00
+               S01:080019AC:  02 00
+               S01:080019AE:  00 00
+               S01:080019B0:  00 00
+               S01:080019B2:  00 00
+               S01:080019B4:  00 00
+               S01:080019B6:  00 00
+               S01:080019B8:  02 00
+               S01:080019BA:  00 00
+               S01:080019BC:  00 00
+               S01:080019BE:  00 00
+               S01:080019C0:  00 00
+               S01:080019C2:  02 00
+               S01:080019C4:  00 00
+               S01:080019C6:  00 00
+               S01:080019C8:  01 00
+               S01:080019CA:  02 00
+               S01:080019CC:  00 00
+               S01:080019CE:  00 00
+               S01:080019D0:  00 00
+               S01:080019D2:  00 00
+F00:0547       	.WORD 0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1
+               S01:080019D4:  00 00
+               S01:080019D6:  00 00
+               S01:080019D8:  00 00
+               S01:080019DA:  00 00
+               S01:080019DC:  01 00
+               S01:080019DE:  00 00
+               S01:080019E0:  01 00
+               S01:080019E2:  00 00
+               S01:080019E4:  00 00
+               S01:080019E6:  02 00
+               S01:080019E8:  00 00
+               S01:080019EA:  00 00
+               S01:080019EC:  01 00
+               S01:080019EE:  00 00
+               S01:080019F0:  00 00
+               S01:080019F2:  02 00
+               S01:080019F4:  00 00
+               S01:080019F6:  00 00
+               S01:080019F8:  00 00
+               S01:080019FA:  01 00
+               S01:080019FC:  00 00
+               S01:080019FE:  00 00
+               S01:08001A00:  00 00
+               S01:08001A02:  00 00
+               S01:08001A04:  00 00
+               S01:08001A06:  00 00
+               S01:08001A08:  00 00
+               S01:08001A0A:  00 00
+               S01:08001A0C:  01 00
+               S01:08001A0E:  00 00
+               S01:08001A10:  00 00
+               S01:08001A12:  01 00
+F00:0548       	.WORD 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0
+               S01:08001A14:  00 00
+               S01:08001A16:  01 00
+               S01:08001A18:  00 00
+               S01:08001A1A:  02 00
+               S01:08001A1C:  00 00
+               S01:08001A1E:  00 00
+               S01:08001A20:  00 00
+               S01:08001A22:  00 00
+               S01:08001A24:  01 00
+               S01:08001A26:  00 00
+               S01:08001A28:  00 00
+               S01:08001A2A:  01 00
+               S01:08001A2C:  00 00
+               S01:08001A2E:  00 00
+               S01:08001A30:  00 00
+               S01:08001A32:  00 00
+               S01:08001A34:  00 00
+               S01:08001A36:  00 00
+               S01:08001A38:  00 00
+               S01:08001A3A:  00 00
+               S01:08001A3C:  00 00
+               S01:08001A3E:  00 00
+               S01:08001A40:  01 00
+               S01:08001A42:  00 00
+               S01:08001A44:  01 00
+               S01:08001A46:  00 00
+               S01:08001A48:  00 00
+               S01:08001A4A:  02 00
+               S01:08001A4C:  00 00
+               S01:08001A4E:  00 00
+               S01:08001A50:  00 00
+               S01:08001A52:  00 00
+F00:0549       	.WORD 0 ,0 ,0 ,1 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:08001A54:  00 00
+               S01:08001A56:  00 00
+               S01:08001A58:  00 00
+               S01:08001A5A:  01 00
+               S01:08001A5C:  00 00
+               S01:08001A5E:  01 00
+               S01:08001A60:  00 00
+               S01:08001A62:  02 00
+               S01:08001A64:  00 00
+               S01:08001A66:  00 00
+               S01:08001A68:  00 00
+               S01:08001A6A:  00 00
+               S01:08001A6C:  02 00
+               S01:08001A6E:  00 00
+               S01:08001A70:  00 00
+               S01:08001A72:  00 00
+               S01:08001A74:  01 00
+               S01:08001A76:  00 00
+               S01:08001A78:  00 00
+               S01:08001A7A:  01 00
+               S01:08001A7C:  00 00
+               S01:08001A7E:  00 00
+               S01:08001A80:  00 00
+               S01:08001A82:  02 00
+               S01:08001A84:  00 00
+               S01:08001A86:  00 00
+               S01:08001A88:  00 00
+               S01:08001A8A:  00 00
+               S01:08001A8C:  00 00
+               S01:08001A8E:  00 00
+               S01:08001A90:  00 00
+               S01:08001A92:  02 00
+F00:0550       	.WORD 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0
+               S01:08001A94:  00 00
+               S01:08001A96:  00 00
+               S01:08001A98:  02 00
+               S01:08001A9A:  00 00
+               S01:08001A9C:  00 00
+               S01:08001A9E:  00 00
+               S01:08001AA0:  02 00
+               S01:08001AA2:  00 00
+               S01:08001AA4:  00 00
+               S01:08001AA6:  02 00
+               S01:08001AA8:  00 00
+               S01:08001AAA:  00 00
+               S01:08001AAC:  00 00
+               S01:08001AAE:  00 00
+               S01:08001AB0:  00 00
+               S01:08001AB2:  02 00
+               S01:08001AB4:  00 00
+               S01:08001AB6:  00 00
+               S01:08001AB8:  00 00
+               S01:08001ABA:  00 00
+               S01:08001ABC:  00 00
+               S01:08001ABE:  00 00
+               S01:08001AC0:  00 00
+               S01:08001AC2:  00 00
+               S01:08001AC4:  00 00
+               S01:08001AC6:  02 00
+               S01:08001AC8:  00 00
+               S01:08001ACA:  00 00
+               S01:08001ACC:  00 00
+               S01:08001ACE:  02 00
+               S01:08001AD0:  00 00
+               S01:08001AD2:  00 00
+F00:0551       Tilemap_END:
+F00:0552       	
+F00:0553       
 
 
 Sections:
@@ -3064,13 +3069,15 @@ LoadHalfwordsRep EXPR(134219208=0x80005c8) ABS
 GetScreenPos EXPR(134219168=0x80005a0) UNUSED ABS 
 FillScreen EXPR(134219152=0x8000590) ABS 
 ClearToColor EXPR(134219140=0x8000584) UNUSED ABS 
+SpriteFiles_END EXPR(134222548=0x80012d4) ABS 
 VramSpritePixelPatterns EXPR(100728832=0x6010000) 
+SpriteFiles EXPR(134222388=0x8001234) ABS 
 SpritePaletteMemory EXPR(83886592=0x5000200) 
 VramBackground EXPR(100665344=0x6000800) 
-Tilemap_END EXPR(134222708=0x8001374) ABS 
+Tilemap_END EXPR(134224596=0x8001ad4) ABS 
 VramBase EXPR(100663296=0x6000000) 
-Tilemap EXPR(134220660=0x8000b74) ABS 
-TilemapFiles_END EXPR(134220660=0x8000b74) ABS 
+Tilemap EXPR(134222548=0x80012d4) ABS 
+TilemapFiles_END EXPR(134222388=0x8001234) ABS 
 VramTilemapPixelPatterns EXPR(100679680=0x6004000) 
 TilemapFiles EXPR(134220340=0x8000a34) ABS 
 LoadHalfwords EXPR(134219204=0x80005c4) ABS 
@@ -3092,7 +3099,7 @@ ScanlineCounter EXPR(67108870=0x4000006)
 DelayNextDraw EXPR(134218220=0x80001ec) ABS 
 DelayFrame EXPR(134218212=0x80001e4) ABS 
 DrawSprite EXPR(134219236=0x80005e4) ABS 
-PlayerTileStart EXPR(6=0x6) 
+PlayerTileStart EXPR(1=0x1) 
 PlayerSpriteNum EXPR(1=0x1) 
 GetButton EXPR(134219272=0x8000608) ABS 
 GameLoop EXPR(134218004=0x8000114) ABS 

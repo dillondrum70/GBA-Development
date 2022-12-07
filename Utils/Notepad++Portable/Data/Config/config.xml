@@ -13,7 +13,7 @@
         <GUIConfig name="UserDefineDlg" position="undocked">hide</GUIConfig>
         <GUIConfig name="TabSetting" size="4" replaceBySpace="no" />
         <!--App position-->
-        <GUIConfig name="AppPosition" x="453" y="78" width="1634" height="649" isMaximized="yes" />
+        <GUIConfig name="AppPosition" x="294" y="-3" width="1634" height="649" isMaximized="yes" />
         <!-- For the primary scintilla view,
              2 status for Attribut lineNumberMargin, bookMarkMargin, indentGuideLine and currentLineHilitingShow: "show" or "hide"
              4 status for Attribut folderMarkStyle : "simple", "arrow", "circle" and "box"  -->
@@ -110,16 +110,18 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
-        <Find name="VramSpritePixels" />
-        <Find name="1140" />
-        <Find name="1" />
-        <Find name="ReadInput" />
-        <Find name="Palettes" />
-        <Find name="TilePatterns_End" />
-        <Find name="loadbyte" />
-        <Find name="Palette" />
-        <Find name="TilePatterns_End-TilePatterns" />
+        <Find name="TilemapFile" />
+        <Find name=", " />
+        <Find name="," />
+        <Find name="3" />
         <Find name="CMPS" />
+        <Find name="r11" />
+        <Find name="GetNextLine" />
+        <Find name="WriteText" />
+        <Find name=" " />
+        <Find name="\" />
+        <Replace name=" ," />
+        <Replace name=", " />
         <Replace name="2" />
         <Replace name=" " />
         <Replace name="000" />
@@ -130,21 +132,21 @@
         <Replace name="$" />
     </FindHistory>
     <History nbMaxFile="15" inSubMenu="no" customLength="-1">
+        <File filename="M:\sources\Thumb_Lesson1.asm" />
+        <File filename="M:\sources\HelloWorld\GBA_Hello_Advance.asm" />
+        <File filename="M:\sources\Lesson3.asm" />
+        <File filename="M:\sources\Thumb_Lesson3.asm" />
+        <File filename="M:\sources\Thumb_Lesson5.asm" />
+        <File filename="M:\sources\Thumb_Lesson4.asm" />
+        <File filename="M:\Utils\Notepad++Portable\App\Notepad++\langs.xml" />
+        <File filename="M:\SrcNDS\V1_Header.asm" />
+        <File filename="M:\sources\Delme\Thumb_Minimal.asm" />
+        <File filename="M:\sources\HelloWorld\NDS_Hello_Advanced.asm" />
+        <File filename="M:\Utils\Vasm\vasmNDS.bat" />
+        <File filename="M:\sources\HelloWorld\GBA_Hello.asm" />
+        <File filename="M:\Examples\sources\HelloWorld\GBA_Hello_Advance.asm" />
+        <File filename="M:\Examples\SrcGBA\V1_BitmapMemory.asm" />
         <File filename="M:\Examples\sources\Lesson2.asm" />
-        <File filename="M:\Examples\SrcAll\V1_Footer.asm" />
-        <File filename="C:\Users\dillon-win\Downloads\ArmSources\SrcAll\V1_Footer.asm" />
-        <File filename="C:\Users\dillon-win\Downloads\ArmSources\SrcAll\V1_Header.asm" />
-        <File filename="C:\Users\dillon-win\Downloads\ArmSources\SrcGBA\V1_Header.asm" />
-        <File filename="C:\Users\dillon.drummond\Documents\GBA-Development\GBA-Development\GBA_Tilemap.asm" />
-        <File filename="C:\Users\dillon.drummond\Documents\GBA-Development\GBA-Development\Examples\GBA_Tilemap.asm" />
-        <File filename="C:\Users\dillon.drummond\Documents\GBA-Development\GBA-Development\Examples\SrcGBA\GBA_Tilemap.asm" />
-        <File filename="C:\Users\dillon.drummond\Documents\GBA-Development\GBA-Development\sources\GBA_Tilemap.asm" />
-        <File filename="M:\sources\GBA_Tilemap.asm" />
-        <File filename="M:\Examples\SrcAll\V1_Header.asm" />
-        <File filename="M:\Examples\sources\GBA_Tilemap.asm" />
-        <File filename="M:\Examples\SrcGBA\V1_Header.asm" />
-        <File filename="M:\Examples\sources\GBA_Sprites.asm" />
-        <File filename="C:\Users\dillon.drummond\Documents\GBA-Development\Examples\sources\GBA_Sprites.asm" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />
