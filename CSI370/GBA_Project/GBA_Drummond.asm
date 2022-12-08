@@ -242,16 +242,18 @@ GameLoop:
 			;Check player's position in relation to tiles
 			;Get tile at that index in the tilemap ((TilemapWidth * y) + x)
 			;If tile is equal or greater than the index mark (non-colliding tiles below, colliding tiles above) reset movement to 0
+			
+		;;;;;;;;;;;Top Left Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
 		MOV r1, r8	;Load player X position into first register
-		ADD r1, r1, #PlayerWidth	;Add width of player to get rightmost point
+		;Add nothing to get rightmost x value
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r3, r0
 		
 		;Y index is found the same way
 		MOV r1, r9	;Load player X position into first register
-		ADD r1, r1, #PlayerHeight
+		;Add nothing to get top y value
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r4, r0
@@ -260,11 +262,90 @@ GameLoop:
 		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
 		MOV r1, #TilemapWidth
 		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
-		LDRB r5, [r0, r2]	;Load data in tilemap
+		LDRB r4, [r0, r2]	;Load data in tilemap
 		
-		CMP r5, #BackgroundCollideLimit
+		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
+		CMP r4, #BackgroundCollideLimit
 		MOVGTE r8, r10	;If colliding, reset x position
-		MOVGTE r9, r11
+		MOVGTE r9, r11	;If colliding, reset y position
+		
+		;;;;;;;;;;;Top Right Collision
+		;X index in tilemap is ((playerX - TileLength) / TileLength)
+		MOV r1, r8	;Load player X position into first register
+		ADD r1, r1, #PlayerWidth	;Add width of player to get rightmost x value
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r3, r0
+		
+		;Y index is found the same way
+		MOV r1, r9	;Load player X position into first register
+		;Add nothing to get top y value
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r4, r0
+		
+		;Load tile index from tilemap
+		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
+		MOV r1, #TilemapWidth
+		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
+		LDRB r4, [r0, r2]	;Load data in tilemap
+		
+		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
+		CMP r4, #BackgroundCollideLimit
+		MOVGTE r8, r10	;If colliding, reset x position
+		MOVGTE r9, r11	;If colliding, reset y position
+		
+		;;;;;;;;;;;Bottom Left Collision
+		;X index in tilemap is ((playerX - TileLength) / TileLength)
+		MOV r1, r8	;Load player X position into first register
+		;Add nothing to get left x value
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r3, r0
+		
+		;Y index is found the same way
+		MOV r1, r9	;Load player X position into first register
+		ADD r1, r1, #PlayerHeight	;Add height of player to get bottom y level
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r4, r0
+		
+		;Load tile index from tilemap
+		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
+		MOV r1, #TilemapWidth
+		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
+		LDRB r4, [r0, r2]	;Load data in tilemap
+		
+		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
+		CMP r4, #BackgroundCollideLimit
+		MOVGTE r8, r10	;If colliding, reset x position
+		MOVGTE r9, r11	;If colliding, reset y position
+		
+		;;;;;;;;;;;Bottom Right Collision
+		;X index in tilemap is ((playerX - TileLength) / TileLength)
+		MOV r1, r8	;Load player X position into first register
+		ADD r1, r1, #PlayerWidth;Add width to get right x value
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r3, r0
+		
+		;Y index is found the same way
+		MOV r1, r9	;Load player X position into first register
+		ADD r1, r1, #PlayerHeight	;Add height of player to get bottom y level
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r4, r0
+		
+		;Load tile index from tilemap
+		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
+		MOV r1, #TilemapWidth
+		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
+		LDRB r4, [r0, r2]	;Load data in tilemap
+		
+		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
+		CMP r4, #BackgroundCollideLimit
+		MOVGTE r8, r10	;If colliding, reset x position
+		MOVGTE r9, r11	;If colliding, reset y position
 	
 		;Update memory with new position
 		STRB r8, [r6]
@@ -456,8 +537,8 @@ LoadBytes:
 	STMFD sp!, {r1-r4, lr}
 	
 LoadBytesRep:
-		LDRB r4, [r1], #1	;Load current position in color palette into r1 and increment halfword
-		STRH r4, [r2], #2	;Store palette value in GBA Palette memory and increment halfword
+		LDRB r4, [r1], #1	;Load current position in from byte array and increment 1 byte
+		STRH r4, [r2], #2	;Store palette value in halfword location and increment halfword
 		
 		SUBS r3, r3, #1
 		BNE LoadBytesRep	;Repeat process until number of bytes reached
