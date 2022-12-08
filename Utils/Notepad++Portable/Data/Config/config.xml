@@ -110,6 +110,7 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="ADRL r0, Tilemap&#x0009;;Get addresses of tilemap, far away in code so use ADRL" />
         <Find name="TilemapFile" />
         <Find name=", " />
         <Find name="," />
@@ -119,7 +120,6 @@
         <Find name="GetNextLine" />
         <Find name="WriteText" />
         <Find name=" " />
-        <Find name="\" />
         <Replace name=" ," />
         <Replace name=", " />
         <Replace name="2" />

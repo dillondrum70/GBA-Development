@@ -534,7 +534,7 @@ F00:0262       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so
                S01:080001DC:  12 0C 8F E2 78 00 80 E2
 F00:0263       		MOV r1, #TilemapWidth
                S01:080001E4:  20 10 A0 E3
-F00:0264       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
+F00:0264       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til8
                S01:080001E8:  91 34 22 E0
 F00:0265       		LDRB r4, [r0, r2]	;Load data in tilemap
                S01:080001EC:  02 40 D0 E7
@@ -551,8 +551,8 @@ F00:0272       		;;;;;;;;;;;Top Right Collision
 F00:0273       		;X index in tilemap is ((playerX - TileLength) / TileLength)
 F00:0274       		MOV r1, r8	;Load player X position into first register
                S01:080001FC:  08 10 A0 E1
-F00:0275       		ADD r1, r1, #PlayerWidth	;Add width of player to get rightmost x value
-               S01:08000200:  10 10 81 E2
+F00:0275       		ADD r1, r1, #PlayerWidth-1	;Add width of player to get rightmost x value, subtract 1 to get flush with wall (so we get
+               S01:08000200:  0F 10 81 E2
 F00:0276       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:08000204:  08 20 A0 E3
 F00:0277       		BL DIV
@@ -604,8 +604,8 @@ F00:0305
 F00:0306       		;Y index is found the same way
 F00:0307       		MOV r1, r9	;Load player X position into first register
                S01:08000250:  09 10 A0 E1
-F00:0308       		ADD r1, r1, #PlayerHeight	;Add height of player to get bottom y level
-               S01:08000254:  10 10 81 E2
+F00:0308       		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom y level, subtract 1 to get flush with wall (so we get 
+               S01:08000254:  0F 10 81 E2
 F00:0309       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:08000258:  08 20 A0 E3
 F00:0310       		BL DIV
@@ -635,8 +635,8 @@ F00:0324       		;;;;;;;;;;;Bottom Right Collision
 F00:0325       		;X index in tilemap is ((playerX - TileLength) / TileLength)
 F00:0326       		MOV r1, r8	;Load player X position into first register
                S01:08000284:  08 10 A0 E1
-F00:0327       		ADD r1, r1, #PlayerWidth;Add width to get right x value
-               S01:08000288:  10 10 81 E2
+F00:0327       		ADD r1, r1, #PlayerWidth-1;Add width to get right x value, subtract 1 to get flush with wall (so we get index INSIDE t
+               S01:08000288:  0F 10 81 E2
 F00:0328       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:0800028C:  08 20 A0 E3
 F00:0329       		BL DIV
@@ -647,8 +647,8 @@ F00:0331
 F00:0332       		;Y index is found the same way
 F00:0333       		MOV r1, r9	;Load player X position into first register
                S01:08000298:  09 10 A0 E1
-F00:0334       		ADD r1, r1, #PlayerHeight	;Add height of player to get bottom y level
-               S01:0800029C:  10 10 81 E2
+F00:0334       		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom y level, subtract 1 to get flush with wall (so we get 
+               S01:0800029C:  0F 10 81 E2
 F00:0335       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:080002A0:  08 20 A0 E3
 F00:0336       		BL DIV

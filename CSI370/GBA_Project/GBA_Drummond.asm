@@ -272,7 +272,7 @@ GameLoop:
 		;;;;;;;;;;;Top Right Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
 		MOV r1, r8	;Load player X position into first register
-		ADD r1, r1, #PlayerWidth	;Add width of player to get rightmost x value
+		ADD r1, r1, #PlayerWidth-1	;Add width of player to get rightmost x value, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r3, r0
@@ -305,7 +305,7 @@ GameLoop:
 		
 		;Y index is found the same way
 		MOV r1, r9	;Load player X position into first register
-		ADD r1, r1, #PlayerHeight	;Add height of player to get bottom y level
+		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom y level, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r4, r0
@@ -324,14 +324,14 @@ GameLoop:
 		;;;;;;;;;;;Bottom Right Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
 		MOV r1, r8	;Load player X position into first register
-		ADD r1, r1, #PlayerWidth;Add width to get right x value
+		ADD r1, r1, #PlayerWidth-1;Add width to get right x value, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r3, r0
 		
 		;Y index is found the same way
 		MOV r1, r9	;Load player X position into first register
-		ADD r1, r1, #PlayerHeight	;Add height of player to get bottom y level
+		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom y level, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r4, r0
