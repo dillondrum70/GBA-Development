@@ -97,13 +97,14 @@ Main:
 	;;;;Load background
 	BL BackgroundAndSpriteInit
 	
+	
 	;Initialize player start position
 	MOV r0, #PlayerX
-	MOV r6, #0
+	MOV r6, #20
 	STRB r6, [r0]
 	
 	MOV r0, #PlayerY
-	MOV r7, #0
+	MOV r7, #20
 	STRB r7, [r0]
 	
 	;MOV r1,#PlayerSpriteNum	   		;Sprite Num
@@ -178,8 +179,10 @@ GameLoop:
 		;Load in current player position
 		MOV r6, #PlayerX
 		LDRB r8, [r6]
+		MOV r10, r8	;Cache last player x position so we can modify current position
 		MOV r7, #PlayerY
 		LDRB r9, [r7]
+		MOV r11, r9	;Cache last player y position so we can modify current position
 		
 		;Erase Sprite
 		;LDR r5, SpriteTestAddress
@@ -234,18 +237,47 @@ GameLoop:
 		CMPS r1, r2				;Check if right side of player is out of bounds
 		SUBGT r2, r2, r3		;If so, Subtract width from screen x bound...
 		MOVGT r8, r2			;And move that into x position
+		
+		;Check collision with background objects
+			;Check player's position in relation to tiles
+			;Get tile at that index in the tilemap ((TilemapWidth * y) + x)
+			;If tile is equal or greater than the index mark (non-colliding tiles below, colliding tiles above) reset movement to 0
+		;X index in tilemap is ((playerX - TileLength) / TileLength)
+		MOV r1, r8	;Load player X position into first register
+		ADD r1, r1, #PlayerWidth	;Add width of player to get rightmost point
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r3, r0
+		
+		;Y index is found the same way
+		MOV r1, r9	;Load player X position into first register
+		ADD r1, r1, #PlayerHeight
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r4, r0
+		
+		;Load tile index from tilemap
+		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
+		MOV r1, #TilemapWidth
+		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
+		LDRB r5, [r0, r2]	;Load data in tilemap
+		
+		CMP r5, #BackgroundCollideLimit
+		MOVGTE r8, r10	;If colliding, reset x position
+		MOVGTE r9, r11
 	
 		;Update memory with new position
 		STRB r8, [r6]
 		STRB r9, [r7]
-	
+		
+		;See DrawSprite for meanings of the sprite attribute bits (r2-r4)
 		MOV r1,#PlayerSpriteNum
 		MOV r2,#0b0000000000000000
-		ADD r2, r2, r9
+		ADD r2, r2, r9	;Add y pos to first sprite attribute (y pos is lowest 8 bits)
 		MOV r3,#0b0100000000000000
-		ADD r3, r3, r8
+		ADD r3, r3, r8	;Add x pos to second sprite attribute (x pos is lowest 9 bits)
 		MOV r4,#0b0000000000000000
-		MOV r5, #PlayerTileStart
+		MOV r5, #PlayerTileStart	;Index that marks player start is located in lower bits of third attribute
 		ADD r4, r4, r5
 	
 		BL DrawSprite
@@ -343,13 +375,13 @@ BackgroundAndSpriteInit:
 		ADRL r1, Tilemap
 		MOV r2, #VramBase	;Load the pattern into screen block 0 of character block 0
 		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
-		BL LoadHalfwords
+		BL LoadBytes
 		
 		;Load tilemap into Background Layer VRAM so our 32x32 tilemap becomes 64x32 and repeats
 		ADRL r1, Tilemap
 		MOV r2, #VramBackground	;Load the pattern into the screen block 1 of character block 0
 		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
-		BL LoadHalfwords
+		BL LoadBytes
 		
 		;Load Sprite Palette Colors
 		ADRL r1, ColorPalette		;Palette Address
@@ -417,6 +449,22 @@ LoadHalfwordsRep:
 	LDMFD sp!, {r1-r4, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;r1 = Color Palette Location
+;r2 = GBA Palette Memory Location
+;r3 = number of bytes
+LoadBytes:
+	STMFD sp!, {r1-r4, lr}
+	
+LoadBytesRep:
+		LDRB r4, [r1], #1	;Load current position in color palette into r1 and increment halfword
+		STRH r4, [r2], #2	;Store palette value in GBA Palette memory and increment halfword
+		
+		SUBS r3, r3, #1
+		BNE LoadBytesRep	;Repeat process until number of bytes reached
+	
+	LDMFD sp!, {r1-r4, pc}
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;r1 = current VRAM position
 ;Return VRAM position shifted down one line
 ;https://www.chibialiens.com/arm/platform.php#LessonP2
@@ -478,8 +526,9 @@ GetButton:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-.include "GBA_Core.asm"
-.include "GBA_Text.asm"
+.INCLUDE "GBA_Core.asm"
+.INCLUDE "GBA_Text.asm"
+.INCLUDE "GBA_Math.asm"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -514,39 +563,44 @@ SpriteFiles_END:
 .EQU PlayerSpriteNum, 0x01	;Sprite number of player
 .EQU PlayerTileStart, 1 ;Index of first sprite tile
 	
+	
+.EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index
+.EQU TileLength, 8	;Tiles are 8x8 pixels
+.EQU TilemapWidth, 32
+.EQU TilemapHeight, 32
 ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
 Tilemap:
-	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,1 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0
-	.WORD 0 ,2 ,0 ,1 ,2 ,0 ,25,24,1 ,2 ,0 ,0 ,0 ,12,3 ,3 ,15,1 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0
-	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
-	.WORD 0 ,0 ,0 ,2 ,0 ,0 ,25,24,0 ,0 ,1 ,14,14,8 ,3 ,3 ,11,14,14,14,14,0 ,0 ,2 ,0 ,0 ,2 ,1 ,0 ,1 ,0 ,0
-	.WORD 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
-	.WORD 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
-	.WORD 21,21,16,16,16,21,30,24,2 ,0 ,12,3 ,3 ,10,13,13,13,13,9 ,3 ,3 ,15,0 ,2 ,0 ,1 ,2 ,0 ,0 ,0 ,2 ,0
-	.WORD 32,32,16,16,16,32,32,24,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,1 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,0
-	.WORD 20,27,16,16,16,26,20,27,1 ,2 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,2
-	.WORD 0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0
-	.WORD 0 ,1 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,0 ,0 ,12,3 ,3 ,15,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,12,3 ,3 ,11,14,14,14,14,8 ,3 ,3 ,15,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
-	.WORD 0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
-	.WORD 0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,1 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,13,13,13,13,13,13,13,13,13,13,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,2 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,2
-	.WORD 1 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,2 ,0 ,0 ,2 ,1 ,2 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0
-	.WORD 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
-	.WORD 0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0
-	.WORD 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0
-	.WORD 0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,2 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0
-	.WORD 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
-	.WORD 0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1
-	.WORD 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0
-	.WORD 0 ,0 ,0 ,1 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
-	.WORD 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0
+	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,1 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0
+	.BYTE 0 ,2 ,0 ,1 ,2 ,0 ,25,24,1 ,2 ,0 ,0 ,0 ,12,3 ,3 ,15,1 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0
+	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,25,24,0 ,0 ,1 ,14,14,8 ,3 ,3 ,11,14,14,14,14,0 ,0 ,2 ,0 ,0 ,2 ,1 ,0 ,1 ,0 ,0
+	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+	.BYTE 21,21,16,16,16,21,30,24,2 ,0 ,12,3 ,3 ,10,13,13,13,13,9 ,3 ,3 ,15,0 ,2 ,0 ,1 ,2 ,0 ,0 ,0 ,2 ,0
+	.BYTE 32,32,16,16,16,32,32,24,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,1 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,0
+	.BYTE 20,27,16,16,16,26,20,27,1 ,2 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0
+	.BYTE 0 ,1 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,0 ,0 ,12,3 ,3 ,15,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,12,3 ,3 ,11,14,14,14,14,8 ,3 ,3 ,15,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
+	.BYTE 0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,1 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,13,13,13,13,13,13,13,13,13,13,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,2 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,2
+	.BYTE 1 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,2 ,0 ,0 ,2 ,1 ,2 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0
+	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
+	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0
+	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0
+	.BYTE 0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,2 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0
+	.BYTE 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1
+	.BYTE 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0
+	.BYTE 0 ,0 ,0 ,1 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0
 Tilemap_END:
 	
