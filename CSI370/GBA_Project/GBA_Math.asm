@@ -2,10 +2,11 @@
 ;r2 = divisor
 ;Don't bother saving r2, not changed
 MOD:
-STMFD sp!, {r1, lr}
 	ADD r1, r1, r2	;Gives the result of flipping bits from r2 in r1
 	AND r0, r1, r2	;Thus, AND will give us the bits that represent the remainder
-LDMFD sp!, {r1, pc}
+	SUB r1, r1, r2	;Reset r1 to original value
+	
+	MOV pc, lr
 
 ;http://www.tofla.iconbar.com/tofla/arm/arm02/index.htm
 ;r1 = dividend
