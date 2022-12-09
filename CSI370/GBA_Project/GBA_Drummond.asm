@@ -46,8 +46,10 @@
 .EQU PlayerY, Ram+35	;Player's y position
 
 .EQU PlayerFace, Ram+36	;Direction player faces
-.EQU PlayerCurrentAnim, Ram+37	;Address of current animation indices
-.EQU PlayerAnimIndex, Ram+38	;current index of frame in animation
+.EQU PlayerCurrentAnimBegin, Ram+37	;Address of current animation indices
+.EQU PlayerCurrentAnimAddress, Ram+38	;Address between beginning and end where current animation frame is
+.EQU PlayerCurrentAnimEnd, Ram+39 ;Address where current animation indices end
+;.EQU PlayerAnimIndex, Ram+40	;current index of frame in animation tileset, tells us sprite number for sprite attributes for draw calls
 
 ;Access animation array -> get index in array -> value from the animation is an index in the sprite tilemap -> pass index from animation array as sprite num when drawing player
 
@@ -119,13 +121,16 @@ Main:
 	MOV r7, #20
 	STRB r7, [r0]
 	
-	MOV r0, #PlayerCurrentAnim
+	MOV r0, #PlayerCurrentAnimBegin
 	ADRL r6, Anim_PlayerIdle	;Start with idle animation, load player idle address
 	STR r6, [r0]
 	
-	MOV r0, #PlayerAnimIndex
-	MOV r6, #0	;Start at first frame
-	STRB r6, [r0]
+	MOV r0, #PlayerCurrentAnimAddress	;Current address of current frame will be the beginning of the idle animation
+	STR r6, [r0]
+	
+	MOV r0, #PlayerCurrentAnimEnd
+	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position
+	STR r6, [r0]
 	
 	MOV r0, #PlayerFace
 	MOV r6, #FacingDown	;Start facing down (towards the screen)
@@ -250,14 +255,16 @@ GameLoop:
 		
 		;;;;;;;;;;;;;;;;;;;;;;; Animation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 		
-		MOV r0, #PlayerFace
-		LDRB r1, [r0]
+		;MOV r0, #PlayerFace
+		;LDRB r1, [r0]
 		
-		MOV r0, #PlayerCurrentAnim
-		LDRB r2, [r0]
+		;MOV r0, #PlayerCurrentAnim
+		;LDRB r2, [r0]
 		
-		MOV r0, #PlayerAnimIndex
-		LDRB r3, [r0]
+		;MOV r0, #PlayerAnimIndex
+		;LDRB r3, [r0]
+	
+		
 		
 		;;;;;;;;;;;;;;;;;;; Render images
 		;No parameters, render handles that
@@ -757,9 +764,9 @@ DrawSprite:
 ;Choose which frame to render and then render it
 ;
 Render:
-	STMFD sp!, {r1-r5, lr}
+	STMFD sp!, {r1-r7, lr}
 		;See DrawSprite for meanings of the sprite attribute bits (r2-r4)
-		MOV r1,#PlayerSpriteNum
+		MOV r1, #PlayerSpriteNum
 		
 		MOV r2,#0b0000000000000000
 		MOV r4, #PlayerY
@@ -772,11 +779,30 @@ Render:
 		ADD r3, r3, r5	;Add x pos to second sprite attribute (x pos is lowest 9 bits)
 		
 		MOV r4,#0b0000000000000000
-		MOV r5, #PlayerTileStart	;Index that marks player start is located in lower bits of third attribute
-		ADD r4, r4, r5
-	
+		
+		;;;;;;;;;;;;;;; Animation ;;;;;;;;;;;;;;;;;;
+		MOV r0, #PlayerCurrentAnimAddress	;Address of index in current animation
+		LDR r5, [r0]	;Get address of index
+		LDRB r6, [r5]	;Get actual index from address location
+		ADD r4, r4, r6	;Add index in tilemap of the starting tile to draw for the player
 		BL DrawSprite
-	LDMFD sp!, {r1-r5, pc}
+		
+		ADD r5, r5, #1	;Increment address to next index (one byte)
+		MOV r1, #PlayerCurrentAnimBegin	;Get address to the current address where animation indices beginning
+		LDR r3, [r1]	;Load in address of animation indices beginning from RAM
+		MOV r2, #PlayerCurrentAnimEnd	;Get address of the current address where animation indices end
+		LDR r4, [r2]	;Load in current address of indices ending
+		
+		CMP r5, r4	;Test current address against end address
+		;MOVGTE r0, #PlayerCurrentAnimBegin	;If greater or equal, loop back to beginning of animation
+			STRGTE r3, [r0]	;If current address is equal or greater than end, reset the current address in memory to the address at the beginning of the animation
+		
+			STRLT r5, [r0]	;Otherwise, store this new animation index as our current address
+		
+		
+	
+		
+	LDMFD sp!, {r1-r7, pc}
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Use E conditional to check if pressed
@@ -828,12 +854,12 @@ SpriteFiles:
 	.INCBIN "\Tilemaps\CharacterSpriteTilemap.RAW"
 SpriteFiles_END:
 
-.EQU PlayerSpriteNum, 0x01	;Sprite number of player
+.EQU PlayerSpriteNum, 1	;Player is always our first sprite
 .EQU PlayerTileStart, 1 ;Index of first sprite tile
 
 ;Indexes where the 4 tiles lie in the tilemap for each frame
 Anim_PlayerIdle:	
-	.BYTE 0, 4, 8, 4	;Loop through the 3 idle frames
+	.BYTE 1, 1, 1, 5, 5, 5, 9, 9 ,9 , 5, 5, 5	;Loop through the 3 idle frames
 Anim_PlayerIdle_END:
 	
 .EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index
