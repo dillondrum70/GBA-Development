@@ -36,11 +36,20 @@
 .EQU PlayerWidth, 16
 .EQU PlayerHeight, 16
 
+.EQU FacingDown, 0
+.EQU FacingLeft, 1
+.EQU FacingUp, 2
+.EQU FacingRight, 3
+
 ;Variable
 .EQU PlayerX, Ram+34	;Player's x position
 .EQU PlayerY, Ram+35	;Player's y position
 
 .EQU PlayerFace, Ram+36	;Direction player faces
+.EQU PlayerCurrentAnim, Ram+37	;Address of current animation indices
+.EQU PlayerAnimIndex, Ram+38	;current index of frame in animation
+
+;Access animation array -> get index in array -> value from the animation is an index in the sprite tilemap -> pass index from animation array as sprite num when drawing player
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -101,7 +110,7 @@ Main:
 	BL BackgroundAndSpriteInit
 	
 	
-	;Initialize player start position
+	;Initialize player variables
 	MOV r0, #PlayerX
 	MOV r6, #20
 	STRB r6, [r0]
@@ -110,26 +119,17 @@ Main:
 	MOV r7, #20
 	STRB r7, [r0]
 	
-	;MOV r1,#PlayerSpriteNum	   		;Sprite Num
-;S=Shape (Square /HRect / Vrect)  C=Colors(16/256)  M=Mosiac  
-;T=Transparent  D=Disable/Doublesize  R=Rotation  Y=Ypos
-			; SSCMTTDRYYYYYYYY
-	;MOV r2,#0b0000000000000000		;Ypos
-	;MOV r5, #PlayerY
-	;LDRB r6, [r5]
-	;ADD r2, r2, r6
+	MOV r0, #PlayerCurrentAnim
+	ADRL r6, Anim_PlayerIdle	;Start with idle animation, load player idle address
+	STR r6, [r0]
 	
-;S=Obj Size  VH=V/HFlip  R=Rotation parameter  X=Xpos
-			; SSVHRRRXXXXXXXXX
-	;MOV r3,#0b0100000000000000		;Xpos
-	;MOV r5, #PlayerX
-	;LDRB r6, [r5]
-	;ADD r3, r3, r6
+	MOV r0, #PlayerAnimIndex
+	MOV r6, #0	;Start at first frame
+	STRB r6, [r0]
 	
-;C=Color palette   P=Priority   T=Tile Number
-			; CCCCPPTTTTTTTTTT
-	;MOV r4,#0b0000000000000110   	;Tile
-	;BL DrawSprite
+	MOV r0, #PlayerFace
+	MOV r6, #FacingDown	;Start facing down (towards the screen)
+	STRB r6, [r0]
 
 ;16 color sprite (Wide 2x1 using tile patterns)
 	;mov r0,#0x00	   		;Sprite Num
@@ -144,14 +144,6 @@ Main:
 	;mov r2,#0x4000   		;Xpos	4=256 color
 	;mov r3,#0x000A   		;Tile 
 	;bl DrawSprite
-	
-	;"Spawn" player, when using EOR draw method, a copy of the player bitmap will be at the position it starts otherwise
-	;LDR r5, SpriteTestAddress
-	;MOV r4, #PlayerHeight
-	;MOV r3, #PlayerWidth
-	;MOV r2, r7
-	;MOV r1, r6
-	;BL DrawSprite
 	
 	;LDR r1, AsciiTestAddress1	;Load test address into r1, parameter 1	
 	;BL WriteText
@@ -256,8 +248,19 @@ GameLoop:
 		MOV r3, r8
 		BL HorizontalCollision
 		
-		;;;;;;;;;;;;;;;;;;; Render images
+		;;;;;;;;;;;;;;;;;;;;;;; Animation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 		
+		MOV r0, #PlayerFace
+		LDRB r1, [r0]
+		
+		MOV r0, #PlayerCurrentAnim
+		LDRB r2, [r0]
+		
+		MOV r0, #PlayerAnimIndex
+		LDRB r3, [r0]
+		
+		;;;;;;;;;;;;;;;;;;; Render images
+		;No parameters, render handles that
 		BL Render
 		
 		;Slow down frame rate (otherwise it looks very glitchy and everything moves too fast)
