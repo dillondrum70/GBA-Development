@@ -762,7 +762,7 @@ TilemapFiles:
 TilemapFiles_END:;Points to memory at end of files so we can get their size
 
 SpriteFiles:
-	.INCBIN "\Tilemaps\TestSpriteTiles.RAW"
+	.INCBIN "\Tilemaps\CharacterSpriteTilemap.RAW"
 SpriteFiles_END:
 
 .EQU PlayerSpriteNum, 0x01	;Sprite number of player
