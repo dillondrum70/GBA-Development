@@ -245,6 +245,12 @@ GameLoop:
 			;Get tile at that index in the tilemap ((TilemapWidth * y) + x)
 			;If tile is equal or greater than the index mark (non-colliding tiles below, colliding tiles above) reset movement to 0
 			
+		CMP r9, r11
+		BEQ VerticalCollision_END
+		BGT VerticalCollision_CheckDown	;Greater than means moving down since (0,0) is top left
+		;Otherwise, we are less than and don't need to check
+			
+		VerticalCollision_CheckUp:
 		;;;;;;;;;;;Top Left Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
 		MOV r1, r10	;Load player X position into first register
@@ -268,7 +274,7 @@ GameLoop:
 		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
 		CMP r4, #BackgroundCollideLimit
 		MOVGTE r9, r11	;If colliding, reset y position
-		BGE VerticalCollision_END
+		BGE VerticalCollision_END	;End early, if we collided here, we couldn't have collided in the opposite direction and we already know we need to stop so the other side doens't matter
 		
 		;;;;;;;;;;;Top Right Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
@@ -293,8 +299,10 @@ GameLoop:
 		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
 		CMP r4, #BackgroundCollideLimit
 		MOVGTE r9, r11	;If colliding, reset y position
-		BGE VerticalCollision_END
 		
+		B VerticalCollision_END	;Finished checking up, skip to end
+		
+		VerticalCollision_CheckDown:
 		;;;;;;;;;;;Bottom Left Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
 		MOV r1, r10	;Load player X position into first register
@@ -350,37 +358,16 @@ GameLoop:
 		
 		;;;;;;;;;;;;;;;;;;;;;;; Horizontal Background Collision ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 		
+		CMP r8, r10	;Compare new position to last position
+		BEQ HorizontalCollision_END	;If equal, we haven't moved, don't need to check collision
+		BGT HorizontalCollision_CheckRight	;If current is greater than last position
+		
+		HorizontalCollision_CheckLeft:
 		;Checking just x component (in case colliding trying to move vertically also and there isn't a collision there or vice versa)
 		;;;;;;;;;;;Top Left Collision
 		;X index in tilemap is ((playerX - TileLength) / TileLength)
 		MOV r1, r8	;Load player X position into first register
 		;Add nothing to get rightmost x value
-		MOV r2, #TileLength	;Divide X by length of a tile
-		BL DIV
-		MOV r3, r0
-		
-		;Y index is found the same way
-		MOV r1, r11	;Load player X position into first register
-		;Add nothing to get top y value
-		MOV r2, #TileLength	;Divide X by length of a tile
-		BL DIV
-		MOV r4, r0
-		
-		;Load tile index from tilemap
-		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-		MOV r1, #TilemapWidth
-		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
-		LDRB r4, [r0, r2]	;Load data in tilemap
-		
-		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
-		CMP r4, #BackgroundCollideLimit
-		MOVGTE r8, r10	;If colliding, reset x position
-		BGE HorizontalCollision_END
-		
-		;;;;;;;;;;;Top Right Collision
-		;X index in tilemap is ((playerX - TileLength) / TileLength)
-		MOV r1, r8	;Load player X position into first register
-		ADD r1, r1, #PlayerWidth-1	;Add width of player to get rightmost x value, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r3, r0
@@ -414,6 +401,34 @@ GameLoop:
 		;Y index is found the same way
 		MOV r1, r11	;Load player X position into first register
 		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom y level, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r4, r0
+		
+		;Load tile index from tilemap
+		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
+		MOV r1, #TilemapWidth
+		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((tilemap width * y index) + x index))
+		LDRB r4, [r0, r2]	;Load data in tilemap
+		
+		;If greater than or equal to colliding limit, then we reset position to prevent movement and "collide" with the tile
+		CMP r4, #BackgroundCollideLimit
+		MOVGTE r8, r10	;If colliding, reset x position
+		BGE HorizontalCollision_END
+		
+		HorizontalCollision_CheckRight:
+		
+		;;;;;;;;;;;Top Right Collision
+		;X index in tilemap is ((playerX - TileLength) / TileLength)
+		MOV r1, r8	;Load player X position into first register
+		ADD r1, r1, #PlayerWidth-1	;Add width of player to get rightmost x value, subtract 1 to get flush with wall (so we get index INSIDE the character, not outside)
+		MOV r2, #TileLength	;Divide X by length of a tile
+		BL DIV
+		MOV r3, r0
+		
+		;Y index is found the same way
+		MOV r1, r11	;Load player X position into first register
+		;Add nothing to get top y value
 		MOV r2, #TileLength	;Divide X by length of a tile
 		BL DIV
 		MOV r4, r0
