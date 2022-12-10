@@ -348,7 +348,7 @@ F00:0124
 F00:0125       	MOV r0, #PlayerCurrentAnimBegin
                S01:08000114:  02 04 A0 E3 28 00 80 E3
 F00:0126       	ADRL r6, Anim_PlayerIdle	;Start with idle animation, load player idle address
-               S01:0800011C:  32 6C 8F E2 C0 60 86 E2
+               S01:0800011C:  32 6C 8F E2 C4 60 86 E2
 F00:0127       	STRW r6, [r0]
                S01:08000124:  00 60 80 E5
 F00:0128       	
@@ -361,8 +361,8 @@ F00:0131       	STRB r6, [r0]
 F00:0132       	
 F00:0133       	MOV r0, #PlayerCurrentAnimEnd
                S01:08000138:  02 04 A0 E3 2C 00 80 E3
-F00:0134       	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position
-               S01:08000140:  32 6C 8F E2 A8 60 86 E2
+F00:0134       	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position 
+               S01:08000140:  32 6C 8F E2 B0 60 86 E2
 F00:0135       	STRW r6, [r0]
                S01:08000148:  00 60 80 E5
 F00:0136       	
@@ -441,7 +441,7 @@ F00:0197       		;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Vertical Movement ;;;;;;;;;;;;;;
 F00:0198       		MOV r1, #Key_Up
                S01:08000184:  40 10 A0 E3
 F00:0199       		BL GetButton
-               S01:08000188:  F6 01 00 EB
+               S01:08000188:  F7 01 00 EB
 F00:0200       		CMPS r0, #0
                S01:0800018C:  00 00 50 E3
 F00:0201       		ADDNE r9, r9, #1
@@ -450,7 +450,7 @@ F00:0202
 F00:0203       		MOV r1, #Key_Down
                S01:08000194:  80 10 A0 E3
 F00:0204       		BL GetButton
-               S01:08000198:  F2 01 00 EB
+               S01:08000198:  F3 01 00 EB
 F00:0205       		CMPS r0, #0
                S01:0800019C:  00 00 50 E3
 F00:0206       		SUBNE r9, r9, #1
@@ -481,7 +481,7 @@ F00:0221       		;;;;;;;;;;;;;;;;;;;;;;;;;;; Horizontal Movement ;;;;;;;;;;;;;;;
 F00:0222       		MOV r1, #Key_Right
                S01:080001C4:  10 10 A0 E3
 F00:0223       		BL GetButton
-               S01:080001C8:  E6 01 00 EB
+               S01:080001C8:  E7 01 00 EB
 F00:0224       		CMPS r0, #0
                S01:080001CC:  00 00 50 E3
 F00:0225       		SUBNE r8, r8, #1;;;;;;;;;;;;;;;;;;;********For some reason, when key_right is pressed, adding moves it left so I switc
@@ -490,7 +490,7 @@ F00:0226
 F00:0227       		MOV r1, #Key_Left
                S01:080001D4:  20 10 A0 E3
 F00:0228       		BL GetButton
-               S01:080001D8:  E2 01 00 EB
+               S01:080001D8:  E3 01 00 EB
 F00:0229       		CMPS r0, #0
                S01:080001DC:  00 00 50 E3
 F00:0230       		ADDNE r8, r8, #1;;;;;;;;;;;;;;;;;;;;***********
@@ -678,7 +678,7 @@ F00:0350       	STMFD sp!, {r0-r3, lr}
 F00:0351       	
 F00:0352       		;Load Background Palette Colors
 F00:0353       		ADRL r1, ColorPalette		;Palette Address
-               S01:0800053C:  02 1B 8F E2 80 10 81 E2
+               S01:0800053C:  02 1B 8F E2 84 10 81 E2
 F00:0354       		MOV r2, #BackgroundPaletteMemory
                S01:08000544:  05 24 A0 E3
 F00:0355       		MOV r3, #16*2		;Number of colors * bytes per color
@@ -688,7 +688,7 @@ F00:0356       		BL LoadHalfwords
 F00:0357       		
 F00:0358       		;Load tilemap images
 F00:0359       		ADRL r1, TilemapFiles	;File with tilemap patterns
-               S01:08000550:  02 1B 8F E2 8C 10 81 E2
+               S01:08000550:  02 1B 8F E2 90 10 81 E2
 F00:0360       		MOV r2, #VramTilemapPixelPatterns
                S01:08000558:  01 29 A0 E3 06 24 82 E3
 F00:0361       		MOV r3, #TilemapFiles_END-TilemapFiles
@@ -698,7 +698,7 @@ F00:0362       		BL LoadHalfwords
 F00:0363       		
 F00:0364       		;Load tilemap patterns directly into VRAM
 F00:0365       		ADRL r1, Tilemap
-               S01:08000568:  2E 1C 8F E2 80 10 81 E2
+               S01:08000568:  2E 1C 8F E2 88 10 81 E2
 F00:0366       		MOV r2, #VramBase	;Load the pattern into screen block 0 of character block 0
                S01:08000570:  06 24 A0 E3
 F00:0367       		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
@@ -708,7 +708,7 @@ F00:0368       		BL LoadBytes
 F00:0369       		
 F00:0370       		;Load tilemap into Background Layer VRAM so our 32x32 tilemap becomes 64x32 and repeats
 F00:0371       		ADRL r1, Tilemap
-               S01:0800057C:  2E 1C 8F E2 6C 10 81 E2
+               S01:0800057C:  2E 1C 8F E2 74 10 81 E2
 F00:0372       		MOV r2, #VramBackground	;Load the pattern into the screen block 1 of character block 0
                S01:08000584:  02 2B A0 E3 06 24 82 E3
 F00:0373       		MOV r3, #Tilemap_END-Tilemap	;<width> x <height> tilemap with 2 bytes per tile
@@ -718,7 +718,7 @@ F00:0374       		BL LoadBytes
 F00:0375       		
 F00:0376       		;Load Sprite Palette Colors
 F00:0377       		ADRL r1, ColorPalette		;Palette Address
-               S01:08000594:  02 1B 8F E2 28 10 81 E2
+               S01:08000594:  02 1B 8F E2 2C 10 81 E2
 F00:0378       		MOV r2, #SpritePaletteMemory
                S01:0800059C:  02 2C A0 E3 05 24 82 E3
 F00:0379       		MOV r3, #16*2		;Number of colors * bytes per color
@@ -728,7 +728,7 @@ F00:0380       		BL LoadHalfwords
 F00:0381       		
 F00:0382       		;Load sprite images
 F00:0383       		ADRL r1, SpriteFiles	;File with tilemap patterns
-               S01:080005AC:  01 1A 8F E2 30 10 81 E2
+               S01:080005AC:  01 1A 8F E2 34 10 81 E2
 F00:0384       		MOV r2, #VramSpritePixelPatterns
                S01:080005B4:  01 28 A0 E3 06 24 82 E3
 F00:0385       		MOV r3, #SpriteFiles_END-SpriteFiles
@@ -882,7 +882,7 @@ F00:0488       		;Add nothing to get rightmost x value
 F00:0489       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:0800066C:  08 20 A0 E3
 F00:0490       		BL DIV
-               S01:08000670:  C3 01 00 EB
+               S01:08000670:  C4 01 00 EB
 F00:0491       		MOV r3, r0
                S01:08000674:  00 30 A0 E1
 F00:0492       		
@@ -892,13 +892,13 @@ F00:0494       		;Add nothing to get top X value
 F00:0495       		MOV r2, #TileLength	;Divide Y by length of a tile
                S01:0800067C:  08 20 A0 E3
 F00:0496       		BL DIV
-               S01:08000680:  BF 01 00 EB
+               S01:08000680:  C0 01 00 EB
 F00:0497       		MOV r4, r0
                S01:08000684:  00 40 A0 E1
 F00:0498       		
 F00:0499       		;Load tile index from tilemap
 F00:0500       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:08000688:  2D 0C 8F E2 60 00 80 E2
+               S01:08000688:  2D 0C 8F E2 68 00 80 E2
 F00:0501       		MOV r1, #TilemapWidth
                S01:08000690:  20 10 A0 E3
 F00:0502       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -923,7 +923,7 @@ F00:0513       		ADD r1, r1, #PlayerWidth-1	;Add width of player to get rightmos
 F00:0514       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:080006B0:  08 20 A0 E3
 F00:0515       		BL DIV
-               S01:080006B4:  B2 01 00 EB
+               S01:080006B4:  B3 01 00 EB
 F00:0516       		MOV r3, r0
                S01:080006B8:  00 30 A0 E1
 F00:0517       		
@@ -933,13 +933,13 @@ F00:0519       		;Add nothing to get top X value
 F00:0520       		MOV r2, #TileLength	;Divide Y by length of a tile
                S01:080006C0:  08 20 A0 E3
 F00:0521       		BL DIV
-               S01:080006C4:  AE 01 00 EB
+               S01:080006C4:  AF 01 00 EB
 F00:0522       		MOV r4, r0
                S01:080006C8:  00 40 A0 E1
 F00:0523       		
 F00:0524       		;Load tile index from tilemap
 F00:0525       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:080006CC:  2D 0C 8F E2 1C 00 80 E2
+               S01:080006CC:  2D 0C 8F E2 24 00 80 E2
 F00:0526       		MOV r1, #TilemapWidth
                S01:080006D4:  20 10 A0 E3
 F00:0527       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -965,7 +965,7 @@ F00:0540       		;Add nothing to get left x value
 F00:0541       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:080006F0:  08 20 A0 E3
 F00:0542       		BL DIV
-               S01:080006F4:  A2 01 00 EB
+               S01:080006F4:  A3 01 00 EB
 F00:0543       		MOV r3, r0
                S01:080006F8:  00 30 A0 E1
 F00:0544       		
@@ -977,13 +977,13 @@ F00:0547       		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom
 F00:0548       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:08000704:  08 20 A0 E3
 F00:0549       		BL DIV
-               S01:08000708:  9D 01 00 EB
+               S01:08000708:  9E 01 00 EB
 F00:0550       		MOV r4, r0
                S01:0800070C:  00 40 A0 E1
 F00:0551       		
 F00:0552       		;Load tile index from tilemap
 F00:0553       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:08000710:  0B 0B 8F E2 D8 00 80 E2
+               S01:08000710:  0B 0B 8F E2 E0 00 80 E2
 F00:0554       		MOV r1, #TilemapWidth
                S01:08000718:  20 10 A0 E3
 F00:0555       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -1008,7 +1008,7 @@ F00:0566       		ADD r1, r1, #PlayerWidth-1;Add width to get right x value, subt
 F00:0567       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:08000738:  08 20 A0 E3
 F00:0568       		BL DIV
-               S01:0800073C:  90 01 00 EB
+               S01:0800073C:  91 01 00 EB
 F00:0569       		MOV r3, r0
                S01:08000740:  00 30 A0 E1
 F00:0570       		
@@ -1020,13 +1020,13 @@ F00:0573       		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom
 F00:0574       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:0800074C:  08 20 A0 E3
 F00:0575       		BL DIV
-               S01:08000750:  8B 01 00 EB
+               S01:08000750:  8C 01 00 EB
 F00:0576       		MOV r4, r0
                S01:08000754:  00 40 A0 E1
 F00:0577       		
 F00:0578       		;Load tile index from tilemap
 F00:0579       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:08000758:  0B 0B 8F E2 90 00 80 E2
+               S01:08000758:  0B 0B 8F E2 98 00 80 E2
 F00:0580       		MOV r1, #TilemapWidth
                S01:08000760:  20 10 A0 E3
 F00:0581       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -1085,7 +1085,7 @@ F00:0618       		;Add nothing to get rightmost x value
 F00:0619       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:080007A4:  08 20 A0 E3
 F00:0620       		BL DIV
-               S01:080007A8:  75 01 00 EB
+               S01:080007A8:  76 01 00 EB
 F00:0621       		MOV r3, r0
                S01:080007AC:  00 30 A0 E1
 F00:0622       		
@@ -1096,13 +1096,13 @@ F00:0625       		;Add nothing to get top y value
 F00:0626       		MOV r2, #TileLength	;Divide y by length of a tile
                S01:080007B4:  08 20 A0 E3
 F00:0627       		BL DIV
-               S01:080007B8:  71 01 00 EB
+               S01:080007B8:  72 01 00 EB
 F00:0628       		MOV r4, r0
                S01:080007BC:  00 40 A0 E1
 F00:0629       		
 F00:0630       		;Load tile index from tilemap
 F00:0631       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:080007C0:  0B 0B 8F E2 28 00 80 E2
+               S01:080007C0:  0B 0B 8F E2 30 00 80 E2
 F00:0632       		MOV r1, #TilemapWidth
                S01:080007C8:  20 10 A0 E3
 F00:0633       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -1126,7 +1126,7 @@ F00:0644       		;Add nothing to get left x value
 F00:0645       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:080007E4:  08 20 A0 E3
 F00:0646       		BL DIV
-               S01:080007E8:  65 01 00 EB
+               S01:080007E8:  66 01 00 EB
 F00:0647       		MOV r3, r0
                S01:080007EC:  00 30 A0 E1
 F00:0648       		
@@ -1138,13 +1138,13 @@ F00:0651       		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom
 F00:0652       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:080007F8:  08 20 A0 E3
 F00:0653       		BL DIV
-               S01:080007FC:  60 01 00 EB
+               S01:080007FC:  61 01 00 EB
 F00:0654       		MOV r4, r0
                S01:08000800:  00 40 A0 E1
 F00:0655       		
 F00:0656       		;Load tile index from tilemap
 F00:0657       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:08000804:  2B 0C 8F E2 E4 00 80 E2
+               S01:08000804:  2B 0C 8F E2 EC 00 80 E2
 F00:0658       		MOV r1, #TilemapWidth
                S01:0800080C:  20 10 A0 E3
 F00:0659       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -1171,7 +1171,7 @@ F00:0672       		ADD r1, r1, #PlayerWidth-1	;Add width of player to get rightmos
 F00:0673       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:0800082C:  08 20 A0 E3
 F00:0674       		BL DIV
-               S01:08000830:  53 01 00 EB
+               S01:08000830:  54 01 00 EB
 F00:0675       		MOV r3, r0
                S01:08000834:  00 30 A0 E1
 F00:0676       		
@@ -1182,13 +1182,13 @@ F00:0679       		;Add nothing to get top y value
 F00:0680       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:0800083C:  08 20 A0 E3
 F00:0681       		BL DIV
-               S01:08000840:  4F 01 00 EB
+               S01:08000840:  50 01 00 EB
 F00:0682       		MOV r4, r0
                S01:08000844:  00 40 A0 E1
 F00:0683       		
 F00:0684       		;Load tile index from tilemap
 F00:0685       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:08000848:  2B 0C 8F E2 A0 00 80 E2
+               S01:08000848:  2B 0C 8F E2 A8 00 80 E2
 F00:0686       		MOV r1, #TilemapWidth
                S01:08000850:  20 10 A0 E3
 F00:0687       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -1213,7 +1213,7 @@ F00:0698       		ADD r1, r1, #PlayerWidth-1;Add width to get right x value, subt
 F00:0699       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:08000870:  08 20 A0 E3
 F00:0700       		BL DIV
-               S01:08000874:  42 01 00 EB
+               S01:08000874:  43 01 00 EB
 F00:0701       		MOV r3, r0
                S01:08000878:  00 30 A0 E1
 F00:0702       		
@@ -1225,13 +1225,13 @@ F00:0705       		ADD r1, r1, #PlayerHeight-1	;Add height of player to get bottom
 F00:0706       		MOV r2, #TileLength	;Divide X by length of a tile
                S01:08000884:  08 20 A0 E3
 F00:0707       		BL DIV
-               S01:08000888:  3D 01 00 EB
+               S01:08000888:  3E 01 00 EB
 F00:0708       		MOV r4, r0
                S01:0800088C:  00 40 A0 E1
 F00:0709       		
 F00:0710       		;Load tile index from tilemap
 F00:0711       		ADRL r0, Tilemap	;Get addresses of tilemap, far away in code so use ADRL
-               S01:08000890:  2B 0C 8F E2 58 00 80 E2
+               S01:08000890:  2B 0C 8F E2 60 00 80 E2
 F00:0712       		MOV r1, #TilemapWidth
                S01:08000898:  20 10 A0 E3
 F00:0713       		MLA r2, r1, r4, r3	;r2 = ((r1 * r4) + r3) -> Load the tile at specified position from tilemap (Tilemap address + ((til
@@ -1362,54 +1362,56 @@ F00:0803       		MOV r0, #PlayerCurrentAnimEnd	;Get address of the current addre
                S01:08000938:  02 04 A0 E3 2C 00 80 E3
 F00:0804       		LDR r4, [r0]	;Get memory location where animation ends
                S01:08000940:  00 40 90 E5
-F00:0805       		
-F00:0806       		ADD r6, r6, #1	;Increment memory to see if next is equal to end of array
-               S01:08000944:  01 60 86 E2
-F00:0807       		ADD r7, r5, r6	;Get start memory address + offset
-               S01:08000948:  06 70 85 E0
-F00:0808       		
-F00:0809       		MOV r1, #PlayerCurrentAnimIndex	;Address of index in current animation
-               S01:0800094C:  02 14 A0 E3 24 10 81 E3
-F00:0810       		
-F00:0811       		CMP r7, r4	;Test current address against end address
-               S01:08000954:  04 00 57 E1
-F00:0812       		;MOVGTE r0, #PlayerCurrentAnimBegin	;If greater or equal, loop back to beginning of animation
-F00:0813       			EORGTE r6, r6, r6	;Clear index to 0
-               S01:08000958:  06 60 26 C0
-F00:0814       			STRBGTE r6, [r1]	;If current address is equal or greater than end, reset the current address in memory to the address
-               S01:0800095C:  00 60 81 E5
-F00:0815       			
-F00:0816       			STRBLT r6, [r1]	;Otherwise, store this new animation index as our current address
+F00:0805       		SUB r4, r4, #1	;(- 1 to get the index of the last frame, not just past the last frame)
+               S01:08000944:  01 40 44 E2
+F00:0806       		
+F00:0807       		ADD r6, r6, #1	;Increment memory to see if next is equal to end of array
+               S01:08000948:  01 60 86 E2
+F00:0808       		ADD r7, r5, r6	;Get start memory address + offset
+               S01:0800094C:  06 70 85 E0
+F00:0809       		
+F00:0810       		MOV r1, #PlayerCurrentAnimIndex	;Address of index in current animation
+               S01:08000950:  02 14 A0 E3 24 10 81 E3
+F00:0811       		
+F00:0812       		CMP r7, r4	;Test current address against end address
+               S01:08000958:  04 00 57 E1
+F00:0813       		;MOVGTE r0, #PlayerCurrentAnimBegin	;If greater or equal, loop back to beginning of animation
+F00:0814       			EORGTE r6, r6, r6	;Clear index to 0
+               S01:0800095C:  06 60 26 C0
+F00:0815       			STRBGTE r6, [r1]	;If current address is equal or greater than end, reset the current address in memory to the address
                S01:08000960:  00 60 81 E5
-F00:0817       		
-F00:0818       	LDMFD sp!, {r1-r7, pc}
-               S01:08000964:  FE 80 BD E8
-F00:0819       	
-F00:0820       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0821       ;Use E conditional to check if pressed
-F00:0822       ;r1 = key mask
-F00:0823       ;Returns keymask in r0
-F00:0824       GetButton:
-F00:0825       	STMFD sp!, {r1-r2, lr}
-               S01:08000968:  06 40 2D E9
-F00:0826       		EOR r0, r0, r0
-               S01:0800096C:  00 00 20 E0
-F00:0827       		MOV r2, #InputLocation	;Input memory location
-               S01:08000970:  13 2E A0 E3 01 23 82 E3
-F00:0828       		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
-               S01:08000978:  B0 00 52 E1
-F00:0829       		MOV r2, #MaskKey		;Mask out superfluous bits
-               S01:0800097C:  3F 2B A0 E3
-F00:0830       		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
-               S01:08000980:  02 00 C0 E1
-F00:0831       		AND r0, r0, r1			;AND return register with input bits with the passed key mask
-               S01:08000984:  01 00 00 E0
-F00:0832       	LDMFD sp!, {r1-r2, pc}
-               S01:08000988:  06 80 BD E8
-F00:0833       
-F00:0834       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0835       
-F00:0836       .INCLUDE "GBA_Core.asm"
+F00:0816       			
+F00:0817       			STRBLT r6, [r1]	;Otherwise, store this new animation index as our current address
+               S01:08000964:  00 60 81 E5
+F00:0818       		
+F00:0819       	LDMFD sp!, {r1-r7, pc}
+               S01:08000968:  FE 80 BD E8
+F00:0820       	
+F00:0821       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0822       ;Use E conditional to check if pressed
+F00:0823       ;r1 = key mask
+F00:0824       ;Returns keymask in r0
+F00:0825       GetButton:
+F00:0826       	STMFD sp!, {r1-r2, lr}
+               S01:0800096C:  06 40 2D E9
+F00:0827       		EOR r0, r0, r0
+               S01:08000970:  00 00 20 E0
+F00:0828       		MOV r2, #InputLocation	;Input memory location
+               S01:08000974:  13 2E A0 E3 01 23 82 E3
+F00:0829       		LDRH r0, [r2]			;Get value of input, (1 = not pressed)
+               S01:0800097C:  B0 00 52 E1
+F00:0830       		MOV r2, #MaskKey		;Mask out superfluous bits
+               S01:08000980:  3F 2B A0 E3
+F00:0831       		BIC r0, r0, r2			;Inverse AND the register to only keep input bits (last 10 bits)
+               S01:08000984:  02 00 C0 E1
+F00:0832       		AND r0, r0, r1			;AND return register with input bits with the passed key mask
+               S01:08000988:  01 00 00 E0
+F00:0833       	LDMFD sp!, {r1-r2, pc}
+               S01:0800098C:  06 80 BD E8
+F00:0834       
+F00:0835       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0836       
+F00:0837       .INCLUDE "GBA_Core.asm"
 F01:0001       .EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000, builds upwards, can store whatever we want whereever we want,
 F01:0002       
 F01:0003       .EQU Stack, 0x03000000
@@ -1428,7 +1430,7 @@ F01:0015       .EQU VramBackground, 0x06000800	;Memory location in VRAM of backg
 F01:0016       .EQU VramSpritePixelPatterns, 0x06010000	;Location of GBA sprite pixels patterns (images) in memory, screen block 2
 F01:0017       
 F01:0018       .EQU SpriteOAMSettings, 0x07000000	;Memory address for attributes for sprites that determine how they're drawn
-F00:0837       .INCLUDE "GBA_Text.asm"
+F00:0838       .INCLUDE "GBA_Text.asm"
 F02:0001       .include "GBA_Core.asm"
 F03:0001       .EQU Ram, 0x02000000	;RAM on the GBA starts at 0x02000000, builds upwards, can store whatever we want whereever we want,
 F03:0002       
@@ -1456,24 +1458,24 @@ F02:0006       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
 F02:0007       ;Comments added by me, Dillon Drummond
 F02:0008       NewLine:
 F02:0009       	STMFD sp!, {r0-r1, lr}	;Store stack pointer, registers 0-12, and link register on stack so we don't lose info from the 
-               S01:0800098C:  03 40 2D E9
+               S01:08000990:  03 40 2D E9
 F02:0010       		MOV r0, #CursorX	;Get address of cursor x
-               S01:08000990:  02 04 A0 E3 20 00 80 E3
+               S01:08000994:  02 04 A0 E3 20 00 80 E3
 F02:0011       		EOR r1, r1, r1		;Clear r1
-               S01:08000998:  01 10 21 E0
+               S01:0800099C:  01 10 21 E0
 F02:0012       		STRB r1, [r0]		;Store 0 from r1 in CursorX, move cursor back to left side of screen
-               S01:0800099C:  00 10 C0 E5
+               S01:080009A0:  00 10 C0 E5
 F02:0013       		
 F02:0014       		MOV r0, #CursorY	;Get Y address
-               S01:080009A0:  02 04 A0 E3 21 00 80 E3
+               S01:080009A4:  02 04 A0 E3 21 00 80 E3
 F02:0015       		LDRB r1, [r0]		;Store CursorY valye in r1
-               S01:080009A8:  00 10 D0 E5
+               S01:080009AC:  00 10 D0 E5
 F02:0016       		ADD r1, r1, #1		;Add 1 to CursorY
-               S01:080009AC:  01 10 81 E2
+               S01:080009B0:  01 10 81 E2
 F02:0017       		STRB r1, [r0]		;Store the incremented CursorY vlaue in CursorY, moves cursor down
-               S01:080009B0:  00 10 C0 E5
+               S01:080009B4:  00 10 C0 E5
 F02:0018       	LDMFD sp!, {r0-r1, pc}	;Load registers from stack, put link register in program counter to return
-               S01:080009B4:  03 80 BD E8
+               S01:080009B8:  03 80 BD E8
 F02:0019       
 F02:0020       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 F02:0021       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
@@ -1482,25 +1484,25 @@ F02:0023       ;Some changes made
 F02:0024       ;Paramters: r1 = string address
 F02:0025       WriteText:
 F02:0026       	STMFD sp!, {r0-r2, lr}
-               S01:080009B8:  07 40 2D E9
+               S01:080009BC:  07 40 2D E9
 F02:0027       		MOV r2, r1			;Store parameter in temp variable so new parameter can be passed to WriteChar
-               S01:080009BC:  01 20 A0 E1
+               S01:080009C0:  01 20 A0 E1
 F02:0028       		
 F02:0029       RepeatWriteText:
 F02:0030       		LDRB r1, [r2], #1 	;Load byte then shift by 1
-               S01:080009C0:  01 10 D2 E4
+               S01:080009C4:  01 10 D2 E4
 F02:0031       		CMPS r1, #255		;Check if char is null terminator
-               S01:080009C4:  FF 00 51 E3
+               S01:080009C8:  FF 00 51 E3
 F02:0032       		BEQ WriteTextDone	;If null terminator, exit
-               S01:080009C8:  01 00 00 0A
+               S01:080009CC:  01 00 00 0A
 F02:0033       		BL WriteChar		;Otherwise, write character
-               S01:080009CC:  01 00 00 EB
+               S01:080009D0:  01 00 00 EB
 F02:0034       		B RepeatWriteText	;Go back to begining of this block and check if there is another character or if at null terminator
-               S01:080009D0:  FA FF FF EA
+               S01:080009D4:  FA FF FF EA
 F02:0035       	
 F02:0036       WriteTextDone:
 F02:0037       	LDMFD sp!, {r0-r2, pc}
-               S01:080009D4:  07 80 BD E8
+               S01:080009D8:  07 80 BD E8
 F02:0038       	
 F02:0039       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 F02:0040       ;Source: https://www.chibialiens.com/arm/helloworld.php#LessonH2
@@ -1508,104 +1510,104 @@ F02:0041       ;Comments added by me, Dillon Drummond
 F02:0042       ;r1 = character to write
 F02:0043       WriteChar:
 F02:0044       	STMFD sp!, {r0-r12, lr}	;Store registers and link register
-               S01:080009D8:  FF 5F 2D E9
+               S01:080009DC:  FF 5F 2D E9
 F02:0045       		;Clear r4 and r5
 F02:0046       		EOR r4, r4, r4
-               S01:080009DC:  04 40 24 E0
+               S01:080009E0:  04 40 24 E0
 F02:0047       		EOR r5, r5, r5
-               S01:080009E0:  05 50 25 E0
+               S01:080009E4:  05 50 25 E0
 F02:0048       		
 F02:0049       		;Loading address of cursor x and y then loading values into r4 and r5
 F02:0050       		MOV r3, #CursorX
-               S01:080009E4:  02 34 A0 E3 20 30 83 E3
+               S01:080009E8:  02 34 A0 E3 20 30 83 E3
 F02:0051       		LDRB r4, [r3]
-               S01:080009EC:  00 40 D3 E5
+               S01:080009F0:  00 40 D3 E5
 F02:0052       		MOV r3, #CursorY
-               S01:080009F0:  02 34 A0 E3 21 30 83 E3
+               S01:080009F4:  02 34 A0 E3 21 30 83 E3
 F02:0053       		LDRB r5, [r3]
-               S01:080009F8:  00 50 D3 E5
+               S01:080009FC:  00 50 D3 E5
 F02:0054       		
 F02:0055       		;r4 = cursor x position, r5 = cursor y position
 F02:0056       		
 F02:0057       		MOV r3, #VramBase	;Load VRAM base address in, addresses after this point will modify screen, 2 bytes, half word, 16 bi
-               S01:080009FC:  06 34 A0 E3
+               S01:08000A00:  06 34 A0 E3
 F02:0058       		
 F02:0059       		;Each char is 8 x 8 pixels
 F02:0060       		;Each pixel is 2 bytes
 F02:0061       		;8 lines of 16 bytes
 F02:0062       		MOV r6, #16		;Bytes in a line of character
-               S01:08000A00:  10 60 A0 E3
+               S01:08000A04:  10 60 A0 E3
 F02:0063       		MUL r2, r4, r6	;Multiply cursor x position by 16
-               S01:08000A04:  94 06 02 E0
+               S01:08000A08:  94 06 02 E0
 F02:0064       		ADD r3, r3, r2	;Add that position to r2 so we are at that x position in VRAM
-               S01:08000A08:  02 30 83 E0
+               S01:08000A0C:  02 30 83 E0
 F02:0065       		
 F02:0066       		MOV r4, #240*8*2	;240 pixels per row, 8 lines per char, 2 bytes per pixel, (no longer need cursor x position, can writ
-               S01:08000A0C:  0F 4C A0 E3
+               S01:08000A10:  0F 4C A0 E3
 F02:0067       		MUL r2, r5, r4		;cursor y position * bytes per char row (8 screen lines, 240 pixels per line, 2 bytes per pixel)
-               S01:08000A10:  95 04 02 E0
+               S01:08000A14:  95 04 02 E0
 F02:0068       		ADD r3, r3, r2		;Add number of bytes to move over in x direction (r3) and number of bytes to move down in the y direct
-               S01:08000A14:  02 30 83 E0
+               S01:08000A18:  02 30 83 E0
 F02:0069       		
 F02:0070       		;I added this, could potentially cause problems
 F02:0071       		;Within each 8x8 space for chars, they are offset to the right by one pixel for some reason.  Since r3 is the location
 F02:0072       		;;;;;;;;;;;;;;;;;;;;;;;
 F02:0073       		SUB r3, r3, #2	;Subtract 1 byte from position, solves 1 byte right offset within each char space, may have something t
-               S01:08000A18:  02 30 43 E2
+               S01:08000A1C:  02 30 43 E2
 F02:0074       		;;;;;;;;;;;;;;;;;;;;;;;
 F02:0075       		
 F02:0076       		ADR r4,BitmapFont 	;Load address of font into r4
-               S01:08000A1C:  58 40 8F E2
+               S01:08000A20:  58 40 8F E2
 F02:0077       		
 F02:0078       		SUB r1,r1,#32			;Subtract 32 from value in first paramter 
-               S01:08000A20:  20 10 41 E2
+               S01:08000A24:  20 10 41 E2
 F02:0079       		ADD r4,r4,r1,asl #3		;Add the value to the bitmap font and shift left 3 to multiply by 8 and get address of the passed
-               S01:08000A24:  81 41 84 E0
+               S01:08000A28:  81 41 84 E0
 F02:0080       		
 F02:0081       		MOV r10,#8			;Loop counter for lines
-               S01:08000A28:  08 A0 A0 E3
+               S01:08000A2C:  08 A0 A0 E3
 F02:0082       WriteLine:
 F02:0083       		MOV r7,#8 			;Loop counter for pixels
-               S01:08000A2C:  08 70 A0 E3
+               S01:08000A30:  08 70 A0 E3
 F02:0084       		LDRB r8,[r4],#1				;Load bitmap font value into r8
-               S01:08000A30:  01 80 D4 E4
+               S01:08000A34:  01 80 D4 E4
 F02:0085       		MOV r9,#0b100000000			;Bitmask gets shifted over 1 through each loop
-               S01:08000A34:  01 9C A0 E3
+               S01:08000A38:  01 9C A0 E3
 F02:0086       				
 F02:0087       		MOV r2, #0b1111111101000000; Color: ABBBBBGGGGGRRRRR	A=Alpha
-               S01:08000A38:  FF 2C A0 E3 40 20 82 E3
+               S01:08000A3C:  FF 2C A0 E3 40 20 82 E3
 F02:0088       DrawPixel:
 F02:0089       		TST r8,r9			;Test r8 and r9, CMP but with AND function, uses bitmask on bitmap font to check if current pixel in r3 sh
-               S01:08000A40:  09 00 18 E1
+               S01:08000A44:  09 00 18 E1
 F02:0090       		STRNEH r2,[r3]		;SToRe if Not Equal Halfword, stores halfword if test is not equal, sets pixel at r3 to the color in r
-               S01:08000A44:  B0 20 43 11
+               S01:08000A48:  B0 20 43 11
 F02:0091       		ADD r3,r3,#2		;Increment r3 by 1 byte
-               S01:08000A48:  02 30 83 E2
+               S01:08000A4C:  02 30 83 E2
 F02:0092       		MOV r9,r9,ror #1	;Rotate bitmask (0b10000000 checks leftmost pixel, 0b01000000 checks the next one, etc.)
-               S01:08000A4C:  E9 90 A0 E1
+               S01:08000A50:  E9 90 A0 E1
 F02:0093       		SUBS r7,r7,#1		;Decrement loop counter for pixels, set signs to check if after 8 pixels
-               S01:08000A50:  01 70 57 E2
+               S01:08000A54:  01 70 57 E2
 F02:0094       		BNE DrawPixel		;Loop for 8 pixels, until zero flag is set
-               S01:08000A54:  F9 FF FF 1A
+               S01:08000A58:  F9 FF FF 1A
 F02:0095       		
 F02:0096       		ADD r3,r3,#480-16	;240 pixels * 2 bytes per pixel - 16 
-               S01:08000A58:  1D 3E 83 E2
+               S01:08000A5C:  1D 3E 83 E2
 F02:0097       		SUBS r10,r10,#1		;Decrement loop counter for lines, set signs to see if after 8 lines	
-               S01:08000A5C:  01 A0 5A E2
+               S01:08000A60:  01 A0 5A E2
 F02:0098       		BNE WriteLine		;If zeor flag set, exit.  Otherwise, repeat, go to next line
-               S01:08000A60:  F1 FF FF 1A
+               S01:08000A64:  F1 FF FF 1A
 F02:0099       LineDone:	
 F02:0100       		MOV r3,#CursorX		;Get CursorX address
-               S01:08000A64:  02 34 A0 E3 20 30 83 E3
+               S01:08000A68:  02 34 A0 E3 20 30 83 E3
 F02:0101       		LDRB r1,[r3]		;Get CursorX value
-               S01:08000A6C:  00 10 D3 E5
+               S01:08000A70:  00 10 D3 E5
 F02:0102       		ADD r1,r1,#1		;Increment cursor by 1 position
-               S01:08000A70:  01 10 81 E2
+               S01:08000A74:  01 10 81 E2
 F02:0103       		STRB r1,[r3]		;Store incremented value back in address
-               S01:08000A74:  00 10 C3 E5
+               S01:08000A78:  00 10 C3 E5
 F02:0104       		
 F02:0105       	LDMFD sp!, {r0-r12, pc}	;Return
-               S01:08000A78:  FF 9F BD E8
+               S01:08000A7C:  FF 9F BD E8
 F02:0106       	
 F02:0107       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 F02:0108       
@@ -1615,1313 +1617,1309 @@ F02:0111       ;This effectively defines an 8x8 bitmap of a character
 F02:0112       ;Method learned from https://www.chibialiens.com/arm/helloworld.php#LessonH2
 F02:0113       BitmapFont:
 F02:0114       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00	;0 - Space
-               S01:08000A7C:  00
-               S01:08000A7D:  00
-               S01:08000A7E:  00
-               S01:08000A7F:  00
                S01:08000A80:  00
                S01:08000A81:  00
                S01:08000A82:  00
                S01:08000A83:  00
+               S01:08000A84:  00
+               S01:08000A85:  00
+               S01:08000A86:  00
+               S01:08000A87:  00
 F02:0115       	.BYTE 0x70,0x70,0x70,0x60,0x60,0x00,0x60,0x00	;1 - !
-               S01:08000A84:  70
-               S01:08000A85:  70
-               S01:08000A86:  70
-               S01:08000A87:  60
-               S01:08000A88:  60
-               S01:08000A89:  00
-               S01:08000A8A:  60
-               S01:08000A8B:  00
+               S01:08000A88:  70
+               S01:08000A89:  70
+               S01:08000A8A:  70
+               S01:08000A8B:  60
+               S01:08000A8C:  60
+               S01:08000A8D:  00
+               S01:08000A8E:  60
+               S01:08000A8F:  00
 F02:0116       	.BYTE 0x00,0x66,0x66,0x66,0x00,0x00,0x00,0x00	;2 - "
-               S01:08000A8C:  00
-               S01:08000A8D:  66
-               S01:08000A8E:  66
-               S01:08000A8F:  66
                S01:08000A90:  00
-               S01:08000A91:  00
-               S01:08000A92:  00
-               S01:08000A93:  00
-F02:0117       	.BYTE 0x00,0x6C,0xFE,0x6C,0x6C,0x6C,0xFE,0x6C	;3 - #
+               S01:08000A91:  66
+               S01:08000A92:  66
+               S01:08000A93:  66
                S01:08000A94:  00
-               S01:08000A95:  6C
-               S01:08000A96:  FE
-               S01:08000A97:  6C
-               S01:08000A98:  6C
+               S01:08000A95:  00
+               S01:08000A96:  00
+               S01:08000A97:  00
+F02:0117       	.BYTE 0x00,0x6C,0xFE,0x6C,0x6C,0x6C,0xFE,0x6C	;3 - #
+               S01:08000A98:  00
                S01:08000A99:  6C
                S01:08000A9A:  FE
                S01:08000A9B:  6C
+               S01:08000A9C:  6C
+               S01:08000A9D:  6C
+               S01:08000A9E:  FE
+               S01:08000A9F:  6C
 F02:0118       	.BYTE 0x00,0x10,0x7C,0xD0,0x7C,0x16,0xFC,0x10	;4 - $
-               S01:08000A9C:  00
-               S01:08000A9D:  10
-               S01:08000A9E:  7C
-               S01:08000A9F:  D0
-               S01:08000AA0:  7C
-               S01:08000AA1:  16
-               S01:08000AA2:  FC
-               S01:08000AA3:  10
+               S01:08000AA0:  00
+               S01:08000AA1:  10
+               S01:08000AA2:  7C
+               S01:08000AA3:  D0
+               S01:08000AA4:  7C
+               S01:08000AA5:  16
+               S01:08000AA6:  FC
+               S01:08000AA7:  10
 F02:0119       	.BYTE 0x00,0x62,0xA4,0xC8,0x10,0x26,0x4A,0x8C	;5 - %
-               S01:08000AA4:  00
-               S01:08000AA5:  62
-               S01:08000AA6:  A4
-               S01:08000AA7:  C8
-               S01:08000AA8:  10
-               S01:08000AA9:  26
-               S01:08000AAA:  4A
-               S01:08000AAB:  8C
+               S01:08000AA8:  00
+               S01:08000AA9:  62
+               S01:08000AAA:  A4
+               S01:08000AAB:  C8
+               S01:08000AAC:  10
+               S01:08000AAD:  26
+               S01:08000AAE:  4A
+               S01:08000AAF:  8C
 F02:0120       	.BYTE 0x00,0x70,0xD8,0xD8,0x70,0xDA,0xCC,0x7E	;6 - &
-               S01:08000AAC:  00
-               S01:08000AAD:  70
-               S01:08000AAE:  D8
-               S01:08000AAF:  D8
-               S01:08000AB0:  70
-               S01:08000AB1:  DA
-               S01:08000AB2:  CC
-               S01:08000AB3:  7E
+               S01:08000AB0:  00
+               S01:08000AB1:  70
+               S01:08000AB2:  D8
+               S01:08000AB3:  D8
+               S01:08000AB4:  70
+               S01:08000AB5:  DA
+               S01:08000AB6:  CC
+               S01:08000AB7:  7E
 F02:0121       	.BYTE 0x00,0x30,0x30,0x60,0x00,0x00,0x00,0x00	;7 - '
-               S01:08000AB4:  00
-               S01:08000AB5:  30
-               S01:08000AB6:  30
-               S01:08000AB7:  60
                S01:08000AB8:  00
-               S01:08000AB9:  00
-               S01:08000ABA:  00
-               S01:08000ABB:  00
-F02:0122       	.BYTE 0x00,0x0C,0x18,0x30,0x30,0x30,0x18,0x0C	;8 - (
+               S01:08000AB9:  30
+               S01:08000ABA:  30
+               S01:08000ABB:  60
                S01:08000ABC:  00
-               S01:08000ABD:  0C
-               S01:08000ABE:  18
-               S01:08000ABF:  30
-               S01:08000AC0:  30
-               S01:08000AC1:  30
+               S01:08000ABD:  00
+               S01:08000ABE:  00
+               S01:08000ABF:  00
+F02:0122       	.BYTE 0x00,0x0C,0x18,0x30,0x30,0x30,0x18,0x0C	;8 - (
+               S01:08000AC0:  00
+               S01:08000AC1:  0C
                S01:08000AC2:  18
-               S01:08000AC3:  0C
-F02:0123       	.BYTE 0x00,0x30,0x18,0x0C,0x0C,0x0C,0x18,0x30	;9 - )
-               S01:08000AC4:  00
+               S01:08000AC3:  30
+               S01:08000AC4:  30
                S01:08000AC5:  30
                S01:08000AC6:  18
                S01:08000AC7:  0C
-               S01:08000AC8:  0C
-               S01:08000AC9:  0C
+F02:0123       	.BYTE 0x00,0x30,0x18,0x0C,0x0C,0x0C,0x18,0x30	;9 - )
+               S01:08000AC8:  00
+               S01:08000AC9:  30
                S01:08000ACA:  18
-               S01:08000ACB:  30
+               S01:08000ACB:  0C
+               S01:08000ACC:  0C
+               S01:08000ACD:  0C
+               S01:08000ACE:  18
+               S01:08000ACF:  30
 F02:0124       	.BYTE 0x00,0x6C,0x38,0xFE,0x38,0x6C,0x00,0x00	;10 - *
-               S01:08000ACC:  00
-               S01:08000ACD:  6C
-               S01:08000ACE:  38
-               S01:08000ACF:  FE
-               S01:08000AD0:  38
+               S01:08000AD0:  00
                S01:08000AD1:  6C
-               S01:08000AD2:  00
-               S01:08000AD3:  00
+               S01:08000AD2:  38
+               S01:08000AD3:  FE
+               S01:08000AD4:  38
+               S01:08000AD5:  6C
+               S01:08000AD6:  00
+               S01:08000AD7:  00
 F02:0125       	.BYTE 0x00,0x18,0x18,0x7E,0x7E,0x18,0x18,0x00	;11 - +
-               S01:08000AD4:  00
-               S01:08000AD5:  18
-               S01:08000AD6:  18
-               S01:08000AD7:  7E
-               S01:08000AD8:  7E
+               S01:08000AD8:  00
                S01:08000AD9:  18
                S01:08000ADA:  18
-               S01:08000ADB:  00
-F02:0126       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x30,0x30,0x60	;12 - ,
-               S01:08000ADC:  00
-               S01:08000ADD:  00
-               S01:08000ADE:  00
+               S01:08000ADB:  7E
+               S01:08000ADC:  7E
+               S01:08000ADD:  18
+               S01:08000ADE:  18
                S01:08000ADF:  00
+F02:0126       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x30,0x30,0x60	;12 - ,
                S01:08000AE0:  00
-               S01:08000AE1:  30
-               S01:08000AE2:  30
-               S01:08000AE3:  60
-F02:0127       	.BYTE 0x00,0x00,0x00,0x3C,0x00,0x00,0x00,0x00	;12 - -
+               S01:08000AE1:  00
+               S01:08000AE2:  00
+               S01:08000AE3:  00
                S01:08000AE4:  00
-               S01:08000AE5:  00
-               S01:08000AE6:  00
-               S01:08000AE7:  3C
+               S01:08000AE5:  30
+               S01:08000AE6:  30
+               S01:08000AE7:  60
+F02:0127       	.BYTE 0x00,0x00,0x00,0x3C,0x00,0x00,0x00,0x00	;12 - -
                S01:08000AE8:  00
                S01:08000AE9:  00
                S01:08000AEA:  00
-               S01:08000AEB:  00
-F02:0128       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x30,0x30	;13 - .
+               S01:08000AEB:  3C
                S01:08000AEC:  00
                S01:08000AED:  00
                S01:08000AEE:  00
                S01:08000AEF:  00
+F02:0128       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x30,0x30	;13 - .
                S01:08000AF0:  00
                S01:08000AF1:  00
-               S01:08000AF2:  30
-               S01:08000AF3:  30
+               S01:08000AF2:  00
+               S01:08000AF3:  00
+               S01:08000AF4:  00
+               S01:08000AF5:  00
+               S01:08000AF6:  30
+               S01:08000AF7:  30
 F02:0129       	.BYTE 0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80	;14 - /
-               S01:08000AF4:  01
-               S01:08000AF5:  02
-               S01:08000AF6:  04
-               S01:08000AF7:  08
-               S01:08000AF8:  10
-               S01:08000AF9:  20
-               S01:08000AFA:  40
-               S01:08000AFB:  80
+               S01:08000AF8:  01
+               S01:08000AF9:  02
+               S01:08000AFA:  04
+               S01:08000AFB:  08
+               S01:08000AFC:  10
+               S01:08000AFD:  20
+               S01:08000AFE:  40
+               S01:08000AFF:  80
 F02:0130       	.BYTE 0x38,0x4C,0xC6,0xC6,0xC6,0xC6,0x64,0x38	;15 - 0
-               S01:08000AFC:  38
-               S01:08000AFD:  4C
-               S01:08000AFE:  C6
-               S01:08000AFF:  C6
-               S01:08000B00:  C6
-               S01:08000B01:  C6
-               S01:08000B02:  64
-               S01:08000B03:  38
+               S01:08000B00:  38
+               S01:08000B01:  4C
+               S01:08000B02:  C6
+               S01:08000B03:  C6
+               S01:08000B04:  C6
+               S01:08000B05:  C6
+               S01:08000B06:  64
+               S01:08000B07:  38
 F02:0131       	.BYTE 0x00,0x18,0x38,0x18,0x18,0x18,0x18,0x7E	;16 - 1
-               S01:08000B04:  00
-               S01:08000B05:  18
-               S01:08000B06:  38
-               S01:08000B07:  18
-               S01:08000B08:  18
+               S01:08000B08:  00
                S01:08000B09:  18
-               S01:08000B0A:  18
-               S01:08000B0B:  7E
+               S01:08000B0A:  38
+               S01:08000B0B:  18
+               S01:08000B0C:  18
+               S01:08000B0D:  18
+               S01:08000B0E:  18
+               S01:08000B0F:  7E
 F02:0132       	.BYTE 0x00,0x7C,0xC6,0x0E,0x3C,0x78,0xE0,0xFE	;17 - 2
-               S01:08000B0C:  00
-               S01:08000B0D:  7C
-               S01:08000B0E:  C6
-               S01:08000B0F:  0E
-               S01:08000B10:  3C
-               S01:08000B11:  78
-               S01:08000B12:  E0
-               S01:08000B13:  FE
+               S01:08000B10:  00
+               S01:08000B11:  7C
+               S01:08000B12:  C6
+               S01:08000B13:  0E
+               S01:08000B14:  3C
+               S01:08000B15:  78
+               S01:08000B16:  E0
+               S01:08000B17:  FE
 F02:0133       	.BYTE 0x00,0x7E,0x0C,0x18,0x3C,0x06,0xC6,0x7C	;18 - 3
-               S01:08000B14:  00
-               S01:08000B15:  7E
-               S01:08000B16:  0C
-               S01:08000B17:  18
-               S01:08000B18:  3C
-               S01:08000B19:  06
-               S01:08000B1A:  C6
-               S01:08000B1B:  7C
+               S01:08000B18:  00
+               S01:08000B19:  7E
+               S01:08000B1A:  0C
+               S01:08000B1B:  18
+               S01:08000B1C:  3C
+               S01:08000B1D:  06
+               S01:08000B1E:  C6
+               S01:08000B1F:  7C
 F02:0134       	.BYTE 0x00,0x1C,0x3C,0x6C,0xCC,0xFE,0x0C,0x0C	;19 - 4
-               S01:08000B1C:  00
-               S01:08000B1D:  1C
-               S01:08000B1E:  3C
-               S01:08000B1F:  6C
-               S01:08000B20:  CC
-               S01:08000B21:  FE
-               S01:08000B22:  0C
-               S01:08000B23:  0C
+               S01:08000B20:  00
+               S01:08000B21:  1C
+               S01:08000B22:  3C
+               S01:08000B23:  6C
+               S01:08000B24:  CC
+               S01:08000B25:  FE
+               S01:08000B26:  0C
+               S01:08000B27:  0C
 F02:0135       	.BYTE 0x00,0xFC,0xC0,0xFC,0x06,0x06,0xC6,0x7C	;20 - 5
-               S01:08000B24:  00
-               S01:08000B25:  FC
-               S01:08000B26:  C0
-               S01:08000B27:  FC
-               S01:08000B28:  06
-               S01:08000B29:  06
-               S01:08000B2A:  C6
-               S01:08000B2B:  7C
+               S01:08000B28:  00
+               S01:08000B29:  FC
+               S01:08000B2A:  C0
+               S01:08000B2B:  FC
+               S01:08000B2C:  06
+               S01:08000B2D:  06
+               S01:08000B2E:  C6
+               S01:08000B2F:  7C
 F02:0136       	.BYTE 0x00,0x3C,0x60,0xC0,0xFC,0xC6,0xC6,0x7C	;21 - 6
-               S01:08000B2C:  00
-               S01:08000B2D:  3C
-               S01:08000B2E:  60
-               S01:08000B2F:  C0
-               S01:08000B30:  FC
-               S01:08000B31:  C6
-               S01:08000B32:  C6
-               S01:08000B33:  7C
-F02:0137       	.BYTE 0x00,0xFE,0xC6,0x0C,0x18,0x30,0x30,0x30	;22 - 7
-               S01:08000B34:  00
-               S01:08000B35:  FE
+               S01:08000B30:  00
+               S01:08000B31:  3C
+               S01:08000B32:  60
+               S01:08000B33:  C0
+               S01:08000B34:  FC
+               S01:08000B35:  C6
                S01:08000B36:  C6
-               S01:08000B37:  0C
-               S01:08000B38:  18
-               S01:08000B39:  30
-               S01:08000B3A:  30
-               S01:08000B3B:  30
+               S01:08000B37:  7C
+F02:0137       	.BYTE 0x00,0xFE,0xC6,0x0C,0x18,0x30,0x30,0x30	;22 - 7
+               S01:08000B38:  00
+               S01:08000B39:  FE
+               S01:08000B3A:  C6
+               S01:08000B3B:  0C
+               S01:08000B3C:  18
+               S01:08000B3D:  30
+               S01:08000B3E:  30
+               S01:08000B3F:  30
 F02:0138       	.BYTE 0x00,0x78,0xC4,0xE4,0x78,0x9E,0x86,0x7C	;23 - 8
-               S01:08000B3C:  00
-               S01:08000B3D:  78
-               S01:08000B3E:  C4
-               S01:08000B3F:  E4
-               S01:08000B40:  78
-               S01:08000B41:  9E
-               S01:08000B42:  86
-               S01:08000B43:  7C
+               S01:08000B40:  00
+               S01:08000B41:  78
+               S01:08000B42:  C4
+               S01:08000B43:  E4
+               S01:08000B44:  78
+               S01:08000B45:  9E
+               S01:08000B46:  86
+               S01:08000B47:  7C
 F02:0139       	.BYTE 0x00,0x7C,0xC6,0xC6,0x7E,0x06,0x0C,0x78	;24 - 9
-               S01:08000B44:  00
-               S01:08000B45:  7C
-               S01:08000B46:  C6
-               S01:08000B47:  C6
-               S01:08000B48:  7E
-               S01:08000B49:  06
-               S01:08000B4A:  0C
-               S01:08000B4B:  78
+               S01:08000B48:  00
+               S01:08000B49:  7C
+               S01:08000B4A:  C6
+               S01:08000B4B:  C6
+               S01:08000B4C:  7E
+               S01:08000B4D:  06
+               S01:08000B4E:  0C
+               S01:08000B4F:  78
 F02:0140       	.BYTE 0x00,0x30,0x30,0x00,0x00,0x30,0x30,0x00	;25 - :
-               S01:08000B4C:  00
-               S01:08000B4D:  30
-               S01:08000B4E:  30
-               S01:08000B4F:  00
                S01:08000B50:  00
                S01:08000B51:  30
                S01:08000B52:  30
                S01:08000B53:  00
-F02:0141       	.BYTE 0x00,0x30,0x30,0x00,0x30,0x30,0x60,0x00	;26 - ;
                S01:08000B54:  00
                S01:08000B55:  30
                S01:08000B56:  30
                S01:08000B57:  00
-               S01:08000B58:  30
+F02:0141       	.BYTE 0x00,0x30,0x30,0x00,0x30,0x30,0x60,0x00	;26 - ;
+               S01:08000B58:  00
                S01:08000B59:  30
-               S01:08000B5A:  60
+               S01:08000B5A:  30
                S01:08000B5B:  00
+               S01:08000B5C:  30
+               S01:08000B5D:  30
+               S01:08000B5E:  60
+               S01:08000B5F:  00
 F02:0142       	.BYTE 0x00,0x0C,0x18,0x30,0x18,0x0C,0x00,0x00	;27 - <
-               S01:08000B5C:  00
-               S01:08000B5D:  0C
-               S01:08000B5E:  18
-               S01:08000B5F:  30
-               S01:08000B60:  18
+               S01:08000B60:  00
                S01:08000B61:  0C
-               S01:08000B62:  00
-               S01:08000B63:  00
-F02:0143       	.BYTE 0x00,0x00,0x7E,0x00,0x7E,0x00,0x00,0x00	;28 - =
-               S01:08000B64:  00
-               S01:08000B65:  00
-               S01:08000B66:  7E
+               S01:08000B62:  18
+               S01:08000B63:  30
+               S01:08000B64:  18
+               S01:08000B65:  0C
+               S01:08000B66:  00
                S01:08000B67:  00
-               S01:08000B68:  7E
+F02:0143       	.BYTE 0x00,0x00,0x7E,0x00,0x7E,0x00,0x00,0x00	;28 - =
+               S01:08000B68:  00
                S01:08000B69:  00
-               S01:08000B6A:  00
+               S01:08000B6A:  7E
                S01:08000B6B:  00
+               S01:08000B6C:  7E
+               S01:08000B6D:  00
+               S01:08000B6E:  00
+               S01:08000B6F:  00
 F02:0144       	.BYTE 0x00,0x30,0x18,0x0C,0x18,0x30,0x00,0x00	;29 - >
-               S01:08000B6C:  00
-               S01:08000B6D:  30
-               S01:08000B6E:  18
-               S01:08000B6F:  0C
-               S01:08000B70:  18
+               S01:08000B70:  00
                S01:08000B71:  30
-               S01:08000B72:  00
-               S01:08000B73:  00
+               S01:08000B72:  18
+               S01:08000B73:  0C
+               S01:08000B74:  18
+               S01:08000B75:  30
+               S01:08000B76:  00
+               S01:08000B77:  00
 F02:0145       	.BYTE 0x00,0x7C,0xFE,0xC6,0x0C,0x38,0x00,0x38	;30 - ?
-               S01:08000B74:  00
-               S01:08000B75:  7C
-               S01:08000B76:  FE
-               S01:08000B77:  C6
-               S01:08000B78:  0C
-               S01:08000B79:  38
-               S01:08000B7A:  00
-               S01:08000B7B:  38
+               S01:08000B78:  00
+               S01:08000B79:  7C
+               S01:08000B7A:  FE
+               S01:08000B7B:  C6
+               S01:08000B7C:  0C
+               S01:08000B7D:  38
+               S01:08000B7E:  00
+               S01:08000B7F:  38
 F02:0146       	.BYTE 0x00,0x7C,0x82,0xBA,0xAA,0xBE,0x80,0x7C	;31 - @
-               S01:08000B7C:  00
-               S01:08000B7D:  7C
-               S01:08000B7E:  82
-               S01:08000B7F:  BA
-               S01:08000B80:  AA
-               S01:08000B81:  BE
-               S01:08000B82:  80
-               S01:08000B83:  7C
+               S01:08000B80:  00
+               S01:08000B81:  7C
+               S01:08000B82:  82
+               S01:08000B83:  BA
+               S01:08000B84:  AA
+               S01:08000B85:  BE
+               S01:08000B86:  80
+               S01:08000B87:  7C
 F02:0147       	.BYTE 0x00,0x38,0x6C,0xC6,0xC6,0xFE,0xC6,0xC6	;32 - A
-               S01:08000B84:  00
-               S01:08000B85:  38
-               S01:08000B86:  6C
-               S01:08000B87:  C6
-               S01:08000B88:  C6
-               S01:08000B89:  FE
-               S01:08000B8A:  C6
+               S01:08000B88:  00
+               S01:08000B89:  38
+               S01:08000B8A:  6C
                S01:08000B8B:  C6
-F02:0148       	.BYTE 0x00,0xFC,0xC6,0xC6,0xFC,0xC6,0xC6,0xFC	;33 - B
-               S01:08000B8C:  00
-               S01:08000B8D:  FC
+               S01:08000B8C:  C6
+               S01:08000B8D:  FE
                S01:08000B8E:  C6
                S01:08000B8F:  C6
-               S01:08000B90:  FC
-               S01:08000B91:  C6
+F02:0148       	.BYTE 0x00,0xFC,0xC6,0xC6,0xFC,0xC6,0xC6,0xFC	;33 - B
+               S01:08000B90:  00
+               S01:08000B91:  FC
                S01:08000B92:  C6
-               S01:08000B93:  FC
+               S01:08000B93:  C6
+               S01:08000B94:  FC
+               S01:08000B95:  C6
+               S01:08000B96:  C6
+               S01:08000B97:  FC
 F02:0149       	.BYTE 0x00,0x3C,0x66,0xC0,0xC0,0xC0,0x66,0x3C	;34 - C
-               S01:08000B94:  00
-               S01:08000B95:  3C
-               S01:08000B96:  66
-               S01:08000B97:  C0
-               S01:08000B98:  C0
-               S01:08000B99:  C0
+               S01:08000B98:  00
+               S01:08000B99:  3C
                S01:08000B9A:  66
-               S01:08000B9B:  3C
+               S01:08000B9B:  C0
+               S01:08000B9C:  C0
+               S01:08000B9D:  C0
+               S01:08000B9E:  66
+               S01:08000B9F:  3C
 F02:0150       	.BYTE 0x00,0xF8,0xCC,0xC6,0xC6,0xC6,0xCC,0xF8	;35 - D
-               S01:08000B9C:  00
-               S01:08000B9D:  F8
-               S01:08000B9E:  CC
-               S01:08000B9F:  C6
-               S01:08000BA0:  C6
-               S01:08000BA1:  C6
+               S01:08000BA0:  00
+               S01:08000BA1:  F8
                S01:08000BA2:  CC
-               S01:08000BA3:  F8
+               S01:08000BA3:  C6
+               S01:08000BA4:  C6
+               S01:08000BA5:  C6
+               S01:08000BA6:  CC
+               S01:08000BA7:  F8
 F02:0151       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xFE	;36 - E
-               S01:08000BA4:  00
-               S01:08000BA5:  FE
-               S01:08000BA6:  C0
-               S01:08000BA7:  C0
-               S01:08000BA8:  FC
-               S01:08000BA9:  C0
+               S01:08000BA8:  00
+               S01:08000BA9:  FE
                S01:08000BAA:  C0
-               S01:08000BAB:  FE
-F02:0152       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xC0	;37 - F
-               S01:08000BAC:  00
-               S01:08000BAD:  FE
+               S01:08000BAB:  C0
+               S01:08000BAC:  FC
+               S01:08000BAD:  C0
                S01:08000BAE:  C0
-               S01:08000BAF:  C0
-               S01:08000BB0:  FC
-               S01:08000BB1:  C0
+               S01:08000BAF:  FE
+F02:0152       	.BYTE 0x00,0xFE,0xC0,0xC0,0xFC,0xC0,0xC0,0xC0	;37 - F
+               S01:08000BB0:  00
+               S01:08000BB1:  FE
                S01:08000BB2:  C0
                S01:08000BB3:  C0
-F02:0153       	.BYTE 0x00,0x3E,0x60,0xC0,0xCE,0xC6,0x66,0x3E	;38 - G
-               S01:08000BB4:  00
-               S01:08000BB5:  3E
-               S01:08000BB6:  60
+               S01:08000BB4:  FC
+               S01:08000BB5:  C0
+               S01:08000BB6:  C0
                S01:08000BB7:  C0
-               S01:08000BB8:  CE
-               S01:08000BB9:  C6
-               S01:08000BBA:  66
-               S01:08000BBB:  3E
-F02:0154       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xFE,0xC6,0xC6	;39 - H
-               S01:08000BBC:  00
+F02:0153       	.BYTE 0x00,0x3E,0x60,0xC0,0xCE,0xC6,0x66,0x3E	;38 - G
+               S01:08000BB8:  00
+               S01:08000BB9:  3E
+               S01:08000BBA:  60
+               S01:08000BBB:  C0
+               S01:08000BBC:  CE
                S01:08000BBD:  C6
-               S01:08000BBE:  C6
-               S01:08000BBF:  C6
-               S01:08000BC0:  C6
-               S01:08000BC1:  FE
+               S01:08000BBE:  66
+               S01:08000BBF:  3E
+F02:0154       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xFE,0xC6,0xC6	;39 - H
+               S01:08000BC0:  00
+               S01:08000BC1:  C6
                S01:08000BC2:  C6
                S01:08000BC3:  C6
+               S01:08000BC4:  C6
+               S01:08000BC5:  FE
+               S01:08000BC6:  C6
+               S01:08000BC7:  C6
 F02:0155       	.BYTE 0x00,0x7E,0x18,0x18,0x18,0x18,0x18,0x7E	;40 - I
-               S01:08000BC4:  00
-               S01:08000BC5:  7E
-               S01:08000BC6:  18
-               S01:08000BC7:  18
-               S01:08000BC8:  18
-               S01:08000BC9:  18
+               S01:08000BC8:  00
+               S01:08000BC9:  7E
                S01:08000BCA:  18
-               S01:08000BCB:  7E
+               S01:08000BCB:  18
+               S01:08000BCC:  18
+               S01:08000BCD:  18
+               S01:08000BCE:  18
+               S01:08000BCF:  7E
 F02:0156       	.BYTE 0x00,0x06,0x06,0x06,0x06,0x06,0xC6,0x7C	;41 - J
-               S01:08000BCC:  00
-               S01:08000BCD:  06
-               S01:08000BCE:  06
-               S01:08000BCF:  06
-               S01:08000BD0:  06
+               S01:08000BD0:  00
                S01:08000BD1:  06
-               S01:08000BD2:  C6
-               S01:08000BD3:  7C
+               S01:08000BD2:  06
+               S01:08000BD3:  06
+               S01:08000BD4:  06
+               S01:08000BD5:  06
+               S01:08000BD6:  C6
+               S01:08000BD7:  7C
 F02:0157       	.BYTE 0x00,0xC6,0xCC,0xD8,0xF0,0xF8,0xDC,0xCE	;42 - K
-               S01:08000BD4:  00
-               S01:08000BD5:  C6
-               S01:08000BD6:  CC
-               S01:08000BD7:  D8
-               S01:08000BD8:  F0
-               S01:08000BD9:  F8
-               S01:08000BDA:  DC
-               S01:08000BDB:  CE
+               S01:08000BD8:  00
+               S01:08000BD9:  C6
+               S01:08000BDA:  CC
+               S01:08000BDB:  D8
+               S01:08000BDC:  F0
+               S01:08000BDD:  F8
+               S01:08000BDE:  DC
+               S01:08000BDF:  CE
 F02:0158       	.BYTE 0x00,0x60,0x60,0x60,0x60,0x60,0x60,0x7E	;43 - L
-               S01:08000BDC:  00
-               S01:08000BDD:  60
-               S01:08000BDE:  60
-               S01:08000BDF:  60
-               S01:08000BE0:  60
+               S01:08000BE0:  00
                S01:08000BE1:  60
                S01:08000BE2:  60
-               S01:08000BE3:  7E
+               S01:08000BE3:  60
+               S01:08000BE4:  60
+               S01:08000BE5:  60
+               S01:08000BE6:  60
+               S01:08000BE7:  7E
 F02:0159       	.BYTE 0x00,0xC6,0xEE,0xFE,0xD6,0xD6,0xC6,0xC6	;44 - M
-               S01:08000BE4:  00
-               S01:08000BE5:  C6
-               S01:08000BE6:  EE
-               S01:08000BE7:  FE
-               S01:08000BE8:  D6
-               S01:08000BE9:  D6
-               S01:08000BEA:  C6
-               S01:08000BEB:  C6
+               S01:08000BE8:  00
+               S01:08000BE9:  C6
+               S01:08000BEA:  EE
+               S01:08000BEB:  FE
+               S01:08000BEC:  D6
+               S01:08000BED:  D6
+               S01:08000BEE:  C6
+               S01:08000BEF:  C6
 F02:0160       	.BYTE 0x00,0xC6,0xE6,0xF6,0xDE,0xDE,0xC6,0xC6	;45 - N
-               S01:08000BEC:  00
-               S01:08000BED:  C6
-               S01:08000BEE:  E6
-               S01:08000BEF:  F6
-               S01:08000BF0:  DE
-               S01:08000BF1:  DE
-               S01:08000BF2:  C6
-               S01:08000BF3:  C6
-F02:0161       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;46 - O
-               S01:08000BF4:  00
-               S01:08000BF5:  7C
+               S01:08000BF0:  00
+               S01:08000BF1:  C6
+               S01:08000BF2:  E6
+               S01:08000BF3:  F6
+               S01:08000BF4:  DE
+               S01:08000BF5:  DE
                S01:08000BF6:  C6
                S01:08000BF7:  C6
-               S01:08000BF8:  C6
-               S01:08000BF9:  C6
+F02:0161       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;46 - O
+               S01:08000BF8:  00
+               S01:08000BF9:  7C
                S01:08000BFA:  C6
-               S01:08000BFB:  7C
-F02:0162       	.BYTE 0x00,0xFC,0xC6,0xC6,0xC6,0xFC,0xC0,0xC0	;47 - P
-               S01:08000BFC:  00
-               S01:08000BFD:  FC
+               S01:08000BFB:  C6
+               S01:08000BFC:  C6
+               S01:08000BFD:  C6
                S01:08000BFE:  C6
-               S01:08000BFF:  C6
-               S01:08000C00:  C6
+               S01:08000BFF:  7C
+F02:0162       	.BYTE 0x00,0xFC,0xC6,0xC6,0xC6,0xFC,0xC0,0xC0	;47 - P
+               S01:08000C00:  00
                S01:08000C01:  FC
-               S01:08000C02:  C0
-               S01:08000C03:  C0
+               S01:08000C02:  C6
+               S01:08000C03:  C6
+               S01:08000C04:  C6
+               S01:08000C05:  FC
+               S01:08000C06:  C0
+               S01:08000C07:  C0
 F02:0163       	.BYTE 0x00,0x7C,0xC6,0xC6,0xC6,0xDE,0xCC,0x7A	;48 - Q
-               S01:08000C04:  00
-               S01:08000C05:  7C
-               S01:08000C06:  C6
-               S01:08000C07:  C6
-               S01:08000C08:  C6
-               S01:08000C09:  DE
-               S01:08000C0A:  CC
-               S01:08000C0B:  7A
+               S01:08000C08:  00
+               S01:08000C09:  7C
+               S01:08000C0A:  C6
+               S01:08000C0B:  C6
+               S01:08000C0C:  C6
+               S01:08000C0D:  DE
+               S01:08000C0E:  CC
+               S01:08000C0F:  7A
 F02:0164       	.BYTE 0x00,0xFC,0xC6,0xC6,0xCE,0xF8,0xDC,0xCE	;49 - R
-               S01:08000C0C:  00
-               S01:08000C0D:  FC
-               S01:08000C0E:  C6
-               S01:08000C0F:  C6
-               S01:08000C10:  CE
-               S01:08000C11:  F8
-               S01:08000C12:  DC
-               S01:08000C13:  CE
+               S01:08000C10:  00
+               S01:08000C11:  FC
+               S01:08000C12:  C6
+               S01:08000C13:  C6
+               S01:08000C14:  CE
+               S01:08000C15:  F8
+               S01:08000C16:  DC
+               S01:08000C17:  CE
 F02:0165       	.BYTE 0x00,0x7C,0xC6,0xC0,0x7C,0x06,0xC6,0x7C	;50 - S
-               S01:08000C14:  00
-               S01:08000C15:  7C
-               S01:08000C16:  C6
-               S01:08000C17:  C0
-               S01:08000C18:  7C
-               S01:08000C19:  06
+               S01:08000C18:  00
+               S01:08000C19:  7C
                S01:08000C1A:  C6
-               S01:08000C1B:  7C
+               S01:08000C1B:  C0
+               S01:08000C1C:  7C
+               S01:08000C1D:  06
+               S01:08000C1E:  C6
+               S01:08000C1F:  7C
 F02:0166       	.BYTE 0x00,0x7E,0x18,0x18,0x18,0x18,0x18,0x18	;51 - T
-               S01:08000C1C:  00
-               S01:08000C1D:  7E
-               S01:08000C1E:  18
-               S01:08000C1F:  18
-               S01:08000C20:  18
-               S01:08000C21:  18
+               S01:08000C20:  00
+               S01:08000C21:  7E
                S01:08000C22:  18
                S01:08000C23:  18
+               S01:08000C24:  18
+               S01:08000C25:  18
+               S01:08000C26:  18
+               S01:08000C27:  18
 F02:0167       	.BYTE 0x00,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0x7C	;52 - U
-               S01:08000C24:  00
-               S01:08000C25:  C6
-               S01:08000C26:  C6
-               S01:08000C27:  C6
-               S01:08000C28:  C6
+               S01:08000C28:  00
                S01:08000C29:  C6
                S01:08000C2A:  C6
-               S01:08000C2B:  7C
-F02:0168       	.BYTE 0x00,0xC6,0xC6,0xC6,0xEE,0x7C,0x38,0x10	;53 - V
-               S01:08000C2C:  00
+               S01:08000C2B:  C6
+               S01:08000C2C:  C6
                S01:08000C2D:  C6
                S01:08000C2E:  C6
-               S01:08000C2F:  C6
-               S01:08000C30:  EE
-               S01:08000C31:  7C
-               S01:08000C32:  38
-               S01:08000C33:  10
+               S01:08000C2F:  7C
+F02:0168       	.BYTE 0x00,0xC6,0xC6,0xC6,0xEE,0x7C,0x38,0x10	;53 - V
+               S01:08000C30:  00
+               S01:08000C31:  C6
+               S01:08000C32:  C6
+               S01:08000C33:  C6
+               S01:08000C34:  EE
+               S01:08000C35:  7C
+               S01:08000C36:  38
+               S01:08000C37:  10
 F02:0169       	.BYTE 0x00,0xD6,0xD6,0xD6,0xD6,0xFE,0xEE,0x44	;54 - W
-               S01:08000C34:  00
-               S01:08000C35:  D6
-               S01:08000C36:  D6
-               S01:08000C37:  D6
-               S01:08000C38:  D6
-               S01:08000C39:  FE
-               S01:08000C3A:  EE
-               S01:08000C3B:  44
+               S01:08000C38:  00
+               S01:08000C39:  D6
+               S01:08000C3A:  D6
+               S01:08000C3B:  D6
+               S01:08000C3C:  D6
+               S01:08000C3D:  FE
+               S01:08000C3E:  EE
+               S01:08000C3F:  44
 F02:0170       	.BYTE 0x00,0xC6,0xC6,0x6C,0x38,0x6C,0xC6,0xC6	;55 - X
-               S01:08000C3C:  00
-               S01:08000C3D:  C6
-               S01:08000C3E:  C6
-               S01:08000C3F:  6C
-               S01:08000C40:  38
-               S01:08000C41:  6C
+               S01:08000C40:  00
+               S01:08000C41:  C6
                S01:08000C42:  C6
-               S01:08000C43:  C6
+               S01:08000C43:  6C
+               S01:08000C44:  38
+               S01:08000C45:  6C
+               S01:08000C46:  C6
+               S01:08000C47:  C6
 F02:0171       	.BYTE 0x00,0x66,0x66,0x66,0x3C,0x18,0x18,0x18	;56 - Y
-               S01:08000C44:  00
-               S01:08000C45:  66
-               S01:08000C46:  66
-               S01:08000C47:  66
-               S01:08000C48:  3C
-               S01:08000C49:  18
-               S01:08000C4A:  18
-               S01:08000C4B:  18
+               S01:08000C48:  00
+               S01:08000C49:  66
+               S01:08000C4A:  66
+               S01:08000C4B:  66
+               S01:08000C4C:  3C
+               S01:08000C4D:  18
+               S01:08000C4E:  18
+               S01:08000C4F:  18
 F02:0172       	.BYTE 0x00,0xFE,0x0E,0x1C,0x38,0x70,0xE0,0xFE	;57 - Z
-               S01:08000C4C:  00
-               S01:08000C4D:  FE
-               S01:08000C4E:  0E
-               S01:08000C4F:  1C
-               S01:08000C50:  38
-               S01:08000C51:  70
-               S01:08000C52:  E0
-               S01:08000C53:  FE
+               S01:08000C50:  00
+               S01:08000C51:  FE
+               S01:08000C52:  0E
+               S01:08000C53:  1C
+               S01:08000C54:  38
+               S01:08000C55:  70
+               S01:08000C56:  E0
+               S01:08000C57:  FE
 F02:0173       	.BYTE 0x00,0x3C,0x30,0x30,0x30,0x30,0x30,0x3C	;58 - [
-               S01:08000C54:  00
-               S01:08000C55:  3C
-               S01:08000C56:  30
-               S01:08000C57:  30
-               S01:08000C58:  30
-               S01:08000C59:  30
+               S01:08000C58:  00
+               S01:08000C59:  3C
                S01:08000C5A:  30
-               S01:08000C5B:  3C
+               S01:08000C5B:  30
+               S01:08000C5C:  30
+               S01:08000C5D:  30
+               S01:08000C5E:  30
+               S01:08000C5F:  3C
 F02:0174       	.BYTE 0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01	;59 - \ 
-               S01:08000C5C:  80
-               S01:08000C5D:  40
-               S01:08000C5E:  20
-               S01:08000C5F:  10
-               S01:08000C60:  08
-               S01:08000C61:  04
-               S01:08000C62:  02
-               S01:08000C63:  01
+               S01:08000C60:  80
+               S01:08000C61:  40
+               S01:08000C62:  20
+               S01:08000C63:  10
+               S01:08000C64:  08
+               S01:08000C65:  04
+               S01:08000C66:  02
+               S01:08000C67:  01
 F02:0175       	.BYTE 0x00,0x3C,0x0C,0x0C,0x0C,0x0C,0x0C,0x3C	;60 - ]
-               S01:08000C64:  00
-               S01:08000C65:  3C
-               S01:08000C66:  0C
-               S01:08000C67:  0C
-               S01:08000C68:  0C
-               S01:08000C69:  0C
+               S01:08000C68:  00
+               S01:08000C69:  3C
                S01:08000C6A:  0C
-               S01:08000C6B:  3C
+               S01:08000C6B:  0C
+               S01:08000C6C:  0C
+               S01:08000C6D:  0C
+               S01:08000C6E:  0C
+               S01:08000C6F:  3C
 F02:0176       	.BYTE 0x00,0x38,0x6C,0x00,0x00,0x00,0x00,0x00	;61 - ^
-               S01:08000C6C:  00
-               S01:08000C6D:  38
-               S01:08000C6E:  6C
-               S01:08000C6F:  00
                S01:08000C70:  00
-               S01:08000C71:  00
-               S01:08000C72:  00
+               S01:08000C71:  38
+               S01:08000C72:  6C
                S01:08000C73:  00
-F02:0177       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFE	;62 - _
                S01:08000C74:  00
                S01:08000C75:  00
                S01:08000C76:  00
                S01:08000C77:  00
+F02:0177       	.BYTE 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFE	;62 - _
                S01:08000C78:  00
                S01:08000C79:  00
                S01:08000C7A:  00
-               S01:08000C7B:  FE
-F02:0178       	.BYTE 0x00,0x10,0x08,0x00,0x00,0x00,0x00,0x00 	;63 - `
+               S01:08000C7B:  00
                S01:08000C7C:  00
-               S01:08000C7D:  10
-               S01:08000C7E:  08
-               S01:08000C7F:  00
+               S01:08000C7D:  00
+               S01:08000C7E:  00
+               S01:08000C7F:  FE
+F02:0178       	.BYTE 0x00,0x10,0x08,0x00,0x00,0x00,0x00,0x00 	;63 - `
                S01:08000C80:  00
-               S01:08000C81:  00
-               S01:08000C82:  00
+               S01:08000C81:  10
+               S01:08000C82:  08
                S01:08000C83:  00
-F02:0179       	.BYTE 0x00,0x00,0x00,0x7C,0x06,0x7E,0xC6,0x7E	;64 - a
                S01:08000C84:  00
                S01:08000C85:  00
                S01:08000C86:  00
-               S01:08000C87:  7C
-               S01:08000C88:  06
-               S01:08000C89:  7E
-               S01:08000C8A:  C6
-               S01:08000C8B:  7E
+               S01:08000C87:  00
+F02:0179       	.BYTE 0x00,0x00,0x00,0x7C,0x06,0x7E,0xC6,0x7E	;64 - a
+               S01:08000C88:  00
+               S01:08000C89:  00
+               S01:08000C8A:  00
+               S01:08000C8B:  7C
+               S01:08000C8C:  06
+               S01:08000C8D:  7E
+               S01:08000C8E:  C6
+               S01:08000C8F:  7E
 F02:0180       	.BYTE 0x00,0xC0,0xC0,0xFC,0xC6,0xC6,0xC6,0x7C	;65 - b
-               S01:08000C8C:  00
-               S01:08000C8D:  C0
-               S01:08000C8E:  C0
-               S01:08000C8F:  FC
-               S01:08000C90:  C6
-               S01:08000C91:  C6
-               S01:08000C92:  C6
-               S01:08000C93:  7C
+               S01:08000C90:  00
+               S01:08000C91:  C0
+               S01:08000C92:  C0
+               S01:08000C93:  FC
+               S01:08000C94:  C6
+               S01:08000C95:  C6
+               S01:08000C96:  C6
+               S01:08000C97:  7C
 F02:0181       	.BYTE 0x00,0x00,0x00,0x7E,0xC0,0xC0,0xC0,0x7E	;66 - c
-               S01:08000C94:  00
-               S01:08000C95:  00
-               S01:08000C96:  00
-               S01:08000C97:  7E
-               S01:08000C98:  C0
-               S01:08000C99:  C0
-               S01:08000C9A:  C0
+               S01:08000C98:  00
+               S01:08000C99:  00
+               S01:08000C9A:  00
                S01:08000C9B:  7E
-F02:0182       	.BYTE 0x00,0x06,0x06,0x7E,0xC6,0xC6,0xC6,0x7E	;67 - d
-               S01:08000C9C:  00
-               S01:08000C9D:  06
-               S01:08000C9E:  06
+               S01:08000C9C:  C0
+               S01:08000C9D:  C0
+               S01:08000C9E:  C0
                S01:08000C9F:  7E
-               S01:08000CA0:  C6
-               S01:08000CA1:  C6
-               S01:08000CA2:  C6
+F02:0182       	.BYTE 0x00,0x06,0x06,0x7E,0xC6,0xC6,0xC6,0x7E	;67 - d
+               S01:08000CA0:  00
+               S01:08000CA1:  06
+               S01:08000CA2:  06
                S01:08000CA3:  7E
+               S01:08000CA4:  C6
+               S01:08000CA5:  C6
+               S01:08000CA6:  C6
+               S01:08000CA7:  7E
 F02:0183       	.BYTE 0x00,0x00,0x00,0x7C,0xC6,0xFE,0xC0,0x7C	;68 - e
-               S01:08000CA4:  00
-               S01:08000CA5:  00
-               S01:08000CA6:  00
-               S01:08000CA7:  7C
-               S01:08000CA8:  C6
-               S01:08000CA9:  FE
-               S01:08000CAA:  C0
+               S01:08000CA8:  00
+               S01:08000CA9:  00
+               S01:08000CAA:  00
                S01:08000CAB:  7C
+               S01:08000CAC:  C6
+               S01:08000CAD:  FE
+               S01:08000CAE:  C0
+               S01:08000CAF:  7C
 F02:0184       	.BYTE 0x00,0x0E,0x18,0x7E,0x18,0x18,0x18,0x18	;69 - f
-               S01:08000CAC:  00
-               S01:08000CAD:  0E
-               S01:08000CAE:  18
-               S01:08000CAF:  7E
-               S01:08000CB0:  18
-               S01:08000CB1:  18
+               S01:08000CB0:  00
+               S01:08000CB1:  0E
                S01:08000CB2:  18
-               S01:08000CB3:  18
+               S01:08000CB3:  7E
+               S01:08000CB4:  18
+               S01:08000CB5:  18
+               S01:08000CB6:  18
+               S01:08000CB7:  18
 F02:0185       	.BYTE 0x00,0x00,0x7E,0xC6,0xC6,0x7E,0x06,0x7C	;70 - g
-               S01:08000CB4:  00
-               S01:08000CB5:  00
-               S01:08000CB6:  7E
-               S01:08000CB7:  C6
-               S01:08000CB8:  C6
-               S01:08000CB9:  7E
-               S01:08000CBA:  06
-               S01:08000CBB:  7C
+               S01:08000CB8:  00
+               S01:08000CB9:  00
+               S01:08000CBA:  7E
+               S01:08000CBB:  C6
+               S01:08000CBC:  C6
+               S01:08000CBD:  7E
+               S01:08000CBE:  06
+               S01:08000CBF:  7C
 F02:0186       	.BYTE 0x00,0xC0,0xC0,0xFC,0xC6,0xC6,0xC6,0xC6	;71 - h
-               S01:08000CBC:  00
-               S01:08000CBD:  C0
-               S01:08000CBE:  C0
-               S01:08000CBF:  FC
-               S01:08000CC0:  C6
-               S01:08000CC1:  C6
-               S01:08000CC2:  C6
-               S01:08000CC3:  C6
+               S01:08000CC0:  00
+               S01:08000CC1:  C0
+               S01:08000CC2:  C0
+               S01:08000CC3:  FC
+               S01:08000CC4:  C6
+               S01:08000CC5:  C6
+               S01:08000CC6:  C6
+               S01:08000CC7:  C6
 F02:0187       	.BYTE 0x00,0x18,0x00,0x38,0x18,0x18,0x18,0x7E	;72 - i
-               S01:08000CC4:  00
-               S01:08000CC5:  18
-               S01:08000CC6:  00
-               S01:08000CC7:  38
-               S01:08000CC8:  18
+               S01:08000CC8:  00
                S01:08000CC9:  18
-               S01:08000CCA:  18
-               S01:08000CCB:  7E
+               S01:08000CCA:  00
+               S01:08000CCB:  38
+               S01:08000CCC:  18
+               S01:08000CCD:  18
+               S01:08000CCE:  18
+               S01:08000CCF:  7E
 F02:0188       	.BYTE 0x00,0x0C,0x00,0x1C,0x0C,0x0C,0x0C,0x78	;73 - j
-               S01:08000CCC:  00
-               S01:08000CCD:  0C
-               S01:08000CCE:  00
-               S01:08000CCF:  1C
-               S01:08000CD0:  0C
+               S01:08000CD0:  00
                S01:08000CD1:  0C
-               S01:08000CD2:  0C
-               S01:08000CD3:  78
+               S01:08000CD2:  00
+               S01:08000CD3:  1C
+               S01:08000CD4:  0C
+               S01:08000CD5:  0C
+               S01:08000CD6:  0C
+               S01:08000CD7:  78
 F02:0189       	.BYTE 0x00,0xC0,0xC0,0xC6,0xCC,0xF8,0xCC,0xC6	;74 - k
-               S01:08000CD4:  00
-               S01:08000CD5:  C0
-               S01:08000CD6:  C0
-               S01:08000CD7:  C6
-               S01:08000CD8:  CC
-               S01:08000CD9:  F8
-               S01:08000CDA:  CC
+               S01:08000CD8:  00
+               S01:08000CD9:  C0
+               S01:08000CDA:  C0
                S01:08000CDB:  C6
+               S01:08000CDC:  CC
+               S01:08000CDD:  F8
+               S01:08000CDE:  CC
+               S01:08000CDF:  C6
 F02:0190       	.BYTE 0x00,0x38,0x18,0x18,0x18,0x18,0x18,0x7E	;75 - l
-               S01:08000CDC:  00
-               S01:08000CDD:  38
-               S01:08000CDE:  18
-               S01:08000CDF:  18
-               S01:08000CE0:  18
-               S01:08000CE1:  18
+               S01:08000CE0:  00
+               S01:08000CE1:  38
                S01:08000CE2:  18
-               S01:08000CE3:  7E
+               S01:08000CE3:  18
+               S01:08000CE4:  18
+               S01:08000CE5:  18
+               S01:08000CE6:  18
+               S01:08000CE7:  7E
 F02:0191       	.BYTE 0x00,0x00,0x00,0xFC,0xB6,0xB6,0xB6,0xB6	;76 - m
-               S01:08000CE4:  00
-               S01:08000CE5:  00
-               S01:08000CE6:  00
-               S01:08000CE7:  FC
-               S01:08000CE8:  B6
-               S01:08000CE9:  B6
-               S01:08000CEA:  B6
-               S01:08000CEB:  B6
+               S01:08000CE8:  00
+               S01:08000CE9:  00
+               S01:08000CEA:  00
+               S01:08000CEB:  FC
+               S01:08000CEC:  B6
+               S01:08000CED:  B6
+               S01:08000CEE:  B6
+               S01:08000CEF:  B6
 F02:0192       	.BYTE 0x00,0x00,0x00,0xFC,0xC6,0xC6,0xC6,0xC6	;77 - n
-               S01:08000CEC:  00
-               S01:08000CED:  00
-               S01:08000CEE:  00
-               S01:08000CEF:  FC
-               S01:08000CF0:  C6
-               S01:08000CF1:  C6
-               S01:08000CF2:  C6
-               S01:08000CF3:  C6
+               S01:08000CF0:  00
+               S01:08000CF1:  00
+               S01:08000CF2:  00
+               S01:08000CF3:  FC
+               S01:08000CF4:  C6
+               S01:08000CF5:  C6
+               S01:08000CF6:  C6
+               S01:08000CF7:  C6
 F02:0193       	.BYTE 0x00,0x00,0x00,0x7C,0xC6,0xC6,0xC6,0x7C	;78 - o
-               S01:08000CF4:  00
-               S01:08000CF5:  00
-               S01:08000CF6:  00
-               S01:08000CF7:  7C
-               S01:08000CF8:  C6
-               S01:08000CF9:  C6
-               S01:08000CFA:  C6
+               S01:08000CF8:  00
+               S01:08000CF9:  00
+               S01:08000CFA:  00
                S01:08000CFB:  7C
+               S01:08000CFC:  C6
+               S01:08000CFD:  C6
+               S01:08000CFE:  C6
+               S01:08000CFF:  7C
 F02:0194       	.BYTE 0x00,0x00,0xFC,0xC6,0xC6,0xFC,0xC0,0xC0	;79 - p
-               S01:08000CFC:  00
-               S01:08000CFD:  00
-               S01:08000CFE:  FC
-               S01:08000CFF:  C6
-               S01:08000D00:  C6
-               S01:08000D01:  FC
-               S01:08000D02:  C0
-               S01:08000D03:  C0
+               S01:08000D00:  00
+               S01:08000D01:  00
+               S01:08000D02:  FC
+               S01:08000D03:  C6
+               S01:08000D04:  C6
+               S01:08000D05:  FC
+               S01:08000D06:  C0
+               S01:08000D07:  C0
 F02:0195       	.BYTE 0x00,0x00,0x7E,0xC6,0xC6,0x7E,0x06,0x06	;80 - q
-               S01:08000D04:  00
-               S01:08000D05:  00
-               S01:08000D06:  7E
-               S01:08000D07:  C6
-               S01:08000D08:  C6
-               S01:08000D09:  7E
-               S01:08000D0A:  06
-               S01:08000D0B:  06
+               S01:08000D08:  00
+               S01:08000D09:  00
+               S01:08000D0A:  7E
+               S01:08000D0B:  C6
+               S01:08000D0C:  C6
+               S01:08000D0D:  7E
+               S01:08000D0E:  06
+               S01:08000D0F:  06
 F02:0196       	.BYTE 0x00,0x00,0x00,0x6E,0x70,0x60,0x60,0x60	;81 - r
-               S01:08000D0C:  00
-               S01:08000D0D:  00
-               S01:08000D0E:  00
-               S01:08000D0F:  6E
-               S01:08000D10:  70
-               S01:08000D11:  60
-               S01:08000D12:  60
-               S01:08000D13:  60
+               S01:08000D10:  00
+               S01:08000D11:  00
+               S01:08000D12:  00
+               S01:08000D13:  6E
+               S01:08000D14:  70
+               S01:08000D15:  60
+               S01:08000D16:  60
+               S01:08000D17:  60
 F02:0197       	.BYTE 0x00,0x00,0x00,0x7C,0xC0,0x7C,0x06,0xFC	;82 - s
-               S01:08000D14:  00
-               S01:08000D15:  00
-               S01:08000D16:  00
-               S01:08000D17:  7C
-               S01:08000D18:  C0
-               S01:08000D19:  7C
-               S01:08000D1A:  06
-               S01:08000D1B:  FC
+               S01:08000D18:  00
+               S01:08000D19:  00
+               S01:08000D1A:  00
+               S01:08000D1B:  7C
+               S01:08000D1C:  C0
+               S01:08000D1D:  7C
+               S01:08000D1E:  06
+               S01:08000D1F:  FC
 F02:0198       	.BYTE 0x00,0x18,0x18,0x7E,0x18,0x18,0x18,0x18	;83 - t
-               S01:08000D1C:  00
-               S01:08000D1D:  18
-               S01:08000D1E:  18
-               S01:08000D1F:  7E
-               S01:08000D20:  18
+               S01:08000D20:  00
                S01:08000D21:  18
                S01:08000D22:  18
-               S01:08000D23:  18
+               S01:08000D23:  7E
+               S01:08000D24:  18
+               S01:08000D25:  18
+               S01:08000D26:  18
+               S01:08000D27:  18
 F02:0199       	.BYTE 0x00,0x00,0x00,0xC6,0xC6,0xC6,0xC6,0x7E	;84 - u
-               S01:08000D24:  00
-               S01:08000D25:  00
-               S01:08000D26:  00
-               S01:08000D27:  C6
-               S01:08000D28:  C6
-               S01:08000D29:  C6
-               S01:08000D2A:  C6
-               S01:08000D2B:  7E
+               S01:08000D28:  00
+               S01:08000D29:  00
+               S01:08000D2A:  00
+               S01:08000D2B:  C6
+               S01:08000D2C:  C6
+               S01:08000D2D:  C6
+               S01:08000D2E:  C6
+               S01:08000D2F:  7E
 F02:0200       	.BYTE 0x00,0x00,0x00,0x66,0x66,0x66,0x3C,0x18	;85 - v
-               S01:08000D2C:  00
-               S01:08000D2D:  00
-               S01:08000D2E:  00
-               S01:08000D2F:  66
-               S01:08000D30:  66
-               S01:08000D31:  66
-               S01:08000D32:  3C
-               S01:08000D33:  18
+               S01:08000D30:  00
+               S01:08000D31:  00
+               S01:08000D32:  00
+               S01:08000D33:  66
+               S01:08000D34:  66
+               S01:08000D35:  66
+               S01:08000D36:  3C
+               S01:08000D37:  18
 F02:0201       	.BYTE 0x00,0x00,0x00,0xD6,0xD6,0xD6,0xD6,0x6C	;86 - w
-               S01:08000D34:  00
-               S01:08000D35:  00
-               S01:08000D36:  00
-               S01:08000D37:  D6
-               S01:08000D38:  D6
-               S01:08000D39:  D6
-               S01:08000D3A:  D6
-               S01:08000D3B:  6C
+               S01:08000D38:  00
+               S01:08000D39:  00
+               S01:08000D3A:  00
+               S01:08000D3B:  D6
+               S01:08000D3C:  D6
+               S01:08000D3D:  D6
+               S01:08000D3E:  D6
+               S01:08000D3F:  6C
 F02:0202       	.BYTE 0x00,0x00,0x00,0xC6,0x6C,0x38,0x6C,0xC6	;87 - x
-               S01:08000D3C:  00
-               S01:08000D3D:  00
-               S01:08000D3E:  00
-               S01:08000D3F:  C6
-               S01:08000D40:  6C
-               S01:08000D41:  38
-               S01:08000D42:  6C
+               S01:08000D40:  00
+               S01:08000D41:  00
+               S01:08000D42:  00
                S01:08000D43:  C6
-F02:0203       	.BYTE 0x00,0x00,0xC6,0xC6,0xC6,0x7E,0x06,0x7C	;88 - y
-               S01:08000D44:  00
-               S01:08000D45:  00
-               S01:08000D46:  C6
+               S01:08000D44:  6C
+               S01:08000D45:  38
+               S01:08000D46:  6C
                S01:08000D47:  C6
-               S01:08000D48:  C6
-               S01:08000D49:  7E
-               S01:08000D4A:  06
-               S01:08000D4B:  7C
+F02:0203       	.BYTE 0x00,0x00,0xC6,0xC6,0xC6,0x7E,0x06,0x7C	;88 - y
+               S01:08000D48:  00
+               S01:08000D49:  00
+               S01:08000D4A:  C6
+               S01:08000D4B:  C6
+               S01:08000D4C:  C6
+               S01:08000D4D:  7E
+               S01:08000D4E:  06
+               S01:08000D4F:  7C
 F02:0204       	.BYTE 0x00,0x00,0x00,0xFE,0x1C,0x38,0x70,0xFE	;89 - z
-               S01:08000D4C:  00
-               S01:08000D4D:  00
-               S01:08000D4E:  00
-               S01:08000D4F:  FE
-               S01:08000D50:  1C
-               S01:08000D51:  38
-               S01:08000D52:  70
+               S01:08000D50:  00
+               S01:08000D51:  00
+               S01:08000D52:  00
                S01:08000D53:  FE
+               S01:08000D54:  1C
+               S01:08000D55:  38
+               S01:08000D56:  70
+               S01:08000D57:  FE
 F02:0205       	.BYTE 0x00,0x0C,0x18,0x18,0x30,0x18,0x18,0x0C	;90 - {
-               S01:08000D54:  00
-               S01:08000D55:  0C
-               S01:08000D56:  18
-               S01:08000D57:  18
-               S01:08000D58:  30
-               S01:08000D59:  18
+               S01:08000D58:  00
+               S01:08000D59:  0C
                S01:08000D5A:  18
-               S01:08000D5B:  0C
-F02:0206       	.BYTE 0x00,0x18,0x18,0x18,0x18,0x18,0x18,0x18	;91 - |
-               S01:08000D5C:  00
+               S01:08000D5B:  18
+               S01:08000D5C:  30
                S01:08000D5D:  18
                S01:08000D5E:  18
-               S01:08000D5F:  18
-               S01:08000D60:  18
+               S01:08000D5F:  0C
+F02:0206       	.BYTE 0x00,0x18,0x18,0x18,0x18,0x18,0x18,0x18	;91 - |
+               S01:08000D60:  00
                S01:08000D61:  18
                S01:08000D62:  18
                S01:08000D63:  18
-F02:0207       	.BYTE 0x00,0x30,0x18,0x18,0x0C,0x18,0x18,0x30	;92 - }
-               S01:08000D64:  00
-               S01:08000D65:  30
+               S01:08000D64:  18
+               S01:08000D65:  18
                S01:08000D66:  18
                S01:08000D67:  18
-               S01:08000D68:  0C
-               S01:08000D69:  18
+F02:0207       	.BYTE 0x00,0x30,0x18,0x18,0x0C,0x18,0x18,0x30	;92 - }
+               S01:08000D68:  00
+               S01:08000D69:  30
                S01:08000D6A:  18
-               S01:08000D6B:  30
+               S01:08000D6B:  18
+               S01:08000D6C:  0C
+               S01:08000D6D:  18
+               S01:08000D6E:  18
+               S01:08000D6F:  30
 F02:0208       	.BYTE 0x00,0x00,0x70,0xBA,0x1C,0x00,0x00,0x00	;93 - ~
-               S01:08000D6C:  00
-               S01:08000D6D:  00
-               S01:08000D6E:  70
-               S01:08000D6F:  BA
-               S01:08000D70:  1C
+               S01:08000D70:  00
                S01:08000D71:  00
-               S01:08000D72:  00
-               S01:08000D73:  00
+               S01:08000D72:  70
+               S01:08000D73:  BA
+               S01:08000D74:  1C
+               S01:08000D75:  00
+               S01:08000D76:  00
+               S01:08000D77:  00
 F02:0209       	;.BYTE 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
-F00:0838       .INCLUDE "GBA_Math.asm"
+F00:0839       .INCLUDE "GBA_Math.asm"
 F04:0001       ;r1 = dividend
 F04:0002       ;r2 = divisor
 F04:0003       ;Don't bother saving r2, not changed
 F04:0004       MOD:
 F04:0005       	ADD r1, r1, r2	;Gives the result of flipping bits from r2 in r1
-               S01:08000D74:  02 10 81 E0
+               S01:08000D78:  02 10 81 E0
 F04:0006       	AND r0, r1, r2	;Thus, AND will give us the bits that represent the remainder
-               S01:08000D78:  02 00 01 E0
+               S01:08000D7C:  02 00 01 E0
 F04:0007       	SUB r1, r1, r2	;Reset r1 to original value
-               S01:08000D7C:  02 10 41 E0
+               S01:08000D80:  02 10 41 E0
 F04:0008       	
 F04:0009       	MOV pc, lr
-               S01:08000D80:  0E F0 A0 E1
+               S01:08000D84:  0E F0 A0 E1
 F04:0010       
 F04:0011       ;http://www.tofla.iconbar.com/tofla/arm/arm02/index.htm
 F04:0012       ;r1 = dividend
 F04:0013       ;r2 = divisor
 F04:0014       DIV:
 F04:0015       STMFD sp!, {r1-r4, lr}
-               S01:08000D84:  1E 40 2D E9
+               S01:08000D88:  1E 40 2D E9
 F04:0016       	;divide by 0 check
 F04:0017       	CMP r2, #0
-               S01:08000D88:  00 00 52 E3
+               S01:08000D8C:  00 00 52 E3
 F04:0018       	BEQ DIV_End
-               S01:08000D8C:  0B 00 00 0A
+               S01:08000D90:  0B 00 00 0A
 F04:0019       	
 F04:0020       	EOR r0, r0, r0
-               S01:08000D90:  00 00 20 E0
+               S01:08000D94:  00 00 20 E0
 F04:0021       	MOV r3, #1	;set bit 0, will be shifted left and right
-               S01:08000D94:  01 30 A0 E3
+               S01:08000D98:  01 30 A0 E3
 F04:0022       	
 F04:0023       	;Bitshift both left until divisor is almost greater than dividend
 F04:0024       	DIV_Start:
 F04:0025       		CMP r2, r1
-               S01:08000D98:  01 00 52 E1
+               S01:08000D9C:  01 00 52 E1
 F04:0026       		MOVLS r2, r2, LSL#1	;r2 will set the corresponding bit in r3 for every time subtraction succeeds
-               S01:08000D9C:  82 20 A0 91
+               S01:08000DA0:  82 20 A0 91
 F04:0027       		MOVLS r3, r3, LSL#1	;Bitshift r3 left to see the limit of the flag, how far r2 must go
-               S01:08000DA0:  83 30 A0 91
+               S01:08000DA4:  83 30 A0 91
 F04:0028       	BLS DIV_Start
-               S01:08000DA4:  FB FF FF 9A
+               S01:08000DA8:  FB FF FF 9A
 F04:0029       	
 F04:0030       	DIV_Next:
 F04:0031       		CMP r1, r2	;Check if another subtraction can be made, carry flag set if (r1 > r2)
-               S01:08000DA8:  02 00 51 E1
+               S01:08000DAC:  02 00 51 E1
 F04:0032       		SUBCS r1, r1, r2	;Subtract if carry flag is set in result
-               S01:08000DAC:  02 10 41 20
+               S01:08000DB0:  02 10 41 20
 F04:0033       		ADDCS r0, r0, r3	;Add current bit in r3 to accumulator, r0
-               S01:08000DB0:  03 00 80 20
+               S01:08000DB4:  03 00 80 20
 F04:0034       		
 F04:0035       		MOVS r3, r3, LSR#1	;Shift r3 into carry flag
-               S01:08000DB4:  A3 30 B0 E1
+               S01:08000DB8:  A3 30 B0 E1
 F04:0036       		MOVCC r2, r2, LSR#1	;if bit 0 of r3 is o, shift r2 right (carry clear)
-               S01:08000DB8:  A2 20 A0 31
+               S01:08000DBC:  A2 20 A0 31
 F04:0037       	
 F04:0038       		BCC DIV_Next	;Loop while carry is clear, carry is not clear when r1 < r2 and subtraction yields our result
-               S01:08000DBC:  F9 FF FF 3A
+               S01:08000DC0:  F9 FF FF 3A
 F04:0039       		
 F04:0040       	DIV_End:
 F04:0041       LDMFD sp!, {r1-r4, pc}
-               S01:08000DC0:  1E 80 BD E8
-F00:0839       
-F00:0840       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-F00:0841       
-F00:0842       ;-BBBBBGGGGGRRRRR
-F00:0843       ColorPalette:
-F00:0844       	.WORD 0b0000000000000000; ;0  %-BBBBBGGGGGRRRRR
-               S01:08000DC4:  00 00
-F00:0845           .WORD 0b0000000000010000; ;1  %-BBBBBGGGGGRRRRR
-               S01:08000DC6:  10 00
-F00:0846           .WORD 0b0000001000000000; ;2  %-BBBBBGGGGGRRRRR
-               S01:08000DC8:  00 02
-F00:0847           .WORD 0b0000001000010000; ;3  %-BBBBBGGGGGRRRRR
-               S01:08000DCA:  10 02
-F00:0848           .WORD 0b0100000000000000; ;4  %-BBBBBGGGGGRRRRR
-               S01:08000DCC:  00 40
-F00:0849           .WORD 0b0100000000010000; ;5  %-BBBBBGGGGGRRRRR
-               S01:08000DCE:  10 40
-F00:0850           .WORD 0b0100001000000000; ;6  %-BBBBBGGGGGRRRRR
-               S01:08000DD0:  00 42
-F00:0851           .WORD 0b0110001100011000; ;7  %-BBBBBGGGGGRRRRR
-               S01:08000DD2:  18 63
-F00:0852           .WORD 0b0100001000010000; ;8  %-BBBBBGGGGGRRRRR
-               S01:08000DD4:  10 42
-F00:0853           .WORD 0b0000000000011111; ;9  %-BBBBBGGGGGRRRRR
-               S01:08000DD6:  1F 00
-F00:0854           .WORD 0b0000001111100000; ;10  %-BBBBBGGGGGRRRRR
-               S01:08000DD8:  E0 03
-F00:0855           .WORD 0b0000001111111111; ;11  %-BBBBBGGGGGRRRRR
-               S01:08000DDA:  FF 03
-F00:0856           .WORD 0b0111110000000000; ;12  %-BBBBBGGGGGRRRRR
-               S01:08000DDC:  00 7C
-F00:0857           .WORD 0b0111110000011111; ;13  %-BBBBBGGGGGRRRRR
-               S01:08000DDE:  1F 7C
-F00:0858           .WORD 0b0111111111100000; ;14  %-BBBBBGGGGGRRRRR
-               S01:08000DE0:  E0 7F
-F00:0859           .WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
-               S01:08000DE2:  FF 7F
-F00:0860       
-F00:0861       	
-F00:0862       TilemapFiles:
-F00:0863       	.INCBIN "\Tilemaps\GameTilemap.RAW"
-               S01:08000DE4:  AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA
-               S01:08000DF4:  AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA
-F00:0864       TilemapFiles_END:;Points to memory at end of files so we can get their size
-F00:0865       
-F00:0866       SpriteFiles:
-F00:0867       	.INCBIN "\Tilemaps\CharacterSpriteTilemap.RAW"
-               S01:080015E4:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-               S01:080015F4:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-F00:0868       SpriteFiles_END:
-F00:0869       
-F00:0870       .EQU PlayerSpriteNum, 1	;Player is always our first sprite
-F00:0871       .EQU PlayerTileStart, 1 ;Index of first sprite tile
-F00:0872       
-F00:0873       ;Indexes where the 4 tiles lie in the tilemap for each frame
-F00:0874       Anim_PlayerIdle:	
-F00:0875       	.BYTE 1, 1, 1, 5, 5, 5, 9, 9 ,9 , 5, 5, 5	;Loop through the 3 idle frames
-               S01:080033E4:  01
-               S01:080033E5:  01
-               S01:080033E6:  01
-               S01:080033E7:  05
-               S01:080033E8:  05
-               S01:080033E9:  05
-               S01:080033EA:  09
-               S01:080033EB:  09
-               S01:080033EC:  09
+               S01:08000DC4:  1E 80 BD E8
+F00:0840       
+F00:0841       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0842       
+F00:0843       ;-BBBBBGGGGGRRRRR
+F00:0844       ColorPalette:
+F00:0845       	.WORD 0b0000000000000000; ;0  %-BBBBBGGGGGRRRRR
+               S01:08000DC8:  00 00
+F00:0846           .WORD 0b0000000000010000; ;1  %-BBBBBGGGGGRRRRR
+               S01:08000DCA:  10 00
+F00:0847           .WORD 0b0000001000000000; ;2  %-BBBBBGGGGGRRRRR
+               S01:08000DCC:  00 02
+F00:0848           .WORD 0b0000001000010000; ;3  %-BBBBBGGGGGRRRRR
+               S01:08000DCE:  10 02
+F00:0849           .WORD 0b0100000000000000; ;4  %-BBBBBGGGGGRRRRR
+               S01:08000DD0:  00 40
+F00:0850           .WORD 0b0100000000010000; ;5  %-BBBBBGGGGGRRRRR
+               S01:08000DD2:  10 40
+F00:0851           .WORD 0b0100001000000000; ;6  %-BBBBBGGGGGRRRRR
+               S01:08000DD4:  00 42
+F00:0852           .WORD 0b0110001100011000; ;7  %-BBBBBGGGGGRRRRR
+               S01:08000DD6:  18 63
+F00:0853           .WORD 0b0100001000010000; ;8  %-BBBBBGGGGGRRRRR
+               S01:08000DD8:  10 42
+F00:0854           .WORD 0b0000000000011111; ;9  %-BBBBBGGGGGRRRRR
+               S01:08000DDA:  1F 00
+F00:0855           .WORD 0b0000001111100000; ;10  %-BBBBBGGGGGRRRRR
+               S01:08000DDC:  E0 03
+F00:0856           .WORD 0b0000001111111111; ;11  %-BBBBBGGGGGRRRRR
+               S01:08000DDE:  FF 03
+F00:0857           .WORD 0b0111110000000000; ;12  %-BBBBBGGGGGRRRRR
+               S01:08000DE0:  00 7C
+F00:0858           .WORD 0b0111110000011111; ;13  %-BBBBBGGGGGRRRRR
+               S01:08000DE2:  1F 7C
+F00:0859           .WORD 0b0111111111100000; ;14  %-BBBBBGGGGGRRRRR
+               S01:08000DE4:  E0 7F
+F00:0860           .WORD 0b0111111111111111; ;15  %-BBBBBGGGGGRRRRR
+               S01:08000DE6:  FF 7F
+F00:0861       
+F00:0862       	
+F00:0863       TilemapFiles:
+F00:0864       	.INCBIN "\Tilemaps\GameTilemap.RAW"
+               S01:08000DE8:  AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA
+               S01:08000DF8:  AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA AA
+F00:0865       TilemapFiles_END:;Points to memory at end of files so we can get their size
+F00:0866       
+F00:0867       SpriteFiles:
+F00:0868       	.INCBIN "\Tilemaps\CharacterSpriteTilemap.RAW"
+               S01:080015E8:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+               S01:080015F8:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+F00:0869       SpriteFiles_END:
+F00:0870       
+F00:0871       .EQU PlayerSpriteNum, 1	;Player is always our first sprite
+F00:0872       .EQU PlayerTileStart, 1 ;Index of first sprite tile
+F00:0873       
+F00:0874       ;Indexes where the 4 tiles lie in the tilemap for each frame
+F00:0875       Anim_PlayerIdle:
+F00:0876       	.BYTE 1, 1, 1, 1, 5, 5, 5, 5, 9, 9 ,9, 9 , 5, 5, 5, 5	;Loop through the 3 idle frames
+               S01:080033E8:  01
+               S01:080033E9:  01
+               S01:080033EA:  01
+               S01:080033EB:  01
+               S01:080033EC:  05
                S01:080033ED:  05
                S01:080033EE:  05
                S01:080033EF:  05
-F00:0876       Anim_PlayerIdle_END:
-F00:0877       	
-F00:0878       .EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index
-F00:0879       .EQU TileLength, 8	;Tiles are 8x8 pixels
-F00:0880       .EQU TilemapWidth, 32
-F00:0881       .EQU TilemapHeight, 32
-F00:0882       
-F00:0883       ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
-F00:0884       Tilemap:
-F00:0885       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,1 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0
-               S01:080033F0:  00
-               S01:080033F1:  00
-               S01:080033F2:  00
-               S01:080033F3:  00
-               S01:080033F4:  00
-               S01:080033F5:  00
-               S01:080033F6:  19
-               S01:080033F7:  18
-               S01:080033F8:  02
+               S01:080033F0:  09
+               S01:080033F1:  09
+               S01:080033F2:  09
+               S01:080033F3:  09
+               S01:080033F4:  05
+               S01:080033F5:  05
+               S01:080033F6:  05
+               S01:080033F7:  05
+F00:0877       Anim_PlayerIdle_END:
+F00:0878       	
+F00:0879       .EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index
+F00:0880       .EQU TileLength, 8	;Tiles are 8x8 pixels
+F00:0881       .EQU TilemapWidth, 32
+F00:0882       .EQU TilemapHeight, 32
+F00:0883       
+F00:0884       ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
+F00:0885       Tilemap:
+F00:0886       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,1 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0
+               S01:080033F8:  00
                S01:080033F9:  00
                S01:080033FA:  00
-               S01:080033FB:  01
+               S01:080033FB:  00
                S01:080033FC:  00
-               S01:080033FD:  0C
-               S01:080033FE:  03
-               S01:080033FF:  03
-               S01:08003400:  0F
+               S01:080033FD:  00
+               S01:080033FE:  19
+               S01:080033FF:  18
+               S01:08003400:  02
                S01:08003401:  00
-               S01:08003402:  02
-               S01:08003403:  00
+               S01:08003402:  00
+               S01:08003403:  01
                S01:08003404:  00
-               S01:08003405:  00
-               S01:08003406:  02
-               S01:08003407:  00
-               S01:08003408:  00
+               S01:08003405:  0C
+               S01:08003406:  03
+               S01:08003407:  03
+               S01:08003408:  0F
                S01:08003409:  00
-               S01:0800340A:  01
+               S01:0800340A:  02
                S01:0800340B:  00
-               S01:0800340C:  01
+               S01:0800340C:  00
                S01:0800340D:  00
-               S01:0800340E:  00
+               S01:0800340E:  02
                S01:0800340F:  00
-F00:0886       	.BYTE 0 ,2 ,0 ,1 ,2 ,0 ,25,24,1 ,2 ,0 ,0 ,0 ,12,3 ,3 ,15,1 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0
                S01:08003410:  00
-               S01:08003411:  02
-               S01:08003412:  00
-               S01:08003413:  01
-               S01:08003414:  02
+               S01:08003411:  00
+               S01:08003412:  01
+               S01:08003413:  00
+               S01:08003414:  01
                S01:08003415:  00
-               S01:08003416:  19
-               S01:08003417:  18
-               S01:08003418:  01
+               S01:08003416:  00
+               S01:08003417:  00
+F00:0887       	.BYTE 0 ,2 ,0 ,1 ,2 ,0 ,25,24,1 ,2 ,0 ,0 ,0 ,12,3 ,3 ,15,1 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0
+               S01:08003418:  00
                S01:08003419:  02
                S01:0800341A:  00
-               S01:0800341B:  00
-               S01:0800341C:  00
-               S01:0800341D:  0C
-               S01:0800341E:  03
-               S01:0800341F:  03
-               S01:08003420:  0F
-               S01:08003421:  01
+               S01:0800341B:  01
+               S01:0800341C:  02
+               S01:0800341D:  00
+               S01:0800341E:  19
+               S01:0800341F:  18
+               S01:08003420:  01
+               S01:08003421:  02
                S01:08003422:  00
                S01:08003423:  00
                S01:08003424:  00
-               S01:08003425:  02
-               S01:08003426:  00
-               S01:08003427:  01
-               S01:08003428:  00
-               S01:08003429:  00
-               S01:0800342A:  02
+               S01:08003425:  0C
+               S01:08003426:  03
+               S01:08003427:  03
+               S01:08003428:  0F
+               S01:08003429:  01
+               S01:0800342A:  00
                S01:0800342B:  00
                S01:0800342C:  00
-               S01:0800342D:  00
-               S01:0800342E:  01
-               S01:0800342F:  00
-F00:0887       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:0800342D:  02
+               S01:0800342E:  00
+               S01:0800342F:  01
                S01:08003430:  00
                S01:08003431:  00
-               S01:08003432:  00
+               S01:08003432:  02
                S01:08003433:  00
                S01:08003434:  00
                S01:08003435:  00
-               S01:08003436:  19
-               S01:08003437:  18
-               S01:08003438:  02
+               S01:08003436:  01
+               S01:08003437:  00
+F00:0888       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:08003438:  00
                S01:08003439:  00
                S01:0800343A:  00
                S01:0800343B:  00
                S01:0800343C:  00
-               S01:0800343D:  0C
-               S01:0800343E:  03
-               S01:0800343F:  03
-               S01:08003440:  0F
+               S01:0800343D:  00
+               S01:0800343E:  19
+               S01:0800343F:  18
+               S01:08003440:  02
                S01:08003441:  00
-               S01:08003442:  02
+               S01:08003442:  00
                S01:08003443:  00
                S01:08003444:  00
-               S01:08003445:  00
-               S01:08003446:  00
-               S01:08003447:  00
-               S01:08003448:  00
+               S01:08003445:  0C
+               S01:08003446:  03
+               S01:08003447:  03
+               S01:08003448:  0F
                S01:08003449:  00
-               S01:0800344A:  00
+               S01:0800344A:  02
                S01:0800344B:  00
                S01:0800344C:  00
                S01:0800344D:  00
                S01:0800344E:  00
-               S01:0800344F:  02
-F00:0888       	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,25,24,0 ,0 ,1 ,14,14,8 ,3 ,3 ,11,14,14,14,14,0 ,0 ,2 ,0 ,0 ,2 ,1 ,0 ,1 ,0 ,0
+               S01:0800344F:  00
                S01:08003450:  00
                S01:08003451:  00
                S01:08003452:  00
-               S01:08003453:  02
+               S01:08003453:  00
                S01:08003454:  00
                S01:08003455:  00
-               S01:08003456:  19
-               S01:08003457:  18
+               S01:08003456:  00
+               S01:08003457:  02
+F00:0889       	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,25,24,0 ,0 ,1 ,14,14,8 ,3 ,3 ,11,14,14,14,14,0 ,0 ,2 ,0 ,0 ,2 ,1 ,0 ,1 ,0 ,0
                S01:08003458:  00
                S01:08003459:  00
-               S01:0800345A:  01
-               S01:0800345B:  0E
-               S01:0800345C:  0E
-               S01:0800345D:  08
-               S01:0800345E:  03
-               S01:0800345F:  03
-               S01:08003460:  0B
-               S01:08003461:  0E
-               S01:08003462:  0E
+               S01:0800345A:  00
+               S01:0800345B:  02
+               S01:0800345C:  00
+               S01:0800345D:  00
+               S01:0800345E:  19
+               S01:0800345F:  18
+               S01:08003460:  00
+               S01:08003461:  00
+               S01:08003462:  01
                S01:08003463:  0E
                S01:08003464:  0E
-               S01:08003465:  00
-               S01:08003466:  00
-               S01:08003467:  02
-               S01:08003468:  00
-               S01:08003469:  00
-               S01:0800346A:  02
-               S01:0800346B:  01
-               S01:0800346C:  00
-               S01:0800346D:  01
+               S01:08003465:  08
+               S01:08003466:  03
+               S01:08003467:  03
+               S01:08003468:  0B
+               S01:08003469:  0E
+               S01:0800346A:  0E
+               S01:0800346B:  0E
+               S01:0800346C:  0E
+               S01:0800346D:  00
                S01:0800346E:  00
-               S01:0800346F:  00
-F00:0889       	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+               S01:0800346F:  02
                S01:08003470:  00
-               S01:08003471:  01
-               S01:08003472:  00
-               S01:08003473:  00
-               S01:08003474:  02
-               S01:08003475:  00
-               S01:08003476:  19
-               S01:08003477:  18
+               S01:08003471:  00
+               S01:08003472:  02
+               S01:08003473:  01
+               S01:08003474:  00
+               S01:08003475:  01
+               S01:08003476:  00
+               S01:08003477:  00
+F00:0890       	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
                S01:08003478:  00
-               S01:08003479:  00
-               S01:0800347A:  0C
-               S01:0800347B:  03
-               S01:0800347C:  03
-               S01:0800347D:  03
-               S01:0800347E:  03
-               S01:0800347F:  03
-               S01:08003480:  03
-               S01:08003481:  03
-               S01:08003482:  03
+               S01:08003479:  01
+               S01:0800347A:  00
+               S01:0800347B:  00
+               S01:0800347C:  02
+               S01:0800347D:  00
+               S01:0800347E:  19
+               S01:0800347F:  18
+               S01:08003480:  00
+               S01:08003481:  00
+               S01:08003482:  0C
                S01:08003483:  03
                S01:08003484:  03
-               S01:08003485:  0F
-               S01:08003486:  02
-               S01:08003487:  00
-               S01:08003488:  00
-               S01:08003489:  00
-               S01:0800348A:  00
-               S01:0800348B:  01
-               S01:0800348C:  00
-               S01:0800348D:  00
-               S01:0800348E:  00
+               S01:08003485:  03
+               S01:08003486:  03
+               S01:08003487:  03
+               S01:08003488:  03
+               S01:08003489:  03
+               S01:0800348A:  03
+               S01:0800348B:  03
+               S01:0800348C:  03
+               S01:0800348D:  0F
+               S01:0800348E:  02
                S01:0800348F:  00
-F00:0890       	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
                S01:08003490:  00
-               S01:08003491:  01
+               S01:08003491:  00
                S01:08003492:  00
-               S01:08003493:  00
-               S01:08003494:  02
+               S01:08003493:  01
+               S01:08003494:  00
                S01:08003495:  00
-               S01:08003496:  19
-               S01:08003497:  18
+               S01:08003496:  00
+               S01:08003497:  00
+F00:0891       	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,25,24,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
                S01:08003498:  00
-               S01:08003499:  00
-               S01:0800349A:  0C
-               S01:0800349B:  03
-               S01:0800349C:  03
-               S01:0800349D:  03
-               S01:0800349E:  03
-               S01:0800349F:  03
-               S01:080034A0:  03
-               S01:080034A1:  03
-               S01:080034A2:  03
+               S01:08003499:  01
+               S01:0800349A:  00
+               S01:0800349B:  00
+               S01:0800349C:  02
+               S01:0800349D:  00
+               S01:0800349E:  19
+               S01:0800349F:  18
+               S01:080034A0:  00
+               S01:080034A1:  00
+               S01:080034A2:  0C
                S01:080034A3:  03
                S01:080034A4:  03
-               S01:080034A5:  0F
-               S01:080034A6:  02
-               S01:080034A7:  00
-               S01:080034A8:  00
-               S01:080034A9:  00
-               S01:080034AA:  00
-               S01:080034AB:  01
-               S01:080034AC:  00
-               S01:080034AD:  00
-               S01:080034AE:  00
+               S01:080034A5:  03
+               S01:080034A6:  03
+               S01:080034A7:  03
+               S01:080034A8:  03
+               S01:080034A9:  03
+               S01:080034AA:  03
+               S01:080034AB:  03
+               S01:080034AC:  03
+               S01:080034AD:  0F
+               S01:080034AE:  02
                S01:080034AF:  00
-F00:0891       	.BYTE 21,21,16,16,16,21,30,24,2 ,0 ,12,3 ,3 ,10,13,13,13,13,9 ,3 ,3 ,15,0 ,2 ,0 ,1 ,2 ,0 ,0 ,0 ,2 ,0
-               S01:080034B0:  15
-               S01:080034B1:  15
-               S01:080034B2:  10
-               S01:080034B3:  10
-               S01:080034B4:  10
-               S01:080034B5:  15
-               S01:080034B6:  1E
-               S01:080034B7:  18
-               S01:080034B8:  02
-               S01:080034B9:  00
-               S01:080034BA:  0C
-               S01:080034BB:  03
-               S01:080034BC:  03
-               S01:080034BD:  0A
-               S01:080034BE:  0D
-               S01:080034BF:  0D
-               S01:080034C0:  0D
-               S01:080034C1:  0D
-               S01:080034C2:  09
+               S01:080034B0:  00
+               S01:080034B1:  00
+               S01:080034B2:  00
+               S01:080034B3:  01
+               S01:080034B4:  00
+               S01:080034B5:  00
+               S01:080034B6:  00
+               S01:080034B7:  00
+F00:0892       	.BYTE 21,21,16,16,16,21,30,24,2 ,0 ,12,3 ,3 ,10,13,13,13,13,9 ,3 ,3 ,15,0 ,2 ,0 ,1 ,2 ,0 ,0 ,0 ,2 ,0
+               S01:080034B8:  15
+               S01:080034B9:  15
+               S01:080034BA:  10
+               S01:080034BB:  10
+               S01:080034BC:  10
+               S01:080034BD:  15
+               S01:080034BE:  1E
+               S01:080034BF:  18
+               S01:080034C0:  02
+               S01:080034C1:  00
+               S01:080034C2:  0C
                S01:080034C3:  03
                S01:080034C4:  03
-               S01:080034C5:  0F
-               S01:080034C6:  00
-               S01:080034C7:  02
-               S01:080034C8:  00
-               S01:080034C9:  01
-               S01:080034CA:  02
-               S01:080034CB:  00
-               S01:080034CC:  00
-               S01:080034CD:  00
-               S01:080034CE:  02
-               S01:080034CF:  00
-F00:0892       	.BYTE 32,32,16,16,16,32,32,24,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,1 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,0
-               S01:080034D0:  20
-               S01:080034D1:  20
-               S01:080034D2:  10
-               S01:080034D3:  10
-               S01:080034D4:  10
-               S01:080034D5:  20
-               S01:080034D6:  20
-               S01:080034D7:  18
-               S01:080034D8:  00
-               S01:080034D9:  00
-               S01:080034DA:  0C
-               S01:080034DB:  03
-               S01:080034DC:  03
-               S01:080034DD:  0F
-               S01:080034DE:  00
-               S01:080034DF:  02
+               S01:080034C5:  0A
+               S01:080034C6:  0D
+               S01:080034C7:  0D
+               S01:080034C8:  0D
+               S01:080034C9:  0D
+               S01:080034CA:  09
+               S01:080034CB:  03
+               S01:080034CC:  03
+               S01:080034CD:  0F
+               S01:080034CE:  00
+               S01:080034CF:  02
+               S01:080034D0:  00
+               S01:080034D1:  01
+               S01:080034D2:  02
+               S01:080034D3:  00
+               S01:080034D4:  00
+               S01:080034D5:  00
+               S01:080034D6:  02
+               S01:080034D7:  00
+F00:0893       	.BYTE 32,32,16,16,16,32,32,24,0 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,1 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,0
+               S01:080034D8:  20
+               S01:080034D9:  20
+               S01:080034DA:  10
+               S01:080034DB:  10
+               S01:080034DC:  10
+               S01:080034DD:  20
+               S01:080034DE:  20
+               S01:080034DF:  18
                S01:080034E0:  00
-               S01:080034E1:  01
+               S01:080034E1:  00
                S01:080034E2:  0C
                S01:080034E3:  03
                S01:080034E4:  03
                S01:080034E5:  0F
                S01:080034E6:  00
-               S01:080034E7:  00
+               S01:080034E7:  02
                S01:080034E8:  00
-               S01:080034E9:  00
-               S01:080034EA:  00
-               S01:080034EB:  02
-               S01:080034EC:  00
-               S01:080034ED:  00
-               S01:080034EE:  01
+               S01:080034E9:  01
+               S01:080034EA:  0C
+               S01:080034EB:  03
+               S01:080034EC:  03
+               S01:080034ED:  0F
+               S01:080034EE:  00
                S01:080034EF:  00
-F00:0893       	.BYTE 20,27,16,16,16,26,20,27,1 ,2 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,2
-               S01:080034F0:  14
-               S01:080034F1:  1B
-               S01:080034F2:  10
-               S01:080034F3:  10
-               S01:080034F4:  10
-               S01:080034F5:  1A
-               S01:080034F6:  14
-               S01:080034F7:  1B
-               S01:080034F8:  01
-               S01:080034F9:  02
-               S01:080034FA:  0C
-               S01:080034FB:  03
-               S01:080034FC:  03
-               S01:080034FD:  0F
-               S01:080034FE:  00
-               S01:080034FF:  00
-               S01:08003500:  00
-               S01:08003501:  00
+               S01:080034F0:  00
+               S01:080034F1:  00
+               S01:080034F2:  00
+               S01:080034F3:  02
+               S01:080034F4:  00
+               S01:080034F5:  00
+               S01:080034F6:  01
+               S01:080034F7:  00
+F00:0894       	.BYTE 20,27,16,16,16,26,20,27,1 ,2 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:080034F8:  14
+               S01:080034F9:  1B
+               S01:080034FA:  10
+               S01:080034FB:  10
+               S01:080034FC:  10
+               S01:080034FD:  1A
+               S01:080034FE:  14
+               S01:080034FF:  1B
+               S01:08003500:  01
+               S01:08003501:  02
                S01:08003502:  0C
                S01:08003503:  03
                S01:08003504:  03
                S01:08003505:  0F
                S01:08003506:  00
-               S01:08003507:  01
-               S01:08003508:  02
+               S01:08003507:  00
+               S01:08003508:  00
                S01:08003509:  00
-               S01:0800350A:  00
-               S01:0800350B:  00
-               S01:0800350C:  00
-               S01:0800350D:  00
+               S01:0800350A:  0C
+               S01:0800350B:  03
+               S01:0800350C:  03
+               S01:0800350D:  0F
                S01:0800350E:  00
-               S01:0800350F:  02
-F00:0894       	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0
-               S01:08003510:  00
+               S01:0800350F:  01
+               S01:08003510:  02
                S01:08003511:  00
                S01:08003512:  00
-               S01:08003513:  02
+               S01:08003513:  00
                S01:08003514:  00
                S01:08003515:  00
                S01:08003516:  00
-               S01:08003517:  00
+               S01:08003517:  02
+F00:0895       	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0
                S01:08003518:  00
                S01:08003519:  00
-               S01:0800351A:  0C
-               S01:0800351B:  03
-               S01:0800351C:  03
-               S01:0800351D:  0F
+               S01:0800351A:  00
+               S01:0800351B:  02
+               S01:0800351C:  00
+               S01:0800351D:  00
                S01:0800351E:  00
                S01:0800351F:  00
                S01:08003520:  00
@@ -2934,285 +2932,285 @@ F00:0894       	.BYTE 0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,12,3 ,3 ,15,0 ,0 ,0 ,0 ,12,3
                S01:08003527:  00
                S01:08003528:  00
                S01:08003529:  00
-               S01:0800352A:  00
-               S01:0800352B:  01
-               S01:0800352C:  00
-               S01:0800352D:  02
+               S01:0800352A:  0C
+               S01:0800352B:  03
+               S01:0800352C:  03
+               S01:0800352D:  0F
                S01:0800352E:  00
                S01:0800352F:  00
-F00:0895       	.BYTE 0 ,1 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,0 ,0 ,12,3 ,3 ,15,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
                S01:08003530:  00
-               S01:08003531:  01
+               S01:08003531:  00
                S01:08003532:  00
-               S01:08003533:  00
+               S01:08003533:  01
                S01:08003534:  00
-               S01:08003535:  01
+               S01:08003535:  02
                S01:08003536:  00
-               S01:08003537:  02
+               S01:08003537:  00
+F00:0896       	.BYTE 0 ,1 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,12,3 ,3 ,15,0 ,1 ,0 ,0 ,12,3 ,3 ,15,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
                S01:08003538:  00
-               S01:08003539:  00
-               S01:0800353A:  0C
-               S01:0800353B:  03
-               S01:0800353C:  03
-               S01:0800353D:  0F
+               S01:08003539:  01
+               S01:0800353A:  00
+               S01:0800353B:  00
+               S01:0800353C:  00
+               S01:0800353D:  01
                S01:0800353E:  00
-               S01:0800353F:  01
+               S01:0800353F:  02
                S01:08003540:  00
                S01:08003541:  00
                S01:08003542:  0C
                S01:08003543:  03
                S01:08003544:  03
                S01:08003545:  0F
-               S01:08003546:  02
-               S01:08003547:  00
+               S01:08003546:  00
+               S01:08003547:  01
                S01:08003548:  00
                S01:08003549:  00
-               S01:0800354A:  02
-               S01:0800354B:  00
-               S01:0800354C:  00
-               S01:0800354D:  00
-               S01:0800354E:  00
+               S01:0800354A:  0C
+               S01:0800354B:  03
+               S01:0800354C:  03
+               S01:0800354D:  0F
+               S01:0800354E:  02
                S01:0800354F:  00
-F00:0896       	.BYTE 0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,12,3 ,3 ,11,14,14,14,14,8 ,3 ,3 ,15,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
                S01:08003550:  00
                S01:08003551:  00
-               S01:08003552:  00
-               S01:08003553:  01
+               S01:08003552:  02
+               S01:08003553:  00
                S01:08003554:  00
                S01:08003555:  00
                S01:08003556:  00
                S01:08003557:  00
-               S01:08003558:  01
+F00:0897       	.BYTE 0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,12,3 ,3 ,11,14,14,14,14,8 ,3 ,3 ,15,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
+               S01:08003558:  00
                S01:08003559:  00
-               S01:0800355A:  0C
-               S01:0800355B:  03
-               S01:0800355C:  03
-               S01:0800355D:  0B
-               S01:0800355E:  0E
-               S01:0800355F:  0E
-               S01:08003560:  0E
-               S01:08003561:  0E
-               S01:08003562:  08
+               S01:0800355A:  00
+               S01:0800355B:  01
+               S01:0800355C:  00
+               S01:0800355D:  00
+               S01:0800355E:  00
+               S01:0800355F:  00
+               S01:08003560:  01
+               S01:08003561:  00
+               S01:08003562:  0C
                S01:08003563:  03
                S01:08003564:  03
-               S01:08003565:  0F
-               S01:08003566:  00
-               S01:08003567:  00
-               S01:08003568:  00
-               S01:08003569:  02
-               S01:0800356A:  00
-               S01:0800356B:  00
-               S01:0800356C:  00
-               S01:0800356D:  00
+               S01:08003565:  0B
+               S01:08003566:  0E
+               S01:08003567:  0E
+               S01:08003568:  0E
+               S01:08003569:  0E
+               S01:0800356A:  08
+               S01:0800356B:  03
+               S01:0800356C:  03
+               S01:0800356D:  0F
                S01:0800356E:  00
-               S01:0800356F:  02
-F00:0897       	.BYTE 0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+               S01:0800356F:  00
                S01:08003570:  00
                S01:08003571:  02
                S01:08003572:  00
                S01:08003573:  00
-               S01:08003574:  02
+               S01:08003574:  00
                S01:08003575:  00
                S01:08003576:  00
-               S01:08003577:  00
-               S01:08003578:  02
-               S01:08003579:  00
-               S01:0800357A:  0C
-               S01:0800357B:  03
-               S01:0800357C:  03
-               S01:0800357D:  03
-               S01:0800357E:  03
-               S01:0800357F:  03
-               S01:08003580:  03
-               S01:08003581:  03
-               S01:08003582:  03
+               S01:08003577:  02
+F00:0898       	.BYTE 0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+               S01:08003578:  00
+               S01:08003579:  02
+               S01:0800357A:  00
+               S01:0800357B:  00
+               S01:0800357C:  02
+               S01:0800357D:  00
+               S01:0800357E:  00
+               S01:0800357F:  00
+               S01:08003580:  02
+               S01:08003581:  00
+               S01:08003582:  0C
                S01:08003583:  03
                S01:08003584:  03
-               S01:08003585:  0F
-               S01:08003586:  00
-               S01:08003587:  02
-               S01:08003588:  00
-               S01:08003589:  00
-               S01:0800358A:  00
-               S01:0800358B:  00
-               S01:0800358C:  02
-               S01:0800358D:  00
+               S01:08003585:  03
+               S01:08003586:  03
+               S01:08003587:  03
+               S01:08003588:  03
+               S01:08003589:  03
+               S01:0800358A:  03
+               S01:0800358B:  03
+               S01:0800358C:  03
+               S01:0800358D:  0F
                S01:0800358E:  00
-               S01:0800358F:  00
-F00:0898       	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
+               S01:0800358F:  02
                S01:08003590:  00
-               S01:08003591:  01
+               S01:08003591:  00
                S01:08003592:  00
                S01:08003593:  00
                S01:08003594:  02
                S01:08003595:  00
                S01:08003596:  00
-               S01:08003597:  01
+               S01:08003597:  00
+F00:0899       	.BYTE 0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,12,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,15,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0
                S01:08003598:  00
-               S01:08003599:  00
-               S01:0800359A:  0C
-               S01:0800359B:  03
-               S01:0800359C:  03
-               S01:0800359D:  03
-               S01:0800359E:  03
-               S01:0800359F:  03
-               S01:080035A0:  03
-               S01:080035A1:  03
-               S01:080035A2:  03
+               S01:08003599:  01
+               S01:0800359A:  00
+               S01:0800359B:  00
+               S01:0800359C:  02
+               S01:0800359D:  00
+               S01:0800359E:  00
+               S01:0800359F:  01
+               S01:080035A0:  00
+               S01:080035A1:  00
+               S01:080035A2:  0C
                S01:080035A3:  03
                S01:080035A4:  03
-               S01:080035A5:  0F
-               S01:080035A6:  02
-               S01:080035A7:  00
-               S01:080035A8:  00
-               S01:080035A9:  00
-               S01:080035AA:  00
-               S01:080035AB:  01
-               S01:080035AC:  00
-               S01:080035AD:  00
-               S01:080035AE:  00
+               S01:080035A5:  03
+               S01:080035A6:  03
+               S01:080035A7:  03
+               S01:080035A8:  03
+               S01:080035A9:  03
+               S01:080035AA:  03
+               S01:080035AB:  03
+               S01:080035AC:  03
+               S01:080035AD:  0F
+               S01:080035AE:  02
                S01:080035AF:  00
-F00:0899       	.BYTE 0 ,0 ,1 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,13,13,13,13,13,13,13,13,13,13,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0
                S01:080035B0:  00
                S01:080035B1:  00
-               S01:080035B2:  01
-               S01:080035B3:  02
+               S01:080035B2:  00
+               S01:080035B3:  01
                S01:080035B4:  00
                S01:080035B5:  00
-               S01:080035B6:  01
-               S01:080035B7:  02
+               S01:080035B6:  00
+               S01:080035B7:  00
+F00:0900       	.BYTE 0 ,0 ,1 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,13,13,13,13,13,13,13,13,13,13,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0
                S01:080035B8:  00
                S01:080035B9:  00
-               S01:080035BA:  00
-               S01:080035BB:  0D
-               S01:080035BC:  0D
-               S01:080035BD:  0D
-               S01:080035BE:  0D
-               S01:080035BF:  0D
-               S01:080035C0:  0D
-               S01:080035C1:  0D
-               S01:080035C2:  0D
+               S01:080035BA:  01
+               S01:080035BB:  02
+               S01:080035BC:  00
+               S01:080035BD:  00
+               S01:080035BE:  01
+               S01:080035BF:  02
+               S01:080035C0:  00
+               S01:080035C1:  00
+               S01:080035C2:  00
                S01:080035C3:  0D
                S01:080035C4:  0D
-               S01:080035C5:  00
-               S01:080035C6:  01
-               S01:080035C7:  00
-               S01:080035C8:  00
-               S01:080035C9:  00
-               S01:080035CA:  01
-               S01:080035CB:  00
-               S01:080035CC:  00
+               S01:080035C5:  0D
+               S01:080035C6:  0D
+               S01:080035C7:  0D
+               S01:080035C8:  0D
+               S01:080035C9:  0D
+               S01:080035CA:  0D
+               S01:080035CB:  0D
+               S01:080035CC:  0D
                S01:080035CD:  00
-               S01:080035CE:  00
+               S01:080035CE:  01
                S01:080035CF:  00
-F00:0900       	.BYTE 0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,2 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,2
                S01:080035D0:  00
                S01:080035D1:  00
-               S01:080035D2:  00
+               S01:080035D2:  01
                S01:080035D3:  00
                S01:080035D4:  00
-               S01:080035D5:  02
+               S01:080035D5:  00
                S01:080035D6:  00
                S01:080035D7:  00
+F00:0901       	.BYTE 0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,2 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,2
                S01:080035D8:  00
-               S01:080035D9:  02
+               S01:080035D9:  00
                S01:080035DA:  00
                S01:080035DB:  00
                S01:080035DC:  00
-               S01:080035DD:  00
+               S01:080035DD:  02
                S01:080035DE:  00
-               S01:080035DF:  01
-               S01:080035E0:  02
-               S01:080035E1:  00
-               S01:080035E2:  01
+               S01:080035DF:  00
+               S01:080035E0:  00
+               S01:080035E1:  02
+               S01:080035E2:  00
                S01:080035E3:  00
-               S01:080035E4:  02
+               S01:080035E4:  00
                S01:080035E5:  00
                S01:080035E6:  00
-               S01:080035E7:  00
-               S01:080035E8:  00
-               S01:080035E9:  02
-               S01:080035EA:  00
+               S01:080035E7:  01
+               S01:080035E8:  02
+               S01:080035E9:  00
+               S01:080035EA:  01
                S01:080035EB:  00
-               S01:080035EC:  00
-               S01:080035ED:  02
+               S01:080035EC:  02
+               S01:080035ED:  00
                S01:080035EE:  00
-               S01:080035EF:  02
-F00:0901       	.BYTE 1 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0
-               S01:080035F0:  01
-               S01:080035F1:  00
-               S01:080035F2:  01
-               S01:080035F3:  02
+               S01:080035EF:  00
+               S01:080035F0:  00
+               S01:080035F1:  02
+               S01:080035F2:  00
+               S01:080035F3:  00
                S01:080035F4:  00
-               S01:080035F5:  00
+               S01:080035F5:  02
                S01:080035F6:  00
-               S01:080035F7:  00
-               S01:080035F8:  00
-               S01:080035F9:  01
-               S01:080035FA:  00
-               S01:080035FB:  00
+               S01:080035F7:  02
+F00:0902       	.BYTE 1 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0
+               S01:080035F8:  01
+               S01:080035F9:  00
+               S01:080035FA:  01
+               S01:080035FB:  02
                S01:080035FC:  00
-               S01:080035FD:  02
+               S01:080035FD:  00
                S01:080035FE:  00
                S01:080035FF:  00
                S01:08003600:  00
-               S01:08003601:  00
-               S01:08003602:  02
+               S01:08003601:  01
+               S01:08003602:  00
                S01:08003603:  00
                S01:08003604:  00
-               S01:08003605:  00
+               S01:08003605:  02
                S01:08003606:  00
                S01:08003607:  00
                S01:08003608:  00
-               S01:08003609:  01
-               S01:0800360A:  00
-               S01:0800360B:  02
+               S01:08003609:  00
+               S01:0800360A:  02
+               S01:0800360B:  00
                S01:0800360C:  00
                S01:0800360D:  00
                S01:0800360E:  00
                S01:0800360F:  00
-F00:0902       	.BYTE 0 ,0 ,2 ,0 ,0 ,2 ,1 ,2 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0
                S01:08003610:  00
-               S01:08003611:  00
-               S01:08003612:  02
-               S01:08003613:  00
+               S01:08003611:  01
+               S01:08003612:  00
+               S01:08003613:  02
                S01:08003614:  00
-               S01:08003615:  02
-               S01:08003616:  01
-               S01:08003617:  02
+               S01:08003615:  00
+               S01:08003616:  00
+               S01:08003617:  00
+F00:0903       	.BYTE 0 ,0 ,2 ,0 ,0 ,2 ,1 ,2 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0
                S01:08003618:  00
                S01:08003619:  00
                S01:0800361A:  02
                S01:0800361B:  00
-               S01:0800361C:  01
-               S01:0800361D:  00
-               S01:0800361E:  00
+               S01:0800361C:  00
+               S01:0800361D:  02
+               S01:0800361E:  01
                S01:0800361F:  02
                S01:08003620:  00
                S01:08003621:  00
-               S01:08003622:  01
+               S01:08003622:  02
                S01:08003623:  00
-               S01:08003624:  02
+               S01:08003624:  01
                S01:08003625:  00
                S01:08003626:  00
-               S01:08003627:  00
+               S01:08003627:  02
                S01:08003628:  00
                S01:08003629:  00
-               S01:0800362A:  00
+               S01:0800362A:  01
                S01:0800362B:  00
-               S01:0800362C:  01
+               S01:0800362C:  02
                S01:0800362D:  00
                S01:0800362E:  00
                S01:0800362F:  00
-F00:0903       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0
                S01:08003630:  00
                S01:08003631:  00
                S01:08003632:  00
                S01:08003633:  00
-               S01:08003634:  00
+               S01:08003634:  01
                S01:08003635:  00
                S01:08003636:  00
                S01:08003637:  00
+F00:0904       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,1 ,0
                S01:08003638:  00
                S01:08003639:  00
                S01:0800363A:  00
@@ -3227,9 +3225,9 @@ F00:0903       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
                S01:08003643:  00
                S01:08003644:  00
                S01:08003645:  00
-               S01:08003646:  01
+               S01:08003646:  00
                S01:08003647:  00
-               S01:08003648:  02
+               S01:08003648:  00
                S01:08003649:  00
                S01:0800364A:  00
                S01:0800364B:  00
@@ -3237,84 +3235,84 @@ F00:0903       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0
                S01:0800364D:  00
                S01:0800364E:  01
                S01:0800364F:  00
-F00:0904       	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
-               S01:08003650:  00
+               S01:08003650:  02
                S01:08003651:  00
-               S01:08003652:  02
+               S01:08003652:  00
                S01:08003653:  00
                S01:08003654:  00
                S01:08003655:  00
-               S01:08003656:  02
+               S01:08003656:  01
                S01:08003657:  00
+F00:0905       	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0
                S01:08003658:  00
                S01:08003659:  00
-               S01:0800365A:  00
-               S01:0800365B:  02
+               S01:0800365A:  02
+               S01:0800365B:  00
                S01:0800365C:  00
                S01:0800365D:  00
-               S01:0800365E:  00
+               S01:0800365E:  02
                S01:0800365F:  00
                S01:08003660:  00
-               S01:08003661:  02
+               S01:08003661:  00
                S01:08003662:  00
-               S01:08003663:  00
+               S01:08003663:  02
                S01:08003664:  00
                S01:08003665:  00
-               S01:08003666:  02
+               S01:08003666:  00
                S01:08003667:  00
                S01:08003668:  00
-               S01:08003669:  00
-               S01:0800366A:  02
+               S01:08003669:  02
+               S01:0800366A:  00
                S01:0800366B:  00
                S01:0800366C:  00
                S01:0800366D:  00
-               S01:0800366E:  00
+               S01:0800366E:  02
                S01:0800366F:  00
-F00:0905       	.BYTE 0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0
                S01:08003670:  00
                S01:08003671:  00
-               S01:08003672:  00
+               S01:08003672:  02
                S01:08003673:  00
-               S01:08003674:  02
+               S01:08003674:  00
                S01:08003675:  00
                S01:08003676:  00
                S01:08003677:  00
+F00:0906       	.BYTE 0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0
                S01:08003678:  00
-               S01:08003679:  01
+               S01:08003679:  00
                S01:0800367A:  00
                S01:0800367B:  00
-               S01:0800367C:  00
+               S01:0800367C:  02
                S01:0800367D:  00
-               S01:0800367E:  01
+               S01:0800367E:  00
                S01:0800367F:  00
                S01:08003680:  00
-               S01:08003681:  00
+               S01:08003681:  01
                S01:08003682:  00
-               S01:08003683:  02
+               S01:08003683:  00
                S01:08003684:  00
                S01:08003685:  00
-               S01:08003686:  00
+               S01:08003686:  01
                S01:08003687:  00
-               S01:08003688:  01
+               S01:08003688:  00
                S01:08003689:  00
                S01:0800368A:  00
-               S01:0800368B:  01
+               S01:0800368B:  02
                S01:0800368C:  00
                S01:0800368D:  00
                S01:0800368E:  00
                S01:0800368F:  00
-F00:0906       	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
-               S01:08003690:  00
+               S01:08003690:  01
                S01:08003691:  00
-               S01:08003692:  01
-               S01:08003693:  00
+               S01:08003692:  00
+               S01:08003693:  01
                S01:08003694:  00
                S01:08003695:  00
                S01:08003696:  00
                S01:08003697:  00
+F00:0907       	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2
                S01:08003698:  00
                S01:08003699:  00
-               S01:0800369A:  00
+               S01:0800369A:  01
                S01:0800369B:  00
                S01:0800369C:  00
                S01:0800369D:  00
@@ -3322,186 +3320,185 @@ F00:0906       	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0
                S01:0800369F:  00
                S01:080036A0:  00
                S01:080036A1:  00
-               S01:080036A2:  01
+               S01:080036A2:  00
                S01:080036A3:  00
                S01:080036A4:  00
                S01:080036A5:  00
                S01:080036A6:  00
                S01:080036A7:  00
                S01:080036A8:  00
-               S01:080036A9:  02
-               S01:080036AA:  00
+               S01:080036A9:  00
+               S01:080036AA:  01
                S01:080036AB:  00
                S01:080036AC:  00
                S01:080036AD:  00
                S01:080036AE:  00
-               S01:080036AF:  02
-F00:0907       	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
+               S01:080036AF:  00
                S01:080036B0:  00
-               S01:080036B1:  00
-               S01:080036B2:  02
+               S01:080036B1:  02
+               S01:080036B2:  00
                S01:080036B3:  00
                S01:080036B4:  00
                S01:080036B5:  00
                S01:080036B6:  00
                S01:080036B7:  02
+F00:0908       	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0
                S01:080036B8:  00
                S01:080036B9:  00
-               S01:080036BA:  00
-               S01:080036BB:  01
+               S01:080036BA:  02
+               S01:080036BB:  00
                S01:080036BC:  00
                S01:080036BD:  00
                S01:080036BE:  00
-               S01:080036BF:  00
-               S01:080036C0:  02
+               S01:080036BF:  02
+               S01:080036C0:  00
                S01:080036C1:  00
                S01:080036C2:  00
-               S01:080036C3:  00
+               S01:080036C3:  01
                S01:080036C4:  00
-               S01:080036C5:  02
+               S01:080036C5:  00
                S01:080036C6:  00
-               S01:080036C7:  01
-               S01:080036C8:  00
+               S01:080036C7:  00
+               S01:080036C8:  02
                S01:080036C9:  00
                S01:080036CA:  00
                S01:080036CB:  00
-               S01:080036CC:  02
-               S01:080036CD:  00
+               S01:080036CC:  00
+               S01:080036CD:  02
                S01:080036CE:  00
-               S01:080036CF:  00
-F00:0908       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0
+               S01:080036CF:  01
                S01:080036D0:  00
                S01:080036D1:  00
                S01:080036D2:  00
                S01:080036D3:  00
-               S01:080036D4:  00
+               S01:080036D4:  02
                S01:080036D5:  00
-               S01:080036D6:  01
+               S01:080036D6:  00
                S01:080036D7:  00
+F00:0909       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,1 ,0 ,0 ,0
                S01:080036D8:  00
-               S01:080036D9:  02
+               S01:080036D9:  00
                S01:080036DA:  00
                S01:080036DB:  00
                S01:080036DC:  00
-               S01:080036DD:  02
-               S01:080036DE:  00
+               S01:080036DD:  00
+               S01:080036DE:  01
                S01:080036DF:  00
                S01:080036E0:  00
-               S01:080036E1:  00
+               S01:080036E1:  02
                S01:080036E2:  00
                S01:080036E3:  00
                S01:080036E4:  00
-               S01:080036E5:  00
-               S01:080036E6:  02
+               S01:080036E5:  02
+               S01:080036E6:  00
                S01:080036E7:  00
                S01:080036E8:  00
                S01:080036E9:  00
-               S01:080036EA:  02
+               S01:080036EA:  00
                S01:080036EB:  00
-               S01:080036EC:  01
+               S01:080036EC:  00
                S01:080036ED:  00
-               S01:080036EE:  00
+               S01:080036EE:  02
                S01:080036EF:  00
-F00:0909       	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0
                S01:080036F0:  00
                S01:080036F1:  00
-               S01:080036F2:  01
+               S01:080036F2:  02
                S01:080036F3:  00
-               S01:080036F4:  00
+               S01:080036F4:  01
                S01:080036F5:  00
                S01:080036F6:  00
                S01:080036F7:  00
+F00:0910       	.BYTE 0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0
                S01:080036F8:  00
                S01:080036F9:  00
-               S01:080036FA:  00
-               S01:080036FB:  01
+               S01:080036FA:  01
+               S01:080036FB:  00
                S01:080036FC:  00
                S01:080036FD:  00
                S01:080036FE:  00
                S01:080036FF:  00
-               S01:08003700:  01
+               S01:08003700:  00
                S01:08003701:  00
-               S01:08003702:  02
-               S01:08003703:  00
+               S01:08003702:  00
+               S01:08003703:  01
                S01:08003704:  00
-               S01:08003705:  01
+               S01:08003705:  00
                S01:08003706:  00
                S01:08003707:  00
-               S01:08003708:  02
+               S01:08003708:  01
                S01:08003709:  00
-               S01:0800370A:  00
+               S01:0800370A:  02
                S01:0800370B:  00
                S01:0800370C:  00
-               S01:0800370D:  00
-               S01:0800370E:  02
+               S01:0800370D:  01
+               S01:0800370E:  00
                S01:0800370F:  00
-F00:0910       	.BYTE 0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,2 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0
-               S01:08003710:  00
+               S01:08003710:  02
                S01:08003711:  00
                S01:08003712:  00
                S01:08003713:  00
                S01:08003714:  00
-               S01:08003715:  01
-               S01:08003716:  00
-               S01:08003717:  02
+               S01:08003715:  00
+               S01:08003716:  02
+               S01:08003717:  00
+F00:0911       	.BYTE 0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,2 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0
                S01:08003718:  00
                S01:08003719:  00
-               S01:0800371A:  02
+               S01:0800371A:  00
                S01:0800371B:  00
-               S01:0800371C:  02
-               S01:0800371D:  00
+               S01:0800371C:  00
+               S01:0800371D:  01
                S01:0800371E:  00
-               S01:0800371F:  00
+               S01:0800371F:  02
                S01:08003720:  00
                S01:08003721:  00
-               S01:08003722:  00
-               S01:08003723:  01
-               S01:08003724:  00
+               S01:08003722:  02
+               S01:08003723:  00
+               S01:08003724:  02
                S01:08003725:  00
                S01:08003726:  00
                S01:08003727:  00
                S01:08003728:  00
-               S01:08003729:  01
+               S01:08003729:  00
                S01:0800372A:  00
-               S01:0800372B:  00
+               S01:0800372B:  01
                S01:0800372C:  00
-               S01:0800372D:  01
+               S01:0800372D:  00
                S01:0800372E:  00
                S01:0800372F:  00
-F00:0911       	.BYTE 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
                S01:08003730:  00
                S01:08003731:  01
                S01:08003732:  00
-               S01:08003733:  02
+               S01:08003733:  00
                S01:08003734:  00
-               S01:08003735:  00
+               S01:08003735:  01
                S01:08003736:  00
                S01:08003737:  00
+F00:0912       	.BYTE 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
                S01:08003738:  00
-               S01:08003739:  00
+               S01:08003739:  01
                S01:0800373A:  00
-               S01:0800373B:  00
+               S01:0800373B:  02
                S01:0800373C:  00
                S01:0800373D:  00
-               S01:0800373E:  01
+               S01:0800373E:  00
                S01:0800373F:  00
-               S01:08003740:  02
+               S01:08003740:  00
                S01:08003741:  00
                S01:08003742:  00
                S01:08003743:  00
-               S01:08003744:  01
-               S01:08003745:  02
-               S01:08003746:  00
+               S01:08003744:  00
+               S01:08003745:  00
+               S01:08003746:  01
                S01:08003747:  00
-               S01:08003748:  00
+               S01:08003748:  02
                S01:08003749:  00
                S01:0800374A:  00
                S01:0800374B:  00
-               S01:0800374C:  00
-               S01:0800374D:  00
+               S01:0800374C:  01
+               S01:0800374D:  02
                S01:0800374E:  00
-               S01:0800374F:  02
-F00:0912       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0
+               S01:0800374F:  00
                S01:08003750:  00
                S01:08003751:  00
                S01:08003752:  00
@@ -3509,166 +3506,175 @@ F00:0912       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0
                S01:08003754:  00
                S01:08003755:  00
                S01:08003756:  00
-               S01:08003757:  01
+               S01:08003757:  02
+F00:0913       	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,1 ,2 ,0 ,0 ,0 ,0
                S01:08003758:  00
                S01:08003759:  00
                S01:0800375A:  00
                S01:0800375B:  00
-               S01:0800375C:  02
+               S01:0800375C:  00
                S01:0800375D:  00
                S01:0800375E:  00
-               S01:0800375F:  00
+               S01:0800375F:  01
                S01:08003760:  00
                S01:08003761:  00
-               S01:08003762:  02
+               S01:08003762:  00
                S01:08003763:  00
-               S01:08003764:  00
+               S01:08003764:  02
                S01:08003765:  00
                S01:08003766:  00
-               S01:08003767:  02
+               S01:08003767:  00
                S01:08003768:  00
                S01:08003769:  00
-               S01:0800376A:  01
-               S01:0800376B:  02
+               S01:0800376A:  02
+               S01:0800376B:  00
                S01:0800376C:  00
                S01:0800376D:  00
                S01:0800376E:  00
-               S01:0800376F:  00
-F00:0913       	.BYTE 0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1
+               S01:0800376F:  02
                S01:08003770:  00
                S01:08003771:  00
-               S01:08003772:  00
-               S01:08003773:  00
-               S01:08003774:  01
+               S01:08003772:  01
+               S01:08003773:  02
+               S01:08003774:  00
                S01:08003775:  00
-               S01:08003776:  01
+               S01:08003776:  00
                S01:08003777:  00
+F00:0914       	.BYTE 0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1
                S01:08003778:  00
-               S01:08003779:  02
+               S01:08003779:  00
                S01:0800377A:  00
                S01:0800377B:  00
                S01:0800377C:  01
                S01:0800377D:  00
-               S01:0800377E:  00
-               S01:0800377F:  02
+               S01:0800377E:  01
+               S01:0800377F:  00
                S01:08003780:  00
-               S01:08003781:  00
+               S01:08003781:  02
                S01:08003782:  00
-               S01:08003783:  01
-               S01:08003784:  00
+               S01:08003783:  00
+               S01:08003784:  01
                S01:08003785:  00
                S01:08003786:  00
-               S01:08003787:  00
+               S01:08003787:  02
                S01:08003788:  00
                S01:08003789:  00
                S01:0800378A:  00
-               S01:0800378B:  00
-               S01:0800378C:  01
+               S01:0800378B:  01
+               S01:0800378C:  00
                S01:0800378D:  00
                S01:0800378E:  00
-               S01:0800378F:  01
-F00:0914       	.BYTE 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0
+               S01:0800378F:  00
                S01:08003790:  00
-               S01:08003791:  01
+               S01:08003791:  00
                S01:08003792:  00
-               S01:08003793:  02
-               S01:08003794:  00
+               S01:08003793:  00
+               S01:08003794:  01
                S01:08003795:  00
                S01:08003796:  00
-               S01:08003797:  00
-               S01:08003798:  01
-               S01:08003799:  00
+               S01:08003797:  01
+F00:0915       	.BYTE 0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,2 ,0 ,0 ,0 ,0
+               S01:08003798:  00
+               S01:08003799:  01
                S01:0800379A:  00
-               S01:0800379B:  01
+               S01:0800379B:  02
                S01:0800379C:  00
                S01:0800379D:  00
                S01:0800379E:  00
                S01:0800379F:  00
-               S01:080037A0:  00
+               S01:080037A0:  01
                S01:080037A1:  00
                S01:080037A2:  00
-               S01:080037A3:  00
+               S01:080037A3:  01
                S01:080037A4:  00
                S01:080037A5:  00
-               S01:080037A6:  01
+               S01:080037A6:  00
                S01:080037A7:  00
-               S01:080037A8:  01
+               S01:080037A8:  00
                S01:080037A9:  00
                S01:080037AA:  00
-               S01:080037AB:  02
+               S01:080037AB:  00
                S01:080037AC:  00
                S01:080037AD:  00
-               S01:080037AE:  00
+               S01:080037AE:  01
                S01:080037AF:  00
-F00:0915       	.BYTE 0 ,0 ,0 ,1 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
-               S01:080037B0:  00
+               S01:080037B0:  01
                S01:080037B1:  00
                S01:080037B2:  00
-               S01:080037B3:  01
+               S01:080037B3:  02
                S01:080037B4:  00
-               S01:080037B5:  01
+               S01:080037B5:  00
                S01:080037B6:  00
-               S01:080037B7:  02
+               S01:080037B7:  00
+F00:0916       	.BYTE 0 ,0 ,0 ,1 ,0 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,0 ,1 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2
                S01:080037B8:  00
                S01:080037B9:  00
                S01:080037BA:  00
-               S01:080037BB:  00
-               S01:080037BC:  02
-               S01:080037BD:  00
+               S01:080037BB:  01
+               S01:080037BC:  00
+               S01:080037BD:  01
                S01:080037BE:  00
-               S01:080037BF:  00
-               S01:080037C0:  01
+               S01:080037BF:  02
+               S01:080037C0:  00
                S01:080037C1:  00
                S01:080037C2:  00
-               S01:080037C3:  01
-               S01:080037C4:  00
+               S01:080037C3:  00
+               S01:080037C4:  02
                S01:080037C5:  00
                S01:080037C6:  00
-               S01:080037C7:  02
-               S01:080037C8:  00
+               S01:080037C7:  00
+               S01:080037C8:  01
                S01:080037C9:  00
                S01:080037CA:  00
-               S01:080037CB:  00
+               S01:080037CB:  01
                S01:080037CC:  00
                S01:080037CD:  00
                S01:080037CE:  00
                S01:080037CF:  02
-F00:0916       	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0
                S01:080037D0:  00
                S01:080037D1:  00
-               S01:080037D2:  02
+               S01:080037D2:  00
                S01:080037D3:  00
                S01:080037D4:  00
                S01:080037D5:  00
-               S01:080037D6:  02
-               S01:080037D7:  00
+               S01:080037D6:  00
+               S01:080037D7:  02
+F00:0917       	.BYTE 0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0
                S01:080037D8:  00
-               S01:080037D9:  02
-               S01:080037DA:  00
+               S01:080037D9:  00
+               S01:080037DA:  02
                S01:080037DB:  00
                S01:080037DC:  00
                S01:080037DD:  00
-               S01:080037DE:  00
-               S01:080037DF:  02
+               S01:080037DE:  02
+               S01:080037DF:  00
                S01:080037E0:  00
-               S01:080037E1:  00
+               S01:080037E1:  02
                S01:080037E2:  00
                S01:080037E3:  00
                S01:080037E4:  00
                S01:080037E5:  00
                S01:080037E6:  00
-               S01:080037E7:  00
+               S01:080037E7:  02
                S01:080037E8:  00
-               S01:080037E9:  02
+               S01:080037E9:  00
                S01:080037EA:  00
                S01:080037EB:  00
                S01:080037EC:  00
-               S01:080037ED:  02
+               S01:080037ED:  00
                S01:080037EE:  00
                S01:080037EF:  00
-F00:0917       Tilemap_END:
-F00:0918       	
-F00:0919       
+               S01:080037F0:  00
+               S01:080037F1:  02
+               S01:080037F2:  00
+               S01:080037F3:  00
+               S01:080037F4:  00
+               S01:080037F5:  02
+               S01:080037F6:  00
+               S01:080037F7:  00
+F00:0918       Tilemap_END:
+F00:0919       	
+F00:0920       
 
 
 Sections:
@@ -3686,19 +3692,19 @@ F04  GBA_Math.asm
 Symbols:
 TilemapHeight EXPR(32=0x20) UNUSED 
 PlayerTileStart EXPR(1=0x1) UNUSED 
-DIV_Next EXPR(134221224=0x8000da8) ABS 
-DIV_Start EXPR(134221208=0x8000d98) ABS 
-DIV_End EXPR(134221248=0x8000dc0) ABS 
-MOD EXPR(134221172=0x8000d74) UNUSED ABS 
-LineDone EXPR(134220388=0x8000a64) UNUSED ABS 
-DrawPixel EXPR(134220352=0x8000a40) ABS 
-WriteLine EXPR(134220332=0x8000a2c) ABS 
-BitmapFont EXPR(134220412=0x8000a7c) ABS 
-WriteChar EXPR(134220248=0x80009d8) ABS 
-WriteTextDone EXPR(134220244=0x80009d4) ABS 
-RepeatWriteText EXPR(134220224=0x80009c0) ABS 
-WriteText EXPR(134220216=0x80009b8) UNUSED ABS 
-NewLine EXPR(134220172=0x800098c) UNUSED ABS 
+DIV_Next EXPR(134221228=0x8000dac) ABS 
+DIV_Start EXPR(134221212=0x8000d9c) ABS 
+DIV_End EXPR(134221252=0x8000dc4) ABS 
+MOD EXPR(134221176=0x8000d78) UNUSED ABS 
+LineDone EXPR(134220392=0x8000a68) UNUSED ABS 
+DrawPixel EXPR(134220356=0x8000a44) ABS 
+WriteLine EXPR(134220336=0x8000a30) ABS 
+BitmapFont EXPR(134220416=0x8000a80) ABS 
+WriteChar EXPR(134220252=0x80009dc) ABS 
+WriteTextDone EXPR(134220248=0x80009d8) ABS 
+RepeatWriteText EXPR(134220228=0x80009c4) ABS 
+WriteText EXPR(134220220=0x80009bc) UNUSED ABS 
+NewLine EXPR(134220176=0x8000990) UNUSED ABS 
 CursorY EXPR(33554465=0x2000021) 
 CursorX EXPR(33554464=0x2000020) 
 PlayerSpriteNum EXPR(1=0x1) 
@@ -3709,7 +3715,7 @@ HorizontalCollision_CheckRight EXPR(134219812=0x8000824) ABS
 HorizontalCollision_END EXPR(134219948=0x80008ac) ABS 
 BackgroundCollideLimit EXPR(18=0x12) 
 TilemapWidth EXPR(32=0x20) 
-DIV EXPR(134221188=0x8000d84) ABS 
+DIV EXPR(134221192=0x8000d88) ABS 
 TileLength EXPR(8=0x8) 
 VerticalCollision_CheckUp EXPR(134219368=0x8000668) UNUSED ABS 
 VerticalCollision_CheckDown EXPR(134219500=0x80006ec) ABS 
@@ -3720,21 +3726,21 @@ LoadHalfwordsRep EXPR(134219288=0x8000618) ABS
 GetScreenPos EXPR(134219248=0x80005f0) UNUSED ABS 
 FillScreen EXPR(134219232=0x80005e0) ABS 
 ClearToColor EXPR(134219220=0x80005d4) UNUSED ABS 
-SpriteFiles_END EXPR(134231012=0x80033e4) ABS 
+SpriteFiles_END EXPR(134231016=0x80033e8) ABS 
 VramSpritePixelPatterns EXPR(100728832=0x6010000) 
-SpriteFiles EXPR(134223332=0x80015e4) ABS 
+SpriteFiles EXPR(134223336=0x80015e8) ABS 
 SpritePaletteMemory EXPR(83886592=0x5000200) 
 VramBackground EXPR(100665344=0x6000800) 
 LoadBytes EXPR(134219308=0x800062c) ABS 
-Tilemap_END EXPR(134232048=0x80037f0) ABS 
+Tilemap_END EXPR(134232056=0x80037f8) ABS 
 VramBase EXPR(100663296=0x6000000) 
-Tilemap EXPR(134231024=0x80033f0) ABS 
-TilemapFiles_END EXPR(134223332=0x80015e4) ABS 
+Tilemap EXPR(134231032=0x80033f8) ABS 
+TilemapFiles_END EXPR(134223336=0x80015e8) ABS 
 VramTilemapPixelPatterns EXPR(100679680=0x6004000) 
-TilemapFiles EXPR(134221284=0x8000de4) ABS 
+TilemapFiles EXPR(134221288=0x8000de8) ABS 
 LoadHalfwords EXPR(134219284=0x8000614) ABS 
 BackgroundPaletteMemory EXPR(83886080=0x5000000) 
-ColorPalette EXPR(134221252=0x8000dc4) ABS 
+ColorPalette EXPR(134221256=0x8000dc8) ABS 
 LCDControl EXPR(67108864=0x4000000) 
 SpriteTest EXPR(134218516=0x8000314) ABS 
 SpriteTestAddress EXPR(134218512=0x8000310) UNUSED ABS 
@@ -3753,10 +3759,10 @@ DelayFrame EXPR(134218284=0x800022c) ABS
 Render EXPR(134220000=0x80008e0) ABS 
 HorizontalCollision EXPR(134219652=0x8000784) ABS 
 VerticalCollision EXPR(134219340=0x800064c) ABS 
-GetButton EXPR(134220136=0x8000968) ABS 
+GetButton EXPR(134220140=0x800096c) ABS 
 GameLoop EXPR(134218076=0x800015c) ABS 
-Anim_PlayerIdle_END EXPR(134231024=0x80033f0) ABS 
-Anim_PlayerIdle EXPR(134231012=0x80033e4) ABS 
+Anim_PlayerIdle_END EXPR(134231032=0x80033f8) ABS 
+Anim_PlayerIdle EXPR(134231016=0x80033e8) ABS 
 BackgroundAndSpriteInit EXPR(134219064=0x8000538) ABS 
 ScreenInit EXPR(134219028=0x8000514) ABS 
 Stack EXPR(50331648=0x3000000) 

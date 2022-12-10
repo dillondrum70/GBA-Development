@@ -131,7 +131,7 @@ Main:
 	STRB r6, [r0]
 	
 	MOV r0, #PlayerCurrentAnimEnd
-	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position
+	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position 
 	STRW r6, [r0]
 	
 	MOV r0, #PlayerFace
@@ -802,6 +802,7 @@ Render:
 		;ADD r6, r6, #1	;Increment address to next index (one byte)
 		MOV r0, #PlayerCurrentAnimEnd	;Get address of the current address where animation indices end
 		LDR r4, [r0]	;Get memory location where animation ends
+		SUB r4, r4, #1	;(- 1 to get the index of the last frame, not just past the last frame)
 		
 		ADD r6, r6, #1	;Increment memory to see if next is equal to end of array
 		ADD r7, r5, r6	;Get start memory address + offset
@@ -871,8 +872,8 @@ SpriteFiles_END:
 .EQU PlayerTileStart, 1 ;Index of first sprite tile
 
 ;Indexes where the 4 tiles lie in the tilemap for each frame
-Anim_PlayerIdle:	
-	.BYTE 1, 1, 1, 5, 5, 5, 9, 9 ,9 , 5, 5, 5	;Loop through the 3 idle frames
+Anim_PlayerIdle:
+	.BYTE 1, 1, 1, 1, 5, 5, 5, 5, 9, 9 ,9, 9 , 5, 5, 5, 5	;Loop through the 3 idle frames
 Anim_PlayerIdle_END:
 	
 .EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index

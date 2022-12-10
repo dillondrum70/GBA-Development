@@ -110,6 +110,8 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
+        <Find name="PlayerCurrent" />
+        <Find name="Render:" />
         <Find name="PlayerCurrentAnim" />
         <Find name="PlayerAnimIndex" />
         <Find name="ADRL r0, Tilemap&#x0009;;Get addresses of tilemap, far away in code so use ADRL" />
@@ -118,8 +120,6 @@
         <Find name="," />
         <Find name="3" />
         <Find name="CMPS" />
-        <Find name="r11" />
-        <Find name="GetNextLine" />
         <Replace name=" ," />
         <Replace name=", " />
         <Replace name="2" />
