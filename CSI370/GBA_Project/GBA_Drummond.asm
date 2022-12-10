@@ -45,10 +45,10 @@
 .EQU PlayerX, Ram+34	;Player's x position
 .EQU PlayerY, Ram+35	;Player's y position
 
-.EQU PlayerFace, Ram+38	;Direction player faces
-.EQU PlayerCurrentAnimIndex, Ram+36	;Address between beginning and end where current animation frame is
-.EQU PlayerCurrentAnimBegin, Ram+40	;Address of current animation indices
-.EQU PlayerCurrentAnimEnd, Ram+44 ;Address where current animation indices end
+.EQU PlayerFace, Ram+36	;Direction player faces
+.EQU PlayerCurrentAnimIndex, Ram+40	;Address between beginning and end where current animation frame is
+.EQU PlayerCurrentAnimBegin, Ram+44	;Address of current animation indices
+.EQU PlayerCurrentAnimEnd, Ram+48 ;Address where current animation indices end
 ;.EQU PlayerAnimIndex, Ram+40	;current index of frame in animation tileset, tells us sprite number for sprite attributes for draw calls
 
 ;Access animation array -> get index in array -> value from the animation is an index in the sprite tilemap -> pass index from animation array as sprite num when drawing player
@@ -123,7 +123,7 @@ Main:
 	STRB r7, [r0]
 	
 	MOV r0, #PlayerCurrentAnimBegin
-	ADRL r6, Anim_PlayerIdle	;Start with idle animation, load player idle address
+	ADRL r6, Anim_PlayerIdleDown	;Start with idle animation, load player idle address
 	STRW r6, [r0]
 	
 	MOV r0, #PlayerCurrentAnimIndex	;Current index of current animation will be frame 0 of the idle animation
@@ -131,7 +131,7 @@ Main:
 	STRB r6, [r0]
 	
 	MOV r0, #PlayerCurrentAnimEnd
-	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position 
+	ADRL r6, Anim_PlayerIdleDown_END	;Start with idle animation, load player idle address end position 
 	STRW r6, [r0]
 	
 	MOV r0, #PlayerFace
@@ -240,6 +240,50 @@ GameLoop:
 		CMPS r1, r2				;Check if right side of player is out of bounds
 		SUBGT r2, r2, r3		;If so, Subtract width from screen x bound...
 		MOVGT r8, r2			;And move that into x position
+		
+		
+		;;;;;;;;;;;;;;;;; Change Face Direction ;;;;;;;;;;;;;;;;;;;;;
+		MOV r0, #PlayerFace
+		
+		CMP r9, r11
+			MOVGT r1, #FacingDown
+			STRGT r1, [r0]
+			
+			MOVLT r1, #FacingUp
+			STRLT r1, [r0]
+		
+		;Prioritize facing left and right
+		CMP r8, r10
+			MOVGT r1, #FacingRight
+			STRGT r1, [r0]
+			
+			MOVLT r1, #FacingLeft
+			STRLT r1, [r0]
+			
+		;;;;;;;;;;;;;;;;; Change Current Animation ;;;;;;;;;;;;;;;;;;
+		
+		;If player hasn't moved, idle animation
+		CMP r8, r10
+			;If x hasn't moved, check if Y hasn't moved
+			CMPZ r9, r11
+				;Get current animation addresses
+				MOVZ r1, #PlayerCurrentAnimBegin
+				MOVZ r2, #PlayerCurrentAnimEnd
+				
+				;Store new animation addresses
+				ADRL r0, Anim_PlayerIdleDown
+				STRZ r0, [r1]
+				ADRL r0, Anim_PlayerIdleDown_END
+				STRZ r0, [r2]
+			
+			;If x moving down
+			MOVGT r1, #PlayerCurrentAnimBegin
+			MOVGT r2, #PlayerCurrentAnimEnd
+			
+			ADRGTL r0, Anim_PlayerWalkDown
+			STRGT r0, [r1]
+			ADRGTL r0, Anim_PlayerWalkDown_END
+			STRGT r0, [r2]
 		
 		;Do collisions independently so we can still move up and down well moving right against a wall
 		;;;;;;;;;;;;;;; Vertical Collision ;;;;;;;;;;;;;;;;;;;;
@@ -790,7 +834,7 @@ Render:
 		LDRB r7, [r5, r6];Get actual index from beginning address location + index offset
 		ADD r4, r4, r7	;Add index in tilemap of the starting tile to draw for the player
 		
-		;ADRL r0, Anim_PlayerIdle	;Load idle animation address
+		;ADRL r0, Anim_PlayerIdleDown	;Load idle animation address
 		;MOV r5, #PlayerCurrentAnimIndex	;Address of index in current animation
 		;LDRB r6, [r5]	;Load index in current animation
 		;LDRB r7, [r0, r6]	;Access r6 index in r0, the animation, to get the sprite tile index in the sprite tiles' tilemap
@@ -872,9 +916,12 @@ SpriteFiles_END:
 .EQU PlayerTileStart, 1 ;Index of first sprite tile
 
 ;Indexes where the 4 tiles lie in the tilemap for each frame
-Anim_PlayerIdle:
+Anim_PlayerIdleDown:
 	.BYTE 1, 1, 1, 1, 5, 5, 5, 5, 9, 9 ,9, 9 , 5, 5, 5, 5	;Loop through the 3 idle frames
-Anim_PlayerIdle_END:
+Anim_PlayerIdleDown_END:
+Anim_PlayerWalkDown:
+	.BYTE 1, 1, 1, 13, 13, 13, 17, 17, 17, 13, 13, 13, 1, 1, 1, 21, 21, 21, 25, 25, 25, 21, 21, 21	;Loop through the walk frames
+Anim_PlayerWalkDown_END:
 	
 .EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index
 .EQU TileLength, 8	;Tiles are 8x8 pixels
