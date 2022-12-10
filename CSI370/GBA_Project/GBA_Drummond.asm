@@ -45,8 +45,8 @@
 .EQU PlayerX, Ram+34	;Player's x position
 .EQU PlayerY, Ram+35	;Player's y position
 
-.EQU PlayerFace, Ram+36	;Direction player faces
-.EQU PlayerCurrentAnimIndex, Ram+37	;Address between beginning and end where current animation frame is
+.EQU PlayerFace, Ram+38	;Direction player faces
+.EQU PlayerCurrentAnimIndex, Ram+36	;Address between beginning and end where current animation frame is
 .EQU PlayerCurrentAnimBegin, Ram+40	;Address of current animation indices
 .EQU PlayerCurrentAnimEnd, Ram+44 ;Address where current animation indices end
 ;.EQU PlayerAnimIndex, Ram+40	;current index of frame in animation tileset, tells us sprite number for sprite attributes for draw calls
@@ -127,7 +127,7 @@ Main:
 	STRW r6, [r0]
 	
 	MOV r0, #PlayerCurrentAnimIndex	;Current index of current animation will be frame 0 of the idle animation
-	MOV r6, #1
+	MOV r6, #10
 	STRB r6, [r0]
 	
 	MOV r0, #PlayerCurrentAnimEnd
@@ -787,7 +787,7 @@ Render:
 		LDR r5, [r0]	;Access memory and get address of the beginning of current animation
 		MOV r0, #PlayerCurrentAnimIndex	;Address of index in current animation
 		LDRB r6, [r0]		;Get index within current animation
-		LDRB r7, [r5, r6];Get actual index from address location
+		LDRB r7, [r5, r6];Get actual index from beginning address location + index offset
 		ADD r4, r4, r7	;Add index in tilemap of the starting tile to draw for the player
 		
 		;ADRL r0, Anim_PlayerIdle	;Load idle animation address
@@ -799,15 +799,21 @@ Render:
 		;Draw sprite after getting current frame, parameters loaded in r1-r4
 		BL DrawSprite
 		
-		ADD r5, r5, #1	;Increment address to next index (one byte)
-		MOV r2, #PlayerCurrentAnimEnd	;Get address of the current address where animation indices end
-		LDR r4, [r2]	;Load in current address of indices ending
+		;ADD r6, r6, #1	;Increment address to next index (one byte)
+		MOV r0, #PlayerCurrentAnimEnd	;Get address of the current address where animation indices end
+		LDR r4, [r0]	;Get memory location where animation ends
 		
-		CMP r5, r4	;Test current address against end address
+		ADD r6, r6, #1	;Increment memory to see if next is equal to end of array
+		ADD r7, r5, r6	;Get start memory address + offset
+		
+		MOV r1, #PlayerCurrentAnimIndex	;Address of index in current animation
+		
+		CMP r7, r4	;Test current address against end address
 		;MOVGTE r0, #PlayerCurrentAnimBegin	;If greater or equal, loop back to beginning of animation
-			;STRGTE r3, [r0]	;If current address is equal or greater than end, reset the current address in memory to the address at the beginning of the animation
-		
-			;STRLT r5, [r0]	;Otherwise, store this new animation index as our current address
+			EORGTE r6, r6, r6	;Clear index to 0
+			STRBGTE r6, [r1]	;If current address is equal or greater than end, reset the current address in memory to the address at the beginning of the animation
+			
+			STRBLT r6, [r1]	;Otherwise, store this new animation index as our current address
 		
 	LDMFD sp!, {r1-r7, pc}
 	

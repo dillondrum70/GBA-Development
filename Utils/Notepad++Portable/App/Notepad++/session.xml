@@ -1,10 +1,10 @@
 <NotepadPlus>
     <Session activeView="0">
         <mainView activeIndex="0">
-            <File firstVisibleLine="770" xOffset="0" scrollWidth="2630" startPos="28872" endPos="28872" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="M:\Utils\Notepad++Portable\App\Notepad++\backup\GBA_Drummond.asm@2022-12-10_004337" originalFileLastModifTimestamp="1670650988" />
+            <File firstVisibleLine="852" xOffset="0" scrollWidth="2630" startPos="32414" endPos="32414" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Drummond.asm" backupFilePath="M:\Utils\Notepad++Portable\App\Notepad++\backup\GBA_Drummond.asm@2022-12-10_015848" originalFileLastModifTimestamp="1670655513" />
             <File firstVisibleLine="0" xOffset="0" scrollWidth="2630" startPos="0" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Core.asm" backupFilePath="" originalFileLastModifTimestamp="1670453161" />
             <File firstVisibleLine="0" xOffset="0" scrollWidth="2630" startPos="266" endPos="266" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Math.asm" backupFilePath="" originalFileLastModifTimestamp="1670610468" />
-            <File firstVisibleLine="11" xOffset="0" scrollWidth="2630" startPos="2101" endPos="2101" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Text.asm" backupFilePath="" originalFileLastModifTimestamp="1670616981" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="2630" startPos="2101" endPos="2101" selMode="0" lang="Assembly" encoding="-1" filename="M:\CSI370\GBA_Project\GBA_Text.asm" backupFilePath="" originalFileLastModifTimestamp="1670616981" />
         </mainView>
         <subView activeIndex="0" />
     </Session>
