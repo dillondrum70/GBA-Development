@@ -46,9 +46,9 @@
 .EQU PlayerY, Ram+35	;Player's y position
 
 .EQU PlayerFace, Ram+36	;Direction player faces
-.EQU PlayerCurrentAnimBegin, Ram+37	;Address of current animation indices
-.EQU PlayerCurrentAnimAddress, Ram+38	;Address between beginning and end where current animation frame is
-.EQU PlayerCurrentAnimEnd, Ram+39 ;Address where current animation indices end
+.EQU PlayerCurrentAnimIndex, Ram+37	;Address between beginning and end where current animation frame is
+.EQU PlayerCurrentAnimBegin, Ram+40	;Address of current animation indices
+.EQU PlayerCurrentAnimEnd, Ram+44 ;Address where current animation indices end
 ;.EQU PlayerAnimIndex, Ram+40	;current index of frame in animation tileset, tells us sprite number for sprite attributes for draw calls
 
 ;Access animation array -> get index in array -> value from the animation is an index in the sprite tilemap -> pass index from animation array as sprite num when drawing player
@@ -103,6 +103,7 @@ B Main	;Branch to start of program
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 Main:
 	MOV sp, #Stack		;Initialize Stack Pointer, starts at memory address 3000000 on GBA
 	
@@ -123,14 +124,15 @@ Main:
 	
 	MOV r0, #PlayerCurrentAnimBegin
 	ADRL r6, Anim_PlayerIdle	;Start with idle animation, load player idle address
-	STR r6, [r0]
+	STRW r6, [r0]
 	
-	MOV r0, #PlayerCurrentAnimAddress	;Current address of current frame will be the beginning of the idle animation
-	STR r6, [r0]
+	MOV r0, #PlayerCurrentAnimIndex	;Current index of current animation will be frame 0 of the idle animation
+	MOV r6, #1
+	STRB r6, [r0]
 	
 	MOV r0, #PlayerCurrentAnimEnd
 	ADRL r6, Anim_PlayerIdle_END	;Start with idle animation, load player idle address end position
-	STR r6, [r0]
+	STRW r6, [r0]
 	
 	MOV r0, #PlayerFace
 	MOV r6, #FacingDown	;Start facing down (towards the screen)
@@ -732,7 +734,7 @@ HorizontalCollision:
 DrawSprite:
 	STMFD sp!, {r1-r5, lr}
 		MOV r5, #SpriteOAMSettings
-		ADD r5, r5, r1, asl #3	;8 bytes per sprite, bit shift left to get 8 so we can set the first sprite attribute
+		ADD r5, r5, r1, asl #3	;First 8 bytes is the sprite number, bit shift left to get 8 so we can set the first sprite attribute
 		
 		;S=Shape Square / HRect / VRect
 		;C=Colors 15/256
@@ -780,27 +782,32 @@ Render:
 		
 		MOV r4,#0b0000000000000000
 		
-		;;;;;;;;;;;;;;; Animation ;;;;;;;;;;;;;;;;;;
-		MOV r0, #PlayerCurrentAnimAddress	;Address of index in current animation
-		LDR r5, [r0]	;Get address of index
-		LDRB r6, [r5]	;Get actual index from address location
-		ADD r4, r4, r6	;Add index in tilemap of the starting tile to draw for the player
+		;;;;;;;;;;;;;;; Animation ;;;;;;;;;;;;;;;;;; - Change the start tile we choose from the sprite tileset
+		MOV r0, #PlayerCurrentAnimBegin	;Get address to the current address where animation indices beginning
+		LDR r5, [r0]	;Access memory and get address of the beginning of current animation
+		MOV r0, #PlayerCurrentAnimIndex	;Address of index in current animation
+		LDRB r6, [r0]		;Get index within current animation
+		LDRB r7, [r5, r6];Get actual index from address location
+		ADD r4, r4, r7	;Add index in tilemap of the starting tile to draw for the player
+		
+		;ADRL r0, Anim_PlayerIdle	;Load idle animation address
+		;MOV r5, #PlayerCurrentAnimIndex	;Address of index in current animation
+		;LDRB r6, [r5]	;Load index in current animation
+		;LDRB r7, [r0, r6]	;Access r6 index in r0, the animation, to get the sprite tile index in the sprite tiles' tilemap
+		;ADD r4, r4, r7
+		
+		;Draw sprite after getting current frame, parameters loaded in r1-r4
 		BL DrawSprite
 		
 		ADD r5, r5, #1	;Increment address to next index (one byte)
-		MOV r1, #PlayerCurrentAnimBegin	;Get address to the current address where animation indices beginning
-		LDR r3, [r1]	;Load in address of animation indices beginning from RAM
 		MOV r2, #PlayerCurrentAnimEnd	;Get address of the current address where animation indices end
 		LDR r4, [r2]	;Load in current address of indices ending
 		
 		CMP r5, r4	;Test current address against end address
 		;MOVGTE r0, #PlayerCurrentAnimBegin	;If greater or equal, loop back to beginning of animation
-			STRGTE r3, [r0]	;If current address is equal or greater than end, reset the current address in memory to the address at the beginning of the animation
+			;STRGTE r3, [r0]	;If current address is equal or greater than end, reset the current address in memory to the address at the beginning of the animation
 		
-			STRLT r5, [r0]	;Otherwise, store this new animation index as our current address
-		
-		
-	
+			;STRLT r5, [r0]	;Otherwise, store this new animation index as our current address
 		
 	LDMFD sp!, {r1-r7, pc}
 	
@@ -866,6 +873,7 @@ Anim_PlayerIdle_END:
 .EQU TileLength, 8	;Tiles are 8x8 pixels
 .EQU TilemapWidth, 32
 .EQU TilemapHeight, 32
+
 ;Screen is 240x160 pixels, 32x32 tiles in background, tiles are 8x8, screen shows 30x20 tiles-worth of pixels at a time
 Tilemap:
 	.BYTE 0 ,0 ,0 ,0 ,0 ,0 ,25,24,2 ,0 ,0 ,1 ,0 ,12,3 ,3 ,15,0 ,2 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0
