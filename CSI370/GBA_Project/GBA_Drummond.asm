@@ -262,28 +262,124 @@ GameLoop:
 			
 		;;;;;;;;;;;;;;;;; Change Current Animation ;;;;;;;;;;;;;;;;;;
 		
-		;If player hasn't moved, idle animation
-		CMP r8, r10
-			;If x hasn't moved, check if Y hasn't moved
-			CMPZ r9, r11
+		LDR r1, [r0]	;Load in the facing direction depending on previous check (or if it wasn't changed this frame)
+		
+		MOV r2, #FacingUp
+		CMP r1, r2	;If r1 == r2 (facing direction is up)
+			BNE FaceUpCheck_END	;Skip if not equal
+			CMPE r9, r11	;Check if y input has changed this frame
+				;If y moving Up
+				MOVLT r3, #PlayerCurrentAnimBegin
+				MOVLT r2, #PlayerCurrentAnimEnd
+			
+				ADRLTL r0, Anim_PlayerWalkUp
+				STRLT r0, [r3]
+				ADRLTL r0, Anim_PlayerWalkUp_END
+				STRLT r0, [r2]
+				
+				BLT ChangeAnimation_END
+				
 				;Get current animation addresses
-				MOVZ r1, #PlayerCurrentAnimBegin
-				MOVZ r2, #PlayerCurrentAnimEnd
+				MOVEQ r3, #PlayerCurrentAnimBegin
+				MOVEQ r2, #PlayerCurrentAnimEnd
 				
 				;Store new animation addresses
-				ADRL r0, Anim_PlayerIdleDown
-				STRZ r0, [r1]
-				ADRL r0, Anim_PlayerIdleDown_END
-				STRZ r0, [r2]
+				ADREQL r0, Anim_PlayerIdleUp	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r3]
+				ADREQL r0, Anim_PlayerIdleUp_END	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r2]
+				
+				BEQ ChangeAnimation_END
+				
+		FaceUpCheck_END:
+				
+		MOV r2, #FacingDown
+		CMP r1, r2
+			BNE FaceDownCheck_END
+			CMPE r9, r11
+				MOVGT r3, #PlayerCurrentAnimBegin
+				MOVGT r2, #PlayerCurrentAnimEnd
 			
-			;If x moving down
-			MOVGT r1, #PlayerCurrentAnimBegin
-			MOVGT r2, #PlayerCurrentAnimEnd
+				ADRGTL r0, Anim_PlayerWalkDown
+				STRGT r0, [r3]
+				ADRGTL r0, Anim_PlayerWalkDown_END
+				STRGT r0, [r2]
+				
+				BLT ChangeAnimation_END
+				
+				;Get current animation addresses
+				MOVEQ r3, #PlayerCurrentAnimBegin
+				MOVEQ r2, #PlayerCurrentAnimEnd
+				
+				;Store new animation addresses
+				ADREQL r0, Anim_PlayerIdleDown	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r3]
+				ADREQL r0, Anim_PlayerIdleDown_END	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r2]
+				
+				BEQ ChangeAnimation_END
+				
+		FaceDownCheck_END:
+		
+		MOV r2, #FacingLeft
+		CMP r1, r2	;If r1 == r2 (facing direction is left)
+			BNE FaceLeftCheck_END	;Skip if not equal
+			CMPE r8, r10	;Check if x input has changed this frame
+				;If x moving Up
+				MOVLT r3, #PlayerCurrentAnimBegin
+				MOVLT r2, #PlayerCurrentAnimEnd
 			
-			ADRGTL r0, Anim_PlayerWalkDown
-			STRGT r0, [r1]
-			ADRGTL r0, Anim_PlayerWalkDown_END
-			STRGT r0, [r2]
+				ADRLTL r0, Anim_PlayerWalkLeft
+				STRLT r0, [r3]
+				ADRLTL r0, Anim_PlayerWalkLeft_END
+				STRLT r0, [r2]
+				
+				BLT ChangeAnimation_END
+				
+				;Get current animation addresses
+				MOVEQ r3, #PlayerCurrentAnimBegin
+				MOVEQ r2, #PlayerCurrentAnimEnd
+				
+				;Store new animation addresses
+				ADREQL r0, Anim_PlayerIdleLeft	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r3]
+				ADREQL r0, Anim_PlayerIdleLeft_END	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r2]
+				
+				BEQ ChangeAnimation_END
+				
+		FaceLeftCheck_END:
+				
+		MOV r2, #FacingRight
+		CMP r1, r2
+			BNE FaceRightCheck_END
+			CMPE r8, r10
+				MOVGT r3, #PlayerCurrentAnimBegin
+				MOVGT r2, #PlayerCurrentAnimEnd
+			
+				ADRGTL r0, Anim_PlayerWalkRight
+				STRGT r0, [r3]
+				ADRGTL r0, Anim_PlayerWalkRight_END
+				STRGT r0, [r2]
+				
+				BLT ChangeAnimation_END
+				
+				;Get current animation addresses
+				MOVEQ r3, #PlayerCurrentAnimBegin
+				MOVEQ r2, #PlayerCurrentAnimEnd
+				
+				;Store new animation addresses
+				ADREQL r0, Anim_PlayerIdleRight	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r3]
+				ADREQL r0, Anim_PlayerIdleRight_END	;This doesn't have a conditional check because the compiler didn't like it and threw an error
+				STREQ r0, [r2]
+				
+				BEQ ChangeAnimation_END
+				
+		FaceRightCheck_END:
+			
+			
+		ChangeAnimation_END:
 		
 		;Do collisions independently so we can still move up and down well moving right against a wall
 		;;;;;;;;;;;;;;; Vertical Collision ;;;;;;;;;;;;;;;;;;;;
@@ -922,6 +1018,30 @@ Anim_PlayerIdleDown_END:
 Anim_PlayerWalkDown:
 	.BYTE 1, 1, 1, 13, 13, 13, 17, 17, 17, 13, 13, 13, 1, 1, 1, 21, 21, 21, 25, 25, 25, 21, 21, 21	;Loop through the walk frames
 Anim_PlayerWalkDown_END:
+
+;Subtract 2, I think it automatically ignores the empty spaces I put in the animation tileset
+Anim_PlayerIdleRight:
+	.BYTE 30, 30, 30, 30, 34, 34, 34, 34, 38, 38 ,38, 38 , 34, 34, 34, 34	;Loop through the 3 idle frames
+Anim_PlayerIdleRight_END:
+Anim_PlayerWalkRight:
+	.BYTE 30, 30, 30, 42, 42, 42, 46, 46, 46, 42, 42, 42, 30, 30, 30, 50, 50, 50, 54, 54, 54, 50, 50, 50	;Loop through the walk frames
+Anim_PlayerWalkRight_END:
+
+;Subtract 4 from proper indices
+Anim_PlayerIdleLeft:
+	.BYTE 60, 60, 60, 60, 64, 64, 64, 64, 68, 68 ,68, 68 , 64, 64, 64, 64	;Loop through the 3 idle frames
+Anim_PlayerIdleLeft_END:
+Anim_PlayerWalkLeft:
+	.BYTE 60, 60, 60, 72, 72, 72, 76, 76, 76, 72, 72, 72, 60, 60, 60, 80, 80, 80, 84, 84, 84, 80, 80, 80	;Loop through the walk frames
+Anim_PlayerWalkLeft_END:
+
+;Subtract 6 from proper indices
+Anim_PlayerIdleUp:
+	.BYTE 90, 90, 90, 90, 94, 94, 94, 94, 98, 98 ,98, 98 , 94, 94, 94, 94	;Loop through the 3 idle frames
+Anim_PlayerIdleUp_END:
+Anim_PlayerWalkUp:
+	.BYTE 90, 90, 90, 102, 102, 102, 106, 106, 106, 102, 102, 102, 90, 90, 90, 110, 110, 110, 114, 114, 114, 110, 110, 110	;Loop through the walk frames
+Anim_PlayerWalkUp_END:
 	
 .EQU BackgroundCollideLimit, 18	;Colliding tiles start at this index
 .EQU TileLength, 8	;Tiles are 8x8 pixels

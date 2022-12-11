@@ -13,7 +13,7 @@
         <GUIConfig name="UserDefineDlg" position="undocked">hide</GUIConfig>
         <GUIConfig name="TabSetting" size="4" replaceBySpace="no" />
         <!--App position-->
-        <GUIConfig name="AppPosition" x="-13" y="0" width="989" height="731" isMaximized="yes" />
+        <GUIConfig name="AppPosition" x="-8" y="0" width="989" height="731" isMaximized="yes" />
         <!-- For the primary scintilla view,
              2 status for Attribut lineNumberMargin, bookMarkMargin, indentGuideLine and currentLineHilitingShow: "show" or "hide"
              4 status for Attribut folderMarkStyle : "simple", "arrow", "circle" and "box"  -->
@@ -90,7 +90,7 @@
         <GUIConfig name="stylerTheme" path="M:\Utils\Notepad++Portable\App\Notepad++\stylers.xml" />
         <GUIConfig name="delimiterSelection" leftmostDelimiter="40" rightmostDelimiter="41" delimiterSelectionOnEntireDocument="no" />
         <GUIConfig name="MISC" fileSwitcherWithoutExtColumn="no" backSlashIsEscapeCharacterForSql="yes" newStyleSaveDlg="no" />
-        <GUIConfig name="DockingManager" leftWidth="200" rightWidth="200" topHeight="200" bottomHeight="244">
+        <GUIConfig name="DockingManager" leftWidth="200" rightWidth="200" topHeight="200" bottomHeight="145">
             <PluginDlg pluginName="NppExec.dll" id="2" curr="3" prev="-1" isVisible="yes" />
             <PluginDlg pluginName="dummy" id="0" curr="3" prev="-1" isVisible="yes" />
             <PluginDlg pluginName="Notepad++::InternalFunction" id="44084" curr="1" prev="-1" isVisible="no" />
@@ -110,16 +110,16 @@
         <Filter name="*.pdf" />
         <Filter name="*.htm*" />
         <Filter name="*.xml" />
-        <Find name="PlayerCurrent" />
         <Find name="Render:" />
+        <Find name="PlayerIdle" />
+        <Find name="PlayerIdel" />
+        <Find name="right" />
+        <Find name="faceright" />
+        <Find name="PlayerCurrent" />
         <Find name="PlayerCurrentAnim" />
         <Find name="PlayerAnimIndex" />
         <Find name="ADRL r0, Tilemap&#x0009;;Get addresses of tilemap, far away in code so use ADRL" />
         <Find name="TilemapFile" />
-        <Find name=", " />
-        <Find name="," />
-        <Find name="3" />
-        <Find name="CMPS" />
         <Replace name=" ," />
         <Replace name=", " />
         <Replace name="2" />
