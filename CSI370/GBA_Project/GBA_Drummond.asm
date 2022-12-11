@@ -243,6 +243,7 @@ GameLoop:
 		
 		
 		;;;;;;;;;;;;;;;;; Change Face Direction ;;;;;;;;;;;;;;;;;;;;;
+		;r8 and r9 still store the potential new horizontal and vertical positions
 		MOV r0, #PlayerFace
 		
 		CMP r9, r11
